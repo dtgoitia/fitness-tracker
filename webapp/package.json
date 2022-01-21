@@ -1,0 +1,77 @@
+{
+  "name": "shopping-list",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://davidtorralba.com/shopping-list",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^12.20.42",
+    "@types/react": "^16.14.21",
+    "@types/react-dom": "^16.9.14",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "5.0.0",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.0.4",
+    "styled-components": "^5.3.3",
+    "typescript": "^4.5.5",
+    "web-vitals": "^0.2.4",
+    "workbox-background-sync": "^5.1.4",
+    "workbox-broadcast-update": "^5.1.4",
+    "workbox-cacheable-response": "^5.1.4",
+    "workbox-core": "^5.1.4",
+    "workbox-expiration": "^5.1.4",
+    "workbox-google-analytics": "^5.1.4",
+    "workbox-navigation-preload": "^5.1.4",
+    "workbox-precaching": "^5.1.4",
+    "workbox-range-requests": "^5.1.4",
+    "workbox-routing": "^5.1.4",
+    "workbox-strategies": "^5.1.4",
+    "workbox-streams": "^5.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "test:ci": "react-scripts test --watchAll=false",
+    "eject": "react-scripts eject",
+    "clear_build": "rm -rf ./build/",
+    "build_serve": "npm run clear_build && npm run build && serve -s build/",
+    "deploy": "gh-pages --dist=./build --branch=gh-pages --repo=git@github.com:dtgoitia/shopping-list.git",
+    "clean_gh_pages_cache": "rm -rf ./node_modules/.cache/gh-pages",
+    "deploy_from_local": "npm run clear_build && npm run build && npm run clean_gh_pages_cache && npm run deploy"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
+    "@types/styled-components": "^5.1.17",
+    "gh-pages": "^3.2.3",
+    "jest-watch-typeahead": "^0.6.5",
+    "prettier": "^2.5.1",
+    "serve": "^13.0.2",
+    "stylelint": "^14.1.0",
+    "stylelint-config-recommended": "^6.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.10.0"
+  }
+}
