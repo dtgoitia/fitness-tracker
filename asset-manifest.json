@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/fitness-tracker/static/css/main.11dc1e27.css",
+    "main.js": "/fitness-tracker/static/js/main.ad522489.js",
+    "static/js/377.4e0b7f10.chunk.js": "/fitness-tracker/static/js/377.4e0b7f10.chunk.js",
+    "static/media/blueprint-icons-20.eot?": "/fitness-tracker/static/media/blueprint-icons-20.7c675118c62235e8ba85.eot",
+    "static/media/blueprint-icons-20.ttf?": "/fitness-tracker/static/media/blueprint-icons-20.58cecdd9d530e9748708.ttf",
+    "static/media/blueprint-icons-16.eot?": "/fitness-tracker/static/media/blueprint-icons-16.eeaaf48f3aa9749d8399.eot",
+    "static/media/blueprint-icons-16.ttf?": "/fitness-tracker/static/media/blueprint-icons-16.8dad11908ed3e5e9e47a.ttf",
+    "static/media/blueprint-icons-20.woff?": "/fitness-tracker/static/media/blueprint-icons-20.37c48d148164e6a1b9b1.woff",
+    "static/media/blueprint-icons-16.woff?": "/fitness-tracker/static/media/blueprint-icons-16.bdd01e08b240fc397e5a.woff",
+    "service-worker.js": "/fitness-tracker/service-worker.js",
+    "static/media/blueprint-icons-20.woff2?": "/fitness-tracker/static/media/blueprint-icons-20.16fbb3eddfb5d29019ae.woff2",
+    "static/media/blueprint-icons-16.woff2?": "/fitness-tracker/static/media/blueprint-icons-16.d59af1d43e67354fabe4.woff2",
+    "index.html": "/fitness-tracker/index.html",
+    "main.11dc1e27.css.map": "/fitness-tracker/static/css/main.11dc1e27.css.map",
+    "main.ad522489.js.map": "/fitness-tracker/static/js/main.ad522489.js.map",
+    "377.4e0b7f10.chunk.js.map": "/fitness-tracker/static/js/377.4e0b7f10.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.11dc1e27.css",
+    "static/js/main.ad522489.js"
+  ]
+}
