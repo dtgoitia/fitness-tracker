@@ -1,12 +1,12 @@
 version: "3.4"
 
 services:
-  shopping-list-webapp:
+  fitness-tracker-webapp:
     build:
       context: ./webapp
       dockerfile: Dockerfile
     image: shoppint-list-webapp
-    container_name: shopping-list-webapp
+    container_name: fitness-tracker-webapp
     command: "npm start"
     ports:
       - "3000:3000"

@@ -1,4 +1,4 @@
-WEBAPP_NAME:=shopping-list-webapp
+WEBAPP_NAME:=fitness-tracker-webapp
 
 install-dev-tools:
 	pre-commit install  # pre-commit is (default)
@@ -32,4 +32,3 @@ build-webapp:
 
 set-up-development-environment: install-dev-tools rebuild-webapp
 	cd webapp; npm ci
-

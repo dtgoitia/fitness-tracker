@@ -1,9 +1,10 @@
 {
-  "name": "shopping-list",
+  "name": "fitness-tracker",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://davidtorralba.com/shopping-list",
+  "homepage": "https://davidtorralba.com/fitness-tracker",
   "dependencies": {
+    "@blueprintjs/core": "^4.2.1",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
@@ -40,7 +41,7 @@
     "eject": "react-scripts eject",
     "clear_build": "rm -rf ./build/",
     "build_serve": "npm run clear_build && npm run build && serve -s build/",
-    "deploy": "gh-pages --dist=./build --branch=gh-pages --repo=git@github.com:dtgoitia/shopping-list.git",
+    "deploy": "gh-pages --dist=./build --branch=gh-pages --repo=git@github.com:dtgoitia/fitness-tracker.git",
     "clean_gh_pages_cache": "rm -rf ./node_modules/.cache/gh-pages",
     "deploy_from_local": "npm run clear_build && npm run build && npm run clean_gh_pages_cache && npm run deploy"
   },
