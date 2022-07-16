@@ -1,18 +1,58 @@
 import { Activity, CompletedActivity, indexActivities } from "../domain";
 import styled from "styled-components";
 
-function formatDate(date: Date): string {
+// function formatDate(date: Date): string {
+//   const isoUtc = date.toISOString();
+//   const noMilliseconds = isoUtc.split(".")[0];
+//   const [day, time] = noMilliseconds.split("T");
+//   const timeNoSeconds = time.slice(0, 5);
+//   return `${day} ${timeNoSeconds}`;
+// }
+
+function formatTime(date: Date): string {
   const isoUtc = date.toISOString();
   const noMilliseconds = isoUtc.split(".")[0];
-  const [day, time] = noMilliseconds.split("T");
+  const [, time] = noMilliseconds.split("T");
   const timeNoSeconds = time.slice(0, 5);
-  return `${day} ${timeNoSeconds}`;
+  return `${timeNoSeconds}`;
+}
+
+type ISODateString = string;
+type DatedActivities = [ISODateString, CompletedActivity[]];
+
+function getDay(date: Date): ISODateString {
+  return date.toISOString().slice(0, 10);
+}
+
+function groupByDay(history: CompletedActivity[]): DatedActivities[] {
+  let dayCursor: ISODateString = getDay(history[0].date);
+
+  let groupedActivities: CompletedActivity[] = [];
+  const result: DatedActivities[] = [];
+
+  history.forEach((activity) => {
+    const day = getDay(activity.date);
+    if (day === dayCursor) {
+      groupedActivities.push(activity);
+    } else {
+      result.push([dayCursor, [...groupedActivities]]);
+      groupedActivities = [];
+      dayCursor = day;
+    }
+  });
+
+  if (groupedActivities.length > 0) {
+    result.push([dayCursor, [...groupedActivities]]);
+  }
+
+  return result;
 }
 
 const Col1 = styled.div`
   order: 1;
-  flex-basis: 7.5rem;
+  flex-basis: 3rem;
   flex-shrink: 0;
+  margin-left: 0.3rem;
 `;
 const Col2 = styled.div`
   order: 2;
@@ -39,6 +79,7 @@ const RowContainer = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: stretch;
+  margin-bottom: 0.2rem;
 `;
 
 interface RowProps {
@@ -46,10 +87,10 @@ interface RowProps {
   completedActivity: CompletedActivity;
 }
 function Row({ activity, completedActivity }: RowProps) {
-  const date = formatDate(completedActivity.date);
+  const time = formatTime(completedActivity.date);
   return (
     <RowContainer>
-      <Col1>{date}</Col1>
+      <Col1>{time}</Col1>
       <Col2>{activity.name}</Col2>
       <Col3>{completedActivity.intensity}</Col3>
       <Col4>{completedActivity.duration}</Col4>
@@ -58,6 +99,14 @@ function Row({ activity, completedActivity }: RowProps) {
   );
 }
 
+const DayHeader = styled.div`
+  font-size: 1rem;
+  border-bottom: 1px rgba(255, 255, 255, 0.3) solid;
+  margin-top: 0.8rem;
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.3rem;
+`;
+
 interface HistoryViewProps {
   activities: Activity[];
   history: CompletedActivity[];
@@ -65,14 +114,29 @@ interface HistoryViewProps {
 function HistoryView({ history, activities }: HistoryViewProps) {
   const activityIndex = indexActivities(activities);
 
+  const activitiesByDay = groupByDay(history);
+
   return (
     <div>
       <h1>HistoryView</h1>
       <div>
-        {history.map((completedActivity, i) => {
-          const activity = activityIndex.get(completedActivity.id) as Activity;
+        {activitiesByDay.map(([day, dayActivities], i) => {
           return (
-            <Row activity={activity} completedActivity={completedActivity} />
+            <div>
+              <DayHeader>{day}</DayHeader>
+              {dayActivities.map((completedActivity, i) => {
+                const activity = activityIndex.get(
+                  completedActivity.id
+                ) as Activity;
+                return (
+                  <Row
+                    key={i}
+                    activity={activity}
+                    completedActivity={completedActivity}
+                  />
+                );
+              })}
+            </div>
           );
         })}
       </div>
