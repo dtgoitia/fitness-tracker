@@ -2,6 +2,7 @@ import { buildTrie, findWords, TrieNode, Word } from "./autocomplete";
 import { ACTIVITIES, LOAD_ACTIVITIES_FROM_CONFIG } from "./config";
 import storage from "./localStorage";
 
+export type ISODatetimeString = string;
 export type ActivityId = number;
 export type ActivityName = string;
 export interface Activity {
@@ -19,7 +20,7 @@ export enum Duration {
   medium = "medium",
   long = "long",
 }
-export type Notes = string | undefined;
+export type Notes = string;
 export interface CompletedActivity {
   id: ActivityId;
   intensity: Intensity;
@@ -46,7 +47,7 @@ export function getActivitiesFromStorage(): Activity[] {
 }
 
 interface StoredCompletedActivity extends Omit<CompletedActivity, "date"> {
-  date: string;
+  date: ISODatetimeString;
 }
 
 export function getHistoryFromStorage(): CompletedActivity[] {

@@ -49,9 +49,7 @@ function HistoryView({ history, activities }: HistoryViewProps) {
     gridItems.push(<Col2 key={`${i}-2`}>{activity.name}</Col2>);
     gridItems.push(<Col3 key={`${i}-3`}>{completedActivity.intensity}</Col3>);
     gridItems.push(<Col4 key={`${i}-4`}>{completedActivity.duration}</Col4>);
-    gridItems.push(
-      <Col5 key={`${i}-5`}>{completedActivity.notes || `...`}</Col5>
-    );
+    gridItems.push(<Col5 key={`${i}-5`}>{completedActivity.notes}</Col5>);
   });
 
   return (

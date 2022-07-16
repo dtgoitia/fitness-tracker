@@ -26,7 +26,7 @@ function AddCompletedActivity({
 }: AddCompletedActivityProps) {
   const [intensity, setIntensity] = useState<Intensity | undefined>();
   const [duration, setDuration] = useState<Duration | undefined>();
-  const [notes, setNotes] = useState<Notes>(undefined);
+  const [notes, setNotes] = useState<string>("");
 
   function handleSubmit(event: any) {
     event.preventDefault();
@@ -45,15 +45,10 @@ function AddCompletedActivity({
     );
     setIntensity(undefined);
     setDuration(undefined);
-    setNotes(undefined);
+    setNotes("");
   }
 
   function handleNotesChange(event: any) {
-    const inputValue = event.target.value;
-    if (inputValue === "") {
-      setNotes(undefined);
-      return;
-    }
     setNotes(event.target.value);
   }
 

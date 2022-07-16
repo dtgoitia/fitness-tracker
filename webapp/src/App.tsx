@@ -18,6 +18,7 @@ import {
   Intensity,
   addCompletedActivity,
   isActivityUsedInHistory,
+  Notes,
 } from "./domain";
 import storage from "./localStorage";
 import BlueprintThemeProvider from "./style/theme";
@@ -60,7 +61,7 @@ function App() {
     id: ActivityId,
     intensity: Intensity,
     duration: Duration,
-    notes: string | undefined
+    notes: Notes
   ) => {
     console.log(`Adding a new completed activity: id=${id}`);
     const updatedHistory = addCompletedActivity(
