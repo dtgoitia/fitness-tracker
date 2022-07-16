@@ -6,7 +6,7 @@ arguments = sys.argv
 assert len(arguments) == 2, "Must pass only one argument"
 ip = arguments[1]
 
-qr_content = f'http://{ip}:3000/fitness-tracker'
+qr_content = f'https://{ip}:3000/fitness-tracker'
 
 qr = pyqrcode.create(qr_content)
 qr_as_str = qr.terminal(quiet_zone=1)
