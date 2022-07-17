@@ -1,5 +1,6 @@
 import { Activity, CompletedActivity, indexActivities } from "./domain";
 import { Button } from "@blueprintjs/core";
+import styled from "styled-components";
 
 function formatDate(date: Date): string {
   const isoUtc = date.toISOString();
@@ -35,6 +36,10 @@ function buildCsv(activities: Activity[], history: CompletedActivity[]): Blob {
   return csv;
 }
 
+const Container = styled.div`
+  padding: 1rem 0;
+`;
+
 interface DownloadCsvProps {
   activities: Activity[];
   history: CompletedActivity[];
@@ -48,14 +53,13 @@ function DownloadCsv({ activities, history }: DownloadCsvProps) {
   }
 
   return (
-    <div>
-      Download
+    <Container>
       <Button
         intent="success"
         text="Download CSV"
         onClick={() => createAndDownloadBlob()}
       />
-    </div>
+    </Container>
   );
 }
 
