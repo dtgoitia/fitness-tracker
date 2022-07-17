@@ -2,6 +2,7 @@ import AddActivity from "./AddActivity";
 import AddCompletedActivity from "./AddCompletedActivity";
 import "./App.css";
 import DownloadCsv from "./DownloadCsv";
+import ReloadPage from "./ReloadPage";
 import SearchBox from "./SearchBox";
 import HistoryView from "./Views/History";
 import InventoryView from "./Views/Inventory";
@@ -97,6 +98,7 @@ function App() {
         <HistoryView history={history} activities={activities} />
         <AddActivity add={handleAddNewActivity} />
         <DownloadCsv activities={activities} history={history} />
+        <ReloadPage />
       </Centered>
     </BlueprintThemeProvider>
   );
