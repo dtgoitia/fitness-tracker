@@ -107,40 +107,45 @@ const DayHeader = styled.div`
   padding-bottom: 0.3rem;
 `;
 
+const Container = styled.div`
+  padding: 1rem 0;
+`;
+
 interface HistoryViewProps {
   activities: Activity[];
   history: CompletedActivity[];
 }
 function HistoryView({ history, activities }: HistoryViewProps) {
+  if (history.length === 0) {
+    return <Container>{`History is empty :)`}</Container>;
+  }
+
   const activityIndex = indexActivities(activities);
 
   const activitiesByDay = groupByDay(history);
 
   return (
-    <div>
-      <h1>HistoryView</h1>
-      <div>
-        {activitiesByDay.map(([day, dayActivities], i) => {
-          return (
-            <div>
-              <DayHeader>{day}</DayHeader>
-              {dayActivities.map((completedActivity, i) => {
-                const activity = activityIndex.get(
-                  completedActivity.id
-                ) as Activity;
-                return (
-                  <Row
-                    key={i}
-                    activity={activity}
-                    completedActivity={completedActivity}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    <Container>
+      {activitiesByDay.map(([day, dayActivities], i) => {
+        return (
+          <div>
+            <DayHeader>{day}</DayHeader>
+            {dayActivities.map((completedActivity, i) => {
+              const activity = activityIndex.get(
+                completedActivity.id
+              ) as Activity;
+              return (
+                <Row
+                  key={i}
+                  activity={activity}
+                  completedActivity={completedActivity}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
+    </Container>
   );
 }
 
