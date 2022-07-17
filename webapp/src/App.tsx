@@ -81,10 +81,18 @@ function App() {
     setSelected(id);
   };
 
+  const clearSearch = () => {
+    setFilterQuery("");
+  };
+
   return (
     <BlueprintThemeProvider>
       <Centered>
-        <SearchBox query={filterQuery} onChange={setFilterQuery} />
+        <SearchBox
+          query={filterQuery}
+          onChange={setFilterQuery}
+          clearSearch={clearSearch}
+        />
         <InventoryView
           activities={filterInventory(itemsInInventory, filterQuery)}
           removeActivity={handleRemoveActivity}
