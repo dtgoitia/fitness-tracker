@@ -8,6 +8,14 @@ import {
 } from "./domain";
 import { Button } from "@blueprintjs/core";
 import { useState } from "react";
+import styled from "styled-components";
+
+const ButtonsLabel = styled.label`
+  padding-right: 1rem;
+`;
+const ButtonRibbon = styled.div`
+  margin: 1rem 0;
+`;
 
 interface AddCompletedActivityProps {
   activities: Activity[];
@@ -60,7 +68,7 @@ function AddCompletedActivity({
       <button
         key={key}
         type="button"
-        className={`bp4-button ${classNameIfSelected}`}
+        className={`bp4-button bp4-large ${classNameIfSelected}`}
         onClick={() => setIntensity(buttonIntensity)}
       >
         {buttonIntensity}
@@ -76,7 +84,7 @@ function AddCompletedActivity({
       <button
         key={key}
         type="button"
-        className={`bp4-button ${classNameIfSelected}`}
+        className={`bp4-button bp4-large ${classNameIfSelected}`}
         onClick={() => setDuration(buttonDuration)}
       >
         {buttonDuration}
@@ -98,14 +106,14 @@ function AddCompletedActivity({
     <form onSubmit={canSubmit ? handleSubmit : () => {}}>
       <p>Add a new completed activity:</p>
       <div>{selectedActivity?.name}</div>
-      <div>
-        Intensity
+      <ButtonRibbon>
+        <ButtonsLabel>intensity</ButtonsLabel>
         <div className="bp4-button-group .modifier">{intensityButtons}</div>
-      </div>
-      <div>
-        Duration
+      </ButtonRibbon>
+      <ButtonRibbon>
+        <ButtonsLabel>duration</ButtonsLabel>
         <div className="bp4-button-group .modifier">{durationButtons}</div>
-      </div>
+      </ButtonRibbon>
       <input
         id="form-group-input"
         type="text"
