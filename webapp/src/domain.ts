@@ -4,6 +4,7 @@ import storage from "./localStorage";
 
 export type ISODatetimeString = string;
 export type ActivityId = number;
+export type CompletedActivityId = number;
 export type ActivityName = string;
 export interface Activity {
   id: ActivityId;
@@ -22,7 +23,8 @@ export enum Duration {
 }
 export type Notes = string;
 export interface CompletedActivity {
-  id: ActivityId;
+  id: CompletedActivityId;
+  activityId: ActivityId;
   intensity: Intensity;
   duration: Duration;
   date: Date;
@@ -65,6 +67,7 @@ export function getHistoryFromStorage(): CompletedActivity[] {
   ).map((raw) => {
     const completedActivity: CompletedActivity = {
       id: raw.id,
+      activityId: raw.activityId,
       intensity: raw.intensity,
       duration: raw.duration,
       date: new Date(raw.date),
@@ -213,7 +216,15 @@ export function addCompletedActivity(
   notes: Notes
 ): CompletedActivity[] {
   const now = new Date();
-  const newCompletedActivity = { id, intensity, duration, date: now, notes };
+  const uniqueId: CompletedActivityId = Date.now();
+  const newCompletedActivity: CompletedActivity = {
+    id: uniqueId,
+    activityId: id,
+    intensity,
+    duration,
+    date: now,
+    notes,
+  };
   const updatedHistory = [...history, newCompletedActivity];
   return updatedHistory;
 }

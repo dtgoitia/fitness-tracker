@@ -103,7 +103,11 @@ function App() {
           selectedActivityId={selected}
           add={handleNewCompleteActity}
         />
-        <HistoryView history={history} activities={activities} />
+        <HistoryView
+          history={history}
+          activities={activities}
+          updateHistory={setHistory}
+        />
         <AddActivity add={handleAddNewActivity} />
         <DownloadCsv activities={activities} history={history} />
         <ReloadPage />

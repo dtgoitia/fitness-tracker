@@ -1,4 +1,10 @@
-import { Activity, CompletedActivity, indexActivities } from "../domain";
+import {
+  Activity,
+  CompletedActivity,
+  CompletedActivityId,
+  indexActivities,
+} from "../domain";
+import { Button } from "@blueprintjs/core";
 import styled from "styled-components";
 
 // function formatDate(date: Date): string {
@@ -74,6 +80,12 @@ const Col5 = styled.div`
   flex-basis: 7rem;
   flex-shrink: 0;
 `;
+const Col6 = styled.div`
+  order: 6;
+  flex-basis: 1rem;
+  flex-shrink: 0;
+  flex-grow: 0;
+`;
 
 const RowContainer = styled.div`
   display: flex;
@@ -85,8 +97,9 @@ const RowContainer = styled.div`
 interface RowProps {
   activity: Activity;
   completedActivity: CompletedActivity;
+  onDelete: () => void;
 }
-function Row({ activity, completedActivity }: RowProps) {
+function Row({ activity, completedActivity, onDelete }: RowProps) {
   const time = formatTime(completedActivity.date);
   return (
     <RowContainer>
@@ -95,6 +108,9 @@ function Row({ activity, completedActivity }: RowProps) {
       <Col3>{completedActivity.intensity}</Col3>
       <Col4>{completedActivity.duration}</Col4>
       <Col5>{completedActivity.notes}</Col5>
+      <Col6>
+        <Button icon="trash" minimal={true} onClick={onDelete} />
+      </Col6>
     </RowContainer>
   );
 }
@@ -114,8 +130,9 @@ const Container = styled.div`
 interface HistoryViewProps {
   activities: Activity[];
   history: CompletedActivity[];
+  updateHistory: (history: CompletedActivity[]) => void;
 }
-function HistoryView({ history, activities }: HistoryViewProps) {
+function HistoryView({ history, activities, updateHistory }: HistoryViewProps) {
   if (history.length === 0) {
     return <Container>{`History is empty :)`}</Container>;
   }
@@ -124,21 +141,29 @@ function HistoryView({ history, activities }: HistoryViewProps) {
 
   const activitiesByDay = groupByDay(history);
 
+  function deleteRow(id: CompletedActivityId): void {
+    const newHistory = history.filter(
+      (completedActivity) => completedActivity.id !== id
+    );
+    updateHistory(newHistory);
+  }
+
   return (
     <Container>
       {activitiesByDay.map(([day, dayActivities], i) => {
         return (
-          <div>
+          <div key={i}>
             <DayHeader>{day}</DayHeader>
-            {dayActivities.map((completedActivity, i) => {
+            {dayActivities.map((completedActivity, j) => {
               const activity = activityIndex.get(
-                completedActivity.id
+                completedActivity.activityId
               ) as Activity;
               return (
                 <Row
-                  key={i}
+                  key={j}
                   activity={activity}
                   completedActivity={completedActivity}
+                  onDelete={() => deleteRow(completedActivity.id)}
                 />
               );
             })}

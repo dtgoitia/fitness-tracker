@@ -58,6 +58,7 @@ function AddCompletedActivity({
       buttonIntensity === intensity ? "bp4-intent-success" : "";
     return (
       <button
+        key={key}
         type="button"
         className={`bp4-button ${classNameIfSelected}`}
         onClick={() => setIntensity(buttonIntensity)}
@@ -73,6 +74,7 @@ function AddCompletedActivity({
       buttonDuration === duration ? "bp4-intent-success" : "";
     return (
       <button
+        key={key}
         type="button"
         className={`bp4-button ${classNameIfSelected}`}
         onClick={() => setDuration(buttonDuration)}
