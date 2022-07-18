@@ -4,7 +4,8 @@ import {
   CompletedActivityId,
   indexActivities,
 } from "../domain";
-import { Button } from "@blueprintjs/core";
+import { Button, Switch } from "@blueprintjs/core";
+import { useState } from "react";
 import styled from "styled-components";
 
 // function formatDate(date: Date): string {
@@ -56,18 +57,20 @@ function groupByDay(history: CompletedActivity[]): DatedActivities[] {
 
 const Col1 = styled.div`
   order: 1;
+  flex-basis: 1rem;
+  flex-shrink: 0;
+  flex-grow: 0;
+`;
+
+const Col2 = styled.div`
+  order: 2;
   flex-basis: 3rem;
   flex-shrink: 0;
   margin-left: 0.3rem;
 `;
-const Col2 = styled.div`
-  order: 2;
-  flex-grow: 1;
-  flex-shrink: 0;
-`;
 const Col3 = styled.div`
   order: 3;
-  flex-basis: 4rem;
+  flex-grow: 1;
   flex-shrink: 0;
 `;
 const Col4 = styled.div`
@@ -77,11 +80,16 @@ const Col4 = styled.div`
 `;
 const Col5 = styled.div`
   order: 5;
-  flex-basis: 7rem;
+  flex-basis: 4rem;
   flex-shrink: 0;
 `;
 const Col6 = styled.div`
   order: 6;
+  flex-basis: 7rem;
+  flex-shrink: 0;
+`;
+const Col7 = styled.div`
+  order: 7;
   flex-basis: 1rem;
   flex-shrink: 0;
   flex-grow: 0;
@@ -98,19 +106,36 @@ interface RowProps {
   activity: Activity;
   completedActivity: CompletedActivity;
   onDelete: () => void;
+  showEditButtons: boolean;
 }
-function Row({ activity, completedActivity, onDelete }: RowProps) {
+function Row({
+  activity,
+  completedActivity,
+  onDelete,
+  showEditButtons,
+}: RowProps) {
   const time = formatTime(completedActivity.date);
   return (
     <RowContainer>
-      <Col1>{time}</Col1>
-      <Col2>{activity.name}</Col2>
-      <Col3>{completedActivity.intensity}</Col3>
-      <Col4>{completedActivity.duration}</Col4>
-      <Col5>{completedActivity.notes}</Col5>
-      <Col6>
-        <Button icon="trash" minimal={true} onClick={onDelete} />
-      </Col6>
+      {showEditButtons ? (
+        <Col1>
+          <Button
+            icon="edit"
+            minimal={true}
+            onClick={() => alert("NOT IMPLEMENTED YET")}
+          />
+        </Col1>
+      ) : null}
+      <Col2>{time}</Col2>
+      <Col3>{activity.name}</Col3>
+      <Col4>{completedActivity.intensity}</Col4>
+      <Col5>{completedActivity.duration}</Col5>
+      <Col6>{completedActivity.notes}</Col6>
+      {showEditButtons ? (
+        <Col7>
+          <Button icon="trash" minimal={true} onClick={onDelete} />
+        </Col7>
+      ) : null}
     </RowContainer>
   );
 }
@@ -133,6 +158,8 @@ interface HistoryViewProps {
   updateHistory: (history: CompletedActivity[]) => void;
 }
 function HistoryView({ history, activities, updateHistory }: HistoryViewProps) {
+  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
+
   if (history.length === 0) {
     return <Container>{`History is empty :)`}</Container>;
   }
@@ -148,8 +175,17 @@ function HistoryView({ history, activities, updateHistory }: HistoryViewProps) {
     updateHistory(newHistory);
   }
 
+  function toggleEditMode(): void {
+    setIsEditModeOn(!isEditModeOn);
+  }
+
   return (
     <Container>
+      <Switch
+        label={"edit mode"}
+        checked={isEditModeOn}
+        onClick={toggleEditMode}
+      />
       {activitiesByDay.map(([day, dayActivities], i) => {
         return (
           <div key={i}>
@@ -164,6 +200,7 @@ function HistoryView({ history, activities, updateHistory }: HistoryViewProps) {
                   activity={activity}
                   completedActivity={completedActivity}
                   onDelete={() => deleteRow(completedActivity.id)}
+                  showEditButtons={isEditModeOn}
                 />
               );
             })}
