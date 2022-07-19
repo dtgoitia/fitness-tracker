@@ -11,6 +11,7 @@ cd $webapp_dir || exit 1
 
 echo "Kicking off CI-like webapp build..."
 docker-compose run \
+    --no-TTY \
     --env "CI=true" \
     --rm "${WEBAPP_NAME}" \
     npm run build
