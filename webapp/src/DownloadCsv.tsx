@@ -75,22 +75,58 @@ function downloadCsv(blob: Blob, filename: string): void {
   xhr.send();
 }
 
+function shareApiNotAvailable(): boolean {
+  return navigator.share === undefined;
+}
+
 interface DownloadCsvProps {
   activities: Activity[];
   history: CompletedActivity[];
 }
 function DownloadCsv({ activities, history }: DownloadCsvProps) {
-  function createAndDownloadBlob(): void {
+  const fileName = "fitness-tracker__activities.csv";
+  const shareApiAvailable = shareApiNotAvailable() === false;
+
+  function download(): void {
     const blob = buildCsv(activities, history);
-    downloadCsv(blob, "fitness-tracker__activities.csv");
+    downloadCsv(blob, fileName);
+  }
+
+  function share(): void {
+    const blob = buildCsv(activities, history);
+    const file = new File([blob], fileName, { type: "text/csv" });
+    if (shareApiNotAvailable()) {
+      alert("Your device is not compatible with the Web Share API, sorry :)");
+      return;
+    }
+
+    const dataToShare: ShareData = {
+      title: "fitness-tracker CSV",
+      files: [file],
+    };
+
+    const canShare = navigator.canShare(dataToShare);
+    if (!canShare) {
+      alert("You cannot share the CSV for some reason, sorry :)");
+      return;
+    }
+
+    navigator
+      .share(dataToShare)
+      .then(() => alert("all good"))
+      .catch((error) => {
+        alert(error);
+      });
   }
 
   return (
     <Container>
+      <Button intent="success" text="Download CSV" onClick={() => download()} />
       <Button
         intent="success"
-        text="Download CSV"
-        onClick={() => createAndDownloadBlob()}
+        text="Share CSV"
+        onClick={() => share()}
+        disabled={shareApiAvailable === false}
       />
     </Container>
   );
