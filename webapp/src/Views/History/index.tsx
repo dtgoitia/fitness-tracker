@@ -36,7 +36,7 @@ function HistoryView({
   activities,
   onHistoryChange,
 }: HistoryViewProps) {
-  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(true);
+  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
 
   if (history.length === 0) {
     return <Container>{`History is empty :)`}</Container>;
