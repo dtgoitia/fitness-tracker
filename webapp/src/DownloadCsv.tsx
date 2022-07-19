@@ -15,7 +15,12 @@ function buildCsv(activities: Activity[], history: CompletedActivity[]): Blob {
   const headers = ["date", "activity", "intensity", "duration"];
 
   function activityToRow(completedActivity: CompletedActivity): string {
-    const activity = activityIndex.get(completedActivity.id) as Activity;
+    const activityId = completedActivity.activityId;
+    const activity = activityIndex.get(activityId) as Activity;
+    if (activity === undefined) {
+      // TODO: push these errors to a central service
+      throw new Error(`Could not find any activity with ID=${activityId}`);
+    }
 
     const columns: (string | number)[] = [
       formatDate(completedActivity.date),
@@ -48,7 +53,7 @@ function DownloadCsv({ activities, history }: DownloadCsvProps) {
   function createAndDownloadBlob(): void {
     const blob = buildCsv(activities, history);
     const fileUrl = URL.createObjectURL(blob);
-    const w = window.open(fileUrl, "_blank");
+    const w = window.open(fileUrl);
     w && w.focus();
   }
 
