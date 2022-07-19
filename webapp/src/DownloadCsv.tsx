@@ -45,6 +45,36 @@ const Container = styled.div`
   padding: 1rem 0;
 `;
 
+function downloadCsv(blob: Blob, filename: string): void {
+  const fileUrl = URL.createObjectURL(blob);
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", fileUrl, true);
+  xhr.responseType = "blob";
+  xhr.onload = function (e) {
+    if (this.status === 200) {
+      const responseWithDesiredBlob = this.response;
+      const anchor = document.createElement("a");
+      anchor.href = window.URL.createObjectURL(responseWithDesiredBlob);
+      anchor.download = filename;
+      anchor.click();
+    } else {
+      const error = [
+        `Status 200 expected but got ${this.status} instead. No idea what happened`,
+        `here:\n`,
+        `\n`,
+        `blob=${blob.text()}\n`,
+        `\n`,
+        `filename=${filename}\n`,
+        `\n`,
+        `fileUrl=${fileUrl}\n`,
+        `\n`,
+      ].join("");
+      throw new Error(error);
+    }
+  };
+  xhr.send();
+}
+
 interface DownloadCsvProps {
   activities: Activity[];
   history: CompletedActivity[];
@@ -52,9 +82,7 @@ interface DownloadCsvProps {
 function DownloadCsv({ activities, history }: DownloadCsvProps) {
   function createAndDownloadBlob(): void {
     const blob = buildCsv(activities, history);
-    const fileUrl = URL.createObjectURL(blob);
-    const w = window.open(fileUrl);
-    w && w.focus();
+    downloadCsv(blob, "fitness-tracker__activities.csv");
   }
 
   return (
