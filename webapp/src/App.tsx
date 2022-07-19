@@ -20,6 +20,7 @@ import {
   addCompletedActivity,
   isActivityUsedInHistory,
   Notes,
+  CompletedActivity,
 } from "./domain";
 import storage from "./localStorage";
 import BlueprintThemeProvider from "./style/theme";
@@ -81,6 +82,11 @@ function App() {
     setSelected(id);
   };
 
+  function handleHistoryChange(history: CompletedActivity[]): void {
+    setHistory(history);
+    storage.history.set(history);
+  }
+
   const clearSearch = () => {
     setFilterQuery("");
   };
@@ -106,7 +112,7 @@ function App() {
         <HistoryView
           history={history}
           activities={activities}
-          onHistoryChange={setHistory}
+          onHistoryChange={handleHistoryChange}
         />
         <AddActivity add={handleAddNewActivity} />
         <DownloadCsv activities={activities} history={history} />

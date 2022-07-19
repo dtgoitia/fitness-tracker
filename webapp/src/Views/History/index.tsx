@@ -10,6 +10,7 @@ import {
 import EditableRow from "./EditableRow";
 import Row from "./Row";
 import { Switch } from "@blueprintjs/core";
+import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -65,7 +66,7 @@ function HistoryView({
   activities,
   onHistoryChange,
 }: HistoryViewProps) {
-  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
+  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(true);
 
   if (history.length === 0) {
     return <Container>{`History is empty :)`}</Container>;
@@ -112,6 +113,7 @@ function HistoryView({
                     activity={activity}
                     completedActivity={completedActivity}
                     onDelete={() => deleteRow(completedActivity.id)}
+                    onChange={updateRow}
                   />
                 );
               }

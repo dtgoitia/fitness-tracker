@@ -1,47 +1,56 @@
 import { Activity, CompletedActivity } from "../../domain";
-import { Button } from "@blueprintjs/core";
+import { formatTime } from "./datetime";
+import { Button, Dialog } from "@blueprintjs/core";
+import { TimePrecision, DatePicker } from "@blueprintjs/datetime";
+import { useState } from "react";
 import styled from "styled-components";
 
-const Col1 = styled.div`
-  order: 1;
-  flex-basis: 1rem;
+const x = 5;
+const EditTime = styled.div`
+  flex-basis: ${x}rem;
   flex-shrink: 0;
   flex-grow: 0;
+  align-self: center;
 `;
-const Col2 = styled.div`
-  order: 2;
-  flex-basis: 3rem;
-  flex-shrink: 0;
-  margin-left: 0.3rem;
-`;
-const Col3 = styled.div`
-  order: 3;
+const ActivityName = styled.div`
   flex-grow: 1;
   flex-shrink: 0;
+  align-self: center;
 `;
-const Col4 = styled.div`
-  order: 4;
+const Intensity = styled.div`
   flex-basis: 4rem;
   flex-shrink: 0;
+  align-self: center;
 `;
-const Col5 = styled.div`
-  order: 5;
+const Duration = styled.div`
   flex-basis: 4rem;
   flex-shrink: 0;
+  align-self: center;
 `;
-const Col6 = styled.div`
-  order: 6;
-  flex-basis: 7rem;
-  flex-shrink: 0;
-`;
-const Col7 = styled.div`
-  order: 7;
+const DeleteActivity = styled.div`
   flex-basis: 1rem;
   flex-shrink: 0;
   flex-grow: 0;
+  align-self: center;
+`;
+const Notes = styled.div`
+  align-self: center;
+  padding-left: ${x}rem;
+  font-size: 0.8rem;
 `;
 
 const Container = styled.div`
+  margin-bottom: 0.2rem;
+`;
+
+const TopLine = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  margin-bottom: 0.2rem;
+`;
+
+const BottomLine = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: stretch;
@@ -52,25 +61,69 @@ interface RowProps {
   activity: Activity;
   completedActivity: CompletedActivity;
   onDelete: () => void;
+  onChange: (updated: CompletedActivity) => void;
 }
-function EditableRow({ activity, completedActivity, onDelete }: RowProps) {
+function EditableRow({
+  activity,
+  completedActivity,
+  onDelete,
+  onChange,
+}: RowProps) {
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+
+  const time: string = formatTime(completedActivity.date);
+
+  function onDateInputChange(newDate: Date) {
+    const updated: CompletedActivity = { ...completedActivity, date: newDate };
+    onChange(updated);
+  }
   return (
     <Container>
-      <Col1>
-        <Button
-          icon="edit"
-          minimal={true}
-          onClick={() => alert("NOT IMPLEMENTED YET")}
-        />
-      </Col1>
-      <Col2>{completedActivity.date.toISOString()}</Col2>
-      <Col3>{activity.name}</Col3>
-      <Col4>{completedActivity.intensity}</Col4>
-      <Col5>{completedActivity.duration}</Col5>
-      <Col6>{completedActivity.notes}</Col6>
-      <Col7>
-        <Button icon="trash" minimal={true} onClick={onDelete} />
-      </Col7>
+      <Dialog
+        title="Select a new date and time"
+        isOpen={showDatePicker}
+        autoFocus={true}
+        canOutsideClickClose={true}
+        isCloseButtonShown={true}
+        canEscapeKeyClose={true}
+        transitionDuration={0}
+        onClose={() => setShowDatePicker(false)}
+      >
+        <div className="bp4-dialog-body">
+          <DatePicker
+            value={completedActivity.date}
+            defaultValue={completedActivity.date}
+            timePrecision={TimePrecision.MINUTE}
+            shortcuts={true}
+            highlightCurrentDay={true}
+            timePickerProps={{ showArrowButtons: true }}
+            onChange={onDateInputChange}
+          />
+        </div>
+        <div className="bp4-dialog-footer">Changes are saved automatically</div>
+      </Dialog>
+
+      <TopLine>
+        <EditTime>
+          <Button
+            icon="edit"
+            text={time}
+            minimal={true}
+            onClick={() => setShowDatePicker(!showDatePicker)}
+          />
+        </EditTime>
+        <ActivityName>{activity.name}</ActivityName>
+
+        <Intensity>{completedActivity.intensity}</Intensity>
+        <Duration>{completedActivity.duration}</Duration>
+        <DeleteActivity>
+          <Button icon="trash" minimal={true} onClick={onDelete} />
+        </DeleteActivity>
+      </TopLine>
+
+      <BottomLine>
+        <Notes>{completedActivity.notes}</Notes>
+      </BottomLine>
     </Container>
   );
 }

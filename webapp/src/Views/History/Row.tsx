@@ -1,22 +1,6 @@
 import { Activity, CompletedActivity } from "../../domain";
-import { Button } from "@blueprintjs/core";
+import { formatTime } from "./datetime";
 import styled from "styled-components";
-
-// function formatDate(date: Date): string {
-//   const isoUtc = date.toISOString();
-//   const noMilliseconds = isoUtc.split(".")[0];
-//   const [day, time] = noMilliseconds.split("T");
-//   const timeNoSeconds = time.slice(0, 5);
-//   return `${day} ${timeNoSeconds}`;
-// }
-
-function formatTime(date: Date): string {
-  const isoUtc = date.toISOString();
-  const noMilliseconds = isoUtc.split(".")[0];
-  const [, time] = noMilliseconds.split("T");
-  const timeNoSeconds = time.slice(0, 5);
-  return `${timeNoSeconds}`;
-}
 
 const Col1 = styled.div`
   order: 1;
