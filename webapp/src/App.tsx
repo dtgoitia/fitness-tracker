@@ -106,7 +106,7 @@ function App() {
         <HistoryView
           history={history}
           activities={activities}
-          updateHistory={setHistory}
+          onHistoryChange={setHistory}
         />
         <AddActivity add={handleAddNewActivity} />
         <DownloadCsv activities={activities} history={history} />

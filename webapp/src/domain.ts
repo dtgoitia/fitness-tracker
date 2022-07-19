@@ -2,7 +2,8 @@ import { buildTrie, findWords, TrieNode, Word } from "./autocomplete";
 import { ACTIVITIES, LOAD_ACTIVITIES_FROM_CONFIG } from "./config";
 import storage from "./localStorage";
 
-export type ISODatetimeString = string;
+export type ISODatetimeString = string; // "2022-07-19T07:11:00+01:00"
+export type ISODateString = string; // "2022-07-19"
 export type ActivityId = number;
 export type CompletedActivityId = number;
 export type ActivityName = string;
@@ -280,4 +281,24 @@ export function indexActivities(
     map.set(activity.id, activity);
   });
   return map;
+}
+
+export function updateHistory(
+  history: CompletedActivity[],
+  updated: CompletedActivity
+): CompletedActivity[] {
+  const newHistory = history.map((existing) => {
+    return existing.id === updated.id ? updated : existing;
+  });
+  return newHistory;
+}
+
+export function deleteHistoryActivity(
+  history: CompletedActivity[],
+  id: CompletedActivityId
+): CompletedActivity[] {
+  const newHistory = history.filter(
+    (completedActivity) => completedActivity.id !== id
+  );
+  return newHistory;
 }
