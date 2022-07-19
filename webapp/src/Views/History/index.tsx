@@ -3,8 +3,8 @@ import {
   CompletedActivity,
   CompletedActivityId,
   deleteHistoryActivity,
+  groupByDay,
   indexActivities,
-  ISODateString,
   updateHistory,
 } from "../../domain";
 import EditableRow from "./EditableRow";
@@ -13,36 +13,6 @@ import { Switch } from "@blueprintjs/core";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { useState } from "react";
 import styled from "styled-components";
-
-type DatedActivities = [ISODateString, CompletedActivity[]];
-
-function getDay(date: Date): ISODateString {
-  return date.toISOString().slice(0, 10);
-}
-
-function groupByDay(history: CompletedActivity[]): DatedActivities[] {
-  let dayCursor: ISODateString = getDay(history[0].date);
-
-  let groupedActivities: CompletedActivity[] = [];
-  const result: DatedActivities[] = [];
-
-  history.forEach((activity) => {
-    const day = getDay(activity.date);
-    if (day === dayCursor) {
-      groupedActivities.push(activity);
-    } else {
-      result.push([dayCursor, [...groupedActivities]]);
-      groupedActivities = [];
-      dayCursor = day;
-    }
-  });
-
-  if (groupedActivities.length > 0) {
-    result.push([dayCursor, [...groupedActivities]]);
-  }
-
-  return result;
-}
 
 const DayHeader = styled.div`
   font-size: 1rem;

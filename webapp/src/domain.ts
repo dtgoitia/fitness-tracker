@@ -302,3 +302,32 @@ export function deleteHistoryActivity(
   );
   return newHistory;
 }
+
+function getDay(date: Date): ISODateString {
+  return date.toISOString().slice(0, 10);
+}
+type DatedActivities = [ISODateString, CompletedActivity[]];
+
+export function groupByDay(history: CompletedActivity[]): DatedActivities[] {
+  let dayCursor: ISODateString = getDay(history[0].date);
+
+  let groupedActivities: CompletedActivity[] = [];
+  const result: DatedActivities[] = [];
+
+  history.forEach((activity, i) => {
+    const day = getDay(activity.date);
+    if (day === dayCursor) {
+      groupedActivities.push(activity);
+    } else {
+      result.push([dayCursor, [...groupedActivities]]);
+      groupedActivities = [activity];
+      dayCursor = day;
+    }
+  });
+
+  if (groupedActivities.length > 0) {
+    result.push([dayCursor, [...groupedActivities]]);
+  }
+
+  return result;
+}
