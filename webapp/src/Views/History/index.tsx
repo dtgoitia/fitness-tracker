@@ -39,6 +39,13 @@ function HistoryView({
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
 
   if (history.length === 0) {
+    // Problem: if the edit mode is ON and all the transactions are deleted, the switch
+    // will is not visible to exit the edit mode, and when a new completed activity is
+    // added, it can be mistakenly deleted.
+    //
+    // Solution: if the history is empty, just switch off the edit mode.
+    if (isEditModeOn) setIsEditModeOn(false);
+
     return <Container>{`History is empty :)`}</Container>;
   }
 
