@@ -21,6 +21,7 @@ import {
   isActivityUsedInHistory,
   Notes,
   CompletedActivity,
+  sortHistory,
 } from "./domain";
 import storage from "./localStorage";
 import BlueprintThemeProvider from "./style/theme";
@@ -36,7 +37,10 @@ const Centered = styled.div`
 function App() {
   const [activities, setActivities] = useState(getActivitiesFromStorage());
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
-  const [history, setHistory] = useState(getHistoryFromStorage());
+  const [history, _setHistory] = useState(getHistoryFromStorage());
+  function setHistory(history: CompletedActivity[]): void {
+    _setHistory(sortHistory(history));
+  }
   const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
   storage.activities.set(activities);
 

@@ -129,10 +129,6 @@ export function filterInventory(
   return activity.filter((activity) => unsortedResults.has(activity));
 }
 
-// items <--- source of truth
-// toBuy <-- derived from 'items'
-// inventory <-- derived from 'items'
-
 interface WordsToItemMap {
   [w: Word]: Activity[];
 }
@@ -209,6 +205,15 @@ export class ItemAutocompleter {
   }
 }
 
+export function sortHistory(history: CompletedActivity[]): CompletedActivity[] {
+  // Sort from newest to oldest
+  return history.sort(function (a: CompletedActivity, b: CompletedActivity) {
+    if (a.date === b.date) return 0; // preserve current order
+    if (a.date > b.date) return -1; // order: b, a
+    return 1; // order: a, b
+  });
+}
+
 export function addCompletedActivity(
   history: CompletedActivity[],
   id: ActivityId,
@@ -226,7 +231,8 @@ export function addCompletedActivity(
     date: now,
     notes,
   };
-  const updatedHistory = [...history, newCompletedActivity];
+
+  const updatedHistory = sortHistory([newCompletedActivity, ...history]);
   return updatedHistory;
 }
 
