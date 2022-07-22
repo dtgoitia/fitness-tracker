@@ -1,6 +1,6 @@
 import { Activity, CompletedActivity } from "../../domain";
 import { formatTime } from "./datetime";
-import { Button, Dialog } from "@blueprintjs/core";
+import { Button, Dialog, EditableText } from "@blueprintjs/core";
 import { TimePrecision, DatePicker } from "@blueprintjs/datetime";
 import { useState } from "react";
 import styled from "styled-components";
@@ -77,6 +77,14 @@ function EditableRow({
     const updated: CompletedActivity = { ...completedActivity, date: newDate };
     onChange(updated);
   }
+  function onNotesChange(newNotes: string) {
+    const updated: CompletedActivity = {
+      ...completedActivity,
+      notes: newNotes,
+    };
+    onChange(updated);
+  }
+
   return (
     <Container>
       <Dialog
@@ -122,7 +130,14 @@ function EditableRow({
       </TopLine>
 
       <BottomLine>
-        <Notes>{completedActivity.notes}</Notes>
+        <Notes>
+          <EditableText
+            multiline={false}
+            placeholder={`observations...`}
+            value={completedActivity.notes}
+            onChange={onNotesChange}
+          />
+        </Notes>
       </BottomLine>
     </Container>
   );
