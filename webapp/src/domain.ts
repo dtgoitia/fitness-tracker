@@ -205,12 +205,21 @@ export class ItemAutocompleter {
   }
 }
 
+enum SortAction {
+  FIRST_A_THEN_B = -1,
+  PRESERVE_ORDER = 0,
+  FIRST_B_THEN_A = 1,
+}
+
 export function sortHistory(history: CompletedActivity[]): CompletedActivity[] {
   // Sort from newest to oldest
   return history.sort(function (a: CompletedActivity, b: CompletedActivity) {
-    if (a.date === b.date) return 0; // preserve current order
-    if (a.date > b.date) return -1; // order: b, a
-    return 1; // order: a, b
+    const date_a = a.date.getTime();
+    const date_b = b.date.getTime();
+    if (date_a === date_b) return SortAction.PRESERVE_ORDER;
+    if (date_a > date_b) return SortAction.FIRST_A_THEN_B;
+    if (date_a < date_b) return SortAction.FIRST_B_THEN_A;
+    throw new Error("Unexpected scenario reached :S");
   });
 }
 
