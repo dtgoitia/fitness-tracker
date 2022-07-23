@@ -364,3 +364,17 @@ export function groupByDay(history: CompletedActivity[]): DatedActivities[] {
 
   return result;
 }
+
+function duplicateOne(original: CompletedActivity): CompletedActivity {
+  return { ...original, id: generateRandomId(), date: now() };
+}
+export function duplicateSelection(
+  history: CompletedActivity[],
+  selection: Set<CompletedActivityId>
+): CompletedActivity[] {
+  const duplicates = history
+    .filter((completedActivity) => selection.has(completedActivity.id))
+    .map(duplicateOne);
+  const newHistory = [...history, ...duplicates];
+  return newHistory;
+}
