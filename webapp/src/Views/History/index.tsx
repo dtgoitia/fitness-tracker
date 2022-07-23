@@ -3,13 +3,14 @@ import {
   CompletedActivity,
   CompletedActivityId,
   deleteHistoryActivity,
+  duplicateSelection,
   groupByDay,
   indexActivities,
   updateHistory,
 } from "../../domain";
 import EditableRow from "./EditableRow";
 import Row from "./Row";
-import { Switch } from "@blueprintjs/core";
+import { Button, Switch } from "@blueprintjs/core";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { useState } from "react";
 import styled from "styled-components";
@@ -37,6 +38,9 @@ function HistoryView({
   onHistoryChange,
 }: HistoryViewProps) {
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
+  const [selection, setSelected] = useState<Set<CompletedActivityId>>(
+    new Set([])
+  );
 
   if (history.length === 0) {
     // Problem: if the edit mode is ON and all the transactions are deleted, the switch
@@ -67,6 +71,29 @@ function HistoryView({
     setIsEditModeOn(!isEditModeOn);
   }
 
+  function unselectAll(): void {
+    setSelected(new Set<CompletedActivityId>([]));
+  }
+
+  function select(id: CompletedActivityId): Set<CompletedActivityId> {
+    return new Set([...selection, id]);
+  }
+
+  function unselect(id: CompletedActivityId): Set<CompletedActivityId> {
+    return new Set([...selection].filter((selectedId) => selectedId !== id));
+  }
+
+  function handleToggleSelect(id: CompletedActivityId): void {
+    const newSelection = selection.has(id) ? unselect(id) : select(id);
+    setSelected(newSelection);
+  }
+
+  function handleDuplicate(): void {
+    const newHistory = duplicateSelection(history, selection);
+    unselectAll();
+    onHistoryChange(newHistory);
+  }
+
   return (
     <Container>
       <Switch
@@ -75,6 +102,14 @@ function HistoryView({
         onClick={toggleEditMode}
         readOnly
       />
+      {isEditModeOn ? (
+        <Button
+          icon="duplicate"
+          text="duplicate"
+          minimal={true}
+          onClick={handleDuplicate}
+        />
+      ) : null}
       {activitiesByDay.map(([day, dayActivities], i) => {
         return (
           <div key={i}>
@@ -83,14 +118,17 @@ function HistoryView({
               const activity = activityIndex.get(
                 completedActivity.activityId
               ) as Activity;
+              const id = completedActivity.id;
               if (isEditModeOn) {
                 return (
                   <EditableRow
                     key={j}
                     activity={activity}
                     completedActivity={completedActivity}
-                    onDelete={() => deleteRow(completedActivity.id)}
+                    selected={selection.has(id)}
+                    onDelete={() => deleteRow(id)}
                     onChange={updateRow}
+                    onToggleSelect={() => handleToggleSelect(id)}
                   />
                 );
               }
