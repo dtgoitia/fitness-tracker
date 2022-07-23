@@ -45,6 +45,7 @@ const Notes = styled.div`
   align-self: center;
   padding-left: ${selectWidth + editWidth}rem;
   font-size: 0.8rem;
+  max-width: 100%;
 `;
 
 const Container = styled.div`
