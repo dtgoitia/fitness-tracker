@@ -33,6 +33,24 @@ export interface CompletedActivity {
 }
 export type FilterQuery = string;
 
+function now(): Date {
+  return new Date();
+}
+function msThisYear(): number {
+  // Number of milliseconds ellapsed since last new year;
+  const _now = now();
+  const newYear = new Date(_now.getFullYear(), 1, 1);
+  const ellapsedMs = _now.getTime() - newYear.getTime();
+  return ellapsedMs;
+}
+function generateRandomId(): number {
+  // if causes problem, then install `uuid` NPM package
+  const saltSize = 100;
+  const time = msThisYear() * saltSize;
+  const salt = Math.floor(Math.random() * saltSize); // to avoid collisions
+  return time + salt;
+}
+
 export function getActivitiesFromStorage(): Activity[] {
   if (LOAD_ACTIVITIES_FROM_CONFIG) {
     return ACTIVITIES;
@@ -231,7 +249,7 @@ export function addCompletedActivity(
   notes: Notes
 ): CompletedActivity[] {
   const now = new Date();
-  const uniqueId: CompletedActivityId = Date.now();
+  const uniqueId: CompletedActivityId = generateRandomId();
   const newCompletedActivity: CompletedActivity = {
     id: uniqueId,
     activityId: id,
