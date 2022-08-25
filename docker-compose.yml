@@ -20,6 +20,9 @@ services:
       # mounted `./webapp/node_modules` directory, so the host's `node_modules` ownership
       # doesn't pass to the container's user
       - /app/node_modules
+      # These volumes are not present when building the image, so the `node_modules`
+      # folder will not show up in the host until you run the container
+      # https://stackoverflow.com/a/32785014
 
   qr:
     build:

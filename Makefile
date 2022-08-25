@@ -15,7 +15,8 @@ run-webapp:
 # Recreate web app docker image
 rebuild-webapp:
 	docker-compose down
-	docker-compose build $(WEBAPP_NAME)
+	rm -rf webapp/node_modules
+	docker-compose build --no-cache $(WEBAPP_NAME)
 
 test-dev-webapp:
 	docker-compose run --rm $(WEBAPP_NAME) npm test
@@ -32,4 +33,3 @@ build-webapp:
 	scripts/build_webapp.sh
 
 set-up-development-environment: install-dev-tools rebuild-webapp
-	cd webapp; npm ci
