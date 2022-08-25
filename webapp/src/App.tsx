@@ -38,6 +38,7 @@ function App() {
   const [activities, setActivities] = useState(getActivitiesFromStorage());
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
   const [history, _setHistory] = useState(getHistoryFromStorage());
+  const [userIsSearching, setUserIsSearching] = useState(false);
   function setHistory(history: CompletedActivity[]): void {
     _setHistory(sortHistory(history));
   }
@@ -102,11 +103,14 @@ function App() {
           query={filterQuery}
           onChange={setFilterQuery}
           clearSearch={clearSearch}
+          onFocus={() => setUserIsSearching(true)}
+          onBlur={() => setUserIsSearching(false)}
         />
         <InventoryView
           activities={filterInventory(itemsInInventory, filterQuery)}
           removeActivity={handleRemoveActivity}
           selectActivity={handleSelectActivity}
+          collapse={!userIsSearching}
         />
         <AddCompletedActivity
           activities={activities}

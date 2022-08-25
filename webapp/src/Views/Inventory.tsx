@@ -1,4 +1,5 @@
 import { Activity, ActivityId } from "../domain";
+import { Collapse } from "@blueprintjs/core";
 import { Button } from "@blueprintjs/core";
 import styled from "styled-components";
 
@@ -35,27 +36,31 @@ interface InventoryViewProps {
   activities: Activity[];
   selectActivity: (id: ActivityId) => void;
   removeActivity: (id: ActivityId) => void;
+  collapse: boolean;
 }
 function InventoryView({
   activities: items,
   selectActivity,
   removeActivity,
+  collapse,
 }: InventoryViewProps) {
+  const isOpen = !collapse;
   return (
     <div>
-      <p>What activity do you want to record?</p>
-      <ol>
-        {items.map((item) => {
-          return (
-            <SelectableItem
-              key={`item-${item.id}`}
-              item={item}
-              onClick={selectActivity}
-              onDelete={removeActivity}
-            />
-          );
-        })}
-      </ol>
+      <Collapse isOpen={isOpen}>
+        <ol>
+          {items.map((item) => {
+            return (
+              <SelectableItem
+                key={`item-${item.id}`}
+                item={item}
+                onClick={selectActivity}
+                onDelete={removeActivity}
+              />
+            );
+          })}
+        </ol>
+      </Collapse>
     </div>
   );
 }
