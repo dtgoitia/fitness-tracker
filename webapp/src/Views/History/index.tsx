@@ -110,11 +110,11 @@ function HistoryView({
           onClick={handleDuplicate}
         />
       ) : null}
-      {activitiesByDay.map(([day, dayActivities], i) => {
+      {activitiesByDay.map(([day, dayActivities]) => {
         return (
-          <div key={i}>
+          <div key={day}>
             <DayHeader>{day}</DayHeader>
-            {dayActivities.map((completedActivity, j) => {
+            {dayActivities.map((completedActivity) => {
               const activity = activityIndex.get(
                 completedActivity.activityId
               ) as Activity;
@@ -122,7 +122,7 @@ function HistoryView({
               if (isEditModeOn) {
                 return (
                   <EditableRow
-                    key={j}
+                    key={id}
                     activity={activity}
                     completedActivity={completedActivity}
                     selected={selection.has(id)}
@@ -134,7 +134,7 @@ function HistoryView({
               }
               return (
                 <Row
-                  key={j}
+                  key={id}
                   activity={activity}
                   completedActivity={completedActivity}
                 />
