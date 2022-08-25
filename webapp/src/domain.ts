@@ -1,11 +1,12 @@
 import { buildTrie, findWords, TrieNode, Word } from "./autocomplete";
 import { ACTIVITIES, LOAD_ACTIVITIES_FROM_CONFIG } from "./config";
 import storage from "./localStorage";
+import { customAlphabet } from "nanoid";
 
 export type ISODatetimeString = string; // "2022-07-19T07:11:00+01:00"
 export type ISODateString = string; // "2022-07-19"
 export type ActivityId = number;
-export type CompletedActivityId = number;
+export type CompletedActivityId = string;
 export type ActivityName = string;
 export interface Activity {
   id: ActivityId;
@@ -36,19 +37,9 @@ export type FilterQuery = string;
 function now(): Date {
   return new Date();
 }
-function msThisYear(): number {
-  // Number of milliseconds ellapsed since last new year;
-  const _now = now();
-  const newYear = new Date(_now.getFullYear(), 1, 1);
-  const ellapsedMs = _now.getTime() - newYear.getTime();
-  return ellapsedMs;
-}
-function generateRandomId(): number {
-  // if causes problem, then install `uuid` NPM package
-  const saltSize = 100;
-  const time = msThisYear() * saltSize;
-  const salt = Math.floor(Math.random() * saltSize); // to avoid collisions
-  return time + salt;
+function generateRandomId(): string {
+  const generateId = customAlphabet("1234567890abcdef", 10);
+  return generateId();
 }
 
 export function getActivitiesFromStorage(): Activity[] {
@@ -297,8 +288,8 @@ export function isActivityUsedInHistory(
   activityId: ActivityId,
   history: CompletedActivity[]
 ): boolean {
-  for (const activity of history) {
-    if (activity.id === activityId) {
+  for (const completedActivity of history) {
+    if (completedActivity.activityId === activityId) {
       return true;
     }
   }

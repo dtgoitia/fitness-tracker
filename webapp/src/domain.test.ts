@@ -53,7 +53,7 @@ describe("Find items", () => {
 
 test("group completed activities by day", () => {
   const a: CompletedActivity = {
-    id: 1658253269730,
+    id: "ab01",
     activityId: 1,
     intensity: Intensity.medium,
     duration: Duration.short,
@@ -62,7 +62,7 @@ test("group completed activities by day", () => {
   };
 
   const b: CompletedActivity = {
-    id: 1658253273787,
+    id: "ab02",
     activityId: 1,
     intensity: Intensity.medium,
     duration: Duration.medium,
