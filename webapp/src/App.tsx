@@ -104,7 +104,6 @@ function App() {
           onChange={setFilterQuery}
           clearSearch={clearSearch}
           onFocus={() => setUserIsSearching(true)}
-          onBlur={() => setUserIsSearching(false)}
         />
         <InventoryView
           activities={filterInventory(itemsInInventory, filterQuery)}
