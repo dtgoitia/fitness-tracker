@@ -94,6 +94,7 @@ function App() {
 
   const clearSearch = () => {
     setFilterQuery("");
+    setUserIsSearching(false);
   };
 
   return (
