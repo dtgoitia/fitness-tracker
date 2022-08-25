@@ -14,6 +14,7 @@ run-webapp:
 
 # Recreate web app docker image
 rebuild-webapp:
+	docker-compose down
 	docker-compose build $(WEBAPP_NAME)
 
 test-dev-webapp:
