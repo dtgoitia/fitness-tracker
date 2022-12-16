@@ -1,4 +1,4 @@
-import { Activity, CompletedActivity } from "../../domain";
+import { Activity, CompletedActivity } from "../../domain/model";
 import { formatTime } from "./datetime";
 import { Button, Dialog, EditableText } from "@blueprintjs/core";
 import { TimePrecision, DatePicker } from "@blueprintjs/datetime";

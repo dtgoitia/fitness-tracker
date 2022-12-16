@@ -80,7 +80,7 @@ class StoredItem<T> {
   }
 }
 
-class Storage {
+export class Storage {
   activities: StoredItem<object[] | undefined>;
   history: StoredItem<object[] | undefined>;
 

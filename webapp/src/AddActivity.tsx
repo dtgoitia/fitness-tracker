@@ -1,4 +1,4 @@
-import { ActivityName } from "./domain";
+import { ActivityName } from "./domain/model";
 import { Button } from "@blueprintjs/core";
 import { useState } from "react";
 

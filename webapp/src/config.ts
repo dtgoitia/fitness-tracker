@@ -1,4 +1,4 @@
-import { Activity } from "./domain";
+import { Activity } from "./domain/model";
 
 export const STORAGE_PREFIX = "fitness";
 

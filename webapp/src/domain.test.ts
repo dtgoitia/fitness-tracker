@@ -1,11 +1,6 @@
-import {
-  Activity,
-  CompletedActivity,
-  Duration,
-  groupByDay,
-  Intensity,
-  ItemAutocompleter,
-} from "./domain";
+import { groupByDay } from "./domain/completedActivities";
+import { Activity, CompletedActivity, Duration, Intensity } from "./domain/model";
+import { ItemAutocompleter } from "./domain/search";
 
 describe("Find items", () => {
   const defaultArgs = { shop: "Lidl", toBuy: true, otherNames: [] };

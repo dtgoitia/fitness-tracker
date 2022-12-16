@@ -1,13 +1,7 @@
-import {
-  Activity,
-  CompletedActivity,
-  CompletedActivityId,
-  deleteHistoryActivity,
-  duplicateSelection,
-  groupByDay,
-  indexActivities,
-  updateHistory,
-} from "../../domain";
+import { ActivityManager } from "../../domain/activities";
+import { groupByDay } from "../../domain/completedActivities";
+import { unreachable } from "../../domain/devex";
+import { Activity, CompletedActivity, CompletedActivityId } from "../../domain/model";
 import EditableRow from "./EditableRow";
 import Row from "./Row";
 import { Button, Switch } from "@blueprintjs/core";
@@ -28,19 +22,22 @@ const Container = styled.div`
 `;
 
 interface HistoryViewProps {
-  activities: Activity[];
   history: CompletedActivity[];
-  onHistoryChange: (history: CompletedActivity[]) => void;
+  activityManager: ActivityManager;
+  updateCompletedActivity: (updated: CompletedActivity) => void;
+  deleteCompletedActivity: (id: CompletedActivityId) => void;
+  duplicateCompletedActivity: (ids: Set<CompletedActivityId>) => void;
 }
+
 function HistoryView({
   history,
-  activities,
-  onHistoryChange,
+  activityManager,
+  updateCompletedActivity,
+  deleteCompletedActivity,
+  duplicateCompletedActivity,
 }: HistoryViewProps) {
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
-  const [selection, setSelected] = useState<Set<CompletedActivityId>>(
-    new Set([])
-  );
+  const [selection, setSelected] = useState<Set<CompletedActivityId>>(new Set([]));
 
   if (history.length === 0) {
     // Problem: if the edit mode is ON and all the transactions are deleted, the switch
@@ -53,19 +50,7 @@ function HistoryView({
     return <Container>{`History is empty :)`}</Container>;
   }
 
-  const activityIndex = indexActivities(activities);
-
   const activitiesByDay = groupByDay(history);
-
-  function deleteRow(id: CompletedActivityId): void {
-    const newHistory = deleteHistoryActivity(history, id);
-    onHistoryChange(newHistory);
-  }
-
-  function updateRow(updated: CompletedActivity): void {
-    const newHistory = updateHistory(history, updated);
-    onHistoryChange(newHistory);
-  }
 
   function toggleEditMode(): void {
     setIsEditModeOn(!isEditModeOn);
@@ -76,10 +61,12 @@ function HistoryView({
   }
 
   function select(id: CompletedActivityId): Set<CompletedActivityId> {
+    // the point here is that you want to avoid mutating the existing set
     return new Set([...selection, id]);
   }
 
   function unselect(id: CompletedActivityId): Set<CompletedActivityId> {
+    // the point here is that you want to avoid mutating the existing set
     return new Set([...selection].filter((selectedId) => selectedId !== id));
   }
 
@@ -89,9 +76,8 @@ function HistoryView({
   }
 
   function handleDuplicate(): void {
-    const newHistory = duplicateSelection(history, selection);
+    duplicateCompletedActivity(selection);
     unselectAll();
-    onHistoryChange(newHistory);
   }
 
   return (
@@ -115,9 +101,12 @@ function HistoryView({
           <div key={day}>
             <DayHeader>{day}</DayHeader>
             {dayActivities.map((completedActivity) => {
-              const activity = activityIndex.get(
+              const activity = activityManager.get(
                 completedActivity.activityId
               ) as Activity;
+              if (activity === undefined) {
+                throw unreachable();
+              }
               const id = completedActivity.id;
               if (isEditModeOn) {
                 return (
@@ -126,18 +115,14 @@ function HistoryView({
                     activity={activity}
                     completedActivity={completedActivity}
                     selected={selection.has(id)}
-                    onDelete={() => deleteRow(id)}
-                    onChange={updateRow}
+                    onDelete={() => deleteCompletedActivity(id)}
+                    onChange={updateCompletedActivity}
                     onToggleSelect={() => handleToggleSelect(id)}
                   />
                 );
               }
               return (
-                <Row
-                  key={id}
-                  activity={activity}
-                  completedActivity={completedActivity}
-                />
+                <Row key={id} activity={activity} completedActivity={completedActivity} />
               );
             })}
           </div>

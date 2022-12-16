@@ -1,31 +1,28 @@
 import AddActivity from "./AddActivity";
 import AddCompletedActivity from "./AddCompletedActivity";
 import "./App.css";
-import DownloadCsv from "./DownloadCsv";
+import { DownloadJson } from "./DownloadJson";
 import ReloadPage from "./ReloadPage";
 import SearchBox from "./SearchBox";
 import HistoryView from "./Views/History";
 import InventoryView from "./Views/Inventory";
+import { ActivityManager } from "./domain/activities";
+import { CompletedActivityManager } from "./domain/completedActivities";
+import { now } from "./domain/datetimeUtils";
 import {
-  addActivity,
-  filterInventory,
-  FilterQuery,
-  getActivitiesFromStorage,
   ActivityId,
   ActivityName,
-  removeActivity,
-  getHistoryFromStorage,
+  Activity,
+  CompletedActivity,
   Duration,
   Intensity,
-  addCompletedActivity,
-  isActivityUsedInHistory,
   Notes,
-  CompletedActivity,
-  sortHistory,
-} from "./domain";
-import storage from "./localStorage";
+  FilterQuery,
+  CompletedActivityId,
+} from "./domain/model";
+import { filterInventory } from "./domain/search";
 import BlueprintThemeProvider from "./style/theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Centered = styled.div`
@@ -34,34 +31,50 @@ const Centered = styled.div`
   max-width: 800px;
 `;
 
-function App() {
-  const [activities, setActivities] = useState(getActivitiesFromStorage());
+interface Props {
+  activityManager: ActivityManager;
+  completedActivityManager: CompletedActivityManager;
+}
+
+function App({ activityManager, completedActivityManager }: Props) {
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
-  const [history, _setHistory] = useState(getHistoryFromStorage());
+  const [history, setHistory] = useState<CompletedActivity[]>([]);
   const [userIsSearching, setUserIsSearching] = useState(false);
-  function setHistory(history: CompletedActivity[]): void {
-    _setHistory(sortHistory(history));
-  }
   const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
-  storage.activities.set(activities);
 
   const itemsInInventory = activities;
 
-  const handleAddNewActivity = (
-    name: ActivityName,
-    otherNames: ActivityName[]
-  ) => {
-    console.log(`Adding a new activity: ${name}`);
-    setActivities(addActivity(activities, name, otherNames));
+  useEffect(() => {
+    activityManager.changes$.subscribe((_) => {
+      const sortedActivities = activityManager.getAll();
+      setActivities(sortedActivities);
+    });
+
+    completedActivityManager.changes$.subscribe((_) => {
+      const history = completedActivityManager.getAll();
+      setHistory(history);
+    });
+
+    const sortedActivities = activityManager.getAll();
+    setActivities(sortedActivities);
+    const history = completedActivityManager.getAll();
+    setHistory(history);
+  }, [activityManager, completedActivityManager]);
+
+  const handleAddNewActivity = (name: ActivityName, otherNames: ActivityName[]) => {
+    console.log(`App.handleAddNewActivity::Adding a new activity: ${name}`);
+    activityManager.add({ name, otherNames });
   };
 
   const handleRemoveActivity = (id: ActivityId) => {
-    console.log(`Removing activity (ID: ${id})`);
-    if (isActivityUsedInHistory(id, history)) {
+    console.log(`App.handleRemoveActivity::Removing activity (ID: ${id})`);
+    if (completedActivityManager.isActivityUsedInHistory({ activityId: id })) {
       alert(`This activity is used in the history, cannot be removed!`);
       return;
     }
-    setActivities(removeActivity(activities, id));
+
+    activityManager.delete({ id });
   };
 
   const handleNewCompleteActity = (
@@ -69,17 +82,15 @@ function App() {
     intensity: Intensity,
     duration: Duration,
     notes: Notes
-  ) => {
-    console.log(`Adding a new completed activity: id=${id}`);
-    const updatedHistory = addCompletedActivity(
-      history,
-      id,
+  ): void => {
+    console.log(`App.handleNewCompleteActity::Adding a new completed activity: id=${id}`);
+    completedActivityManager.add({
+      activityId: id,
       intensity,
       duration,
-      notes
-    );
-    setHistory(updatedHistory);
-    storage.history.set(updatedHistory);
+      notes,
+      date: now(),
+    });
     setSelected(undefined);
   };
 
@@ -87,9 +98,16 @@ function App() {
     setSelected(id);
   };
 
-  function handleHistoryChange(history: CompletedActivity[]): void {
-    setHistory(history);
-    storage.history.set(history);
+  function handleCompletedActivityUpdate(updated: CompletedActivity): void {
+    completedActivityManager.update({ completedActivity: updated });
+  }
+
+  function handleCompletedActivityDeletion(id: CompletedActivityId): void {
+    completedActivityManager.delete({ id });
+  }
+
+  function handleCompletedActivityDuplication(ids: Set<CompletedActivityId>): void {
+    completedActivityManager.duplicate({ ids });
   }
 
   const clearSearch = () => {
@@ -113,17 +131,22 @@ function App() {
           collapse={!userIsSearching}
         />
         <AddCompletedActivity
-          activities={activities}
+          activityManager={activityManager}
           selectedActivityId={selected}
           add={handleNewCompleteActity}
         />
         <HistoryView
           history={history}
-          activities={activities}
-          onHistoryChange={handleHistoryChange}
+          activityManager={activityManager}
+          updateCompletedActivity={handleCompletedActivityUpdate}
+          deleteCompletedActivity={handleCompletedActivityDeletion}
+          duplicateCompletedActivity={handleCompletedActivityDuplication}
         />
         <AddActivity add={handleAddNewActivity} />
-        <DownloadCsv activities={activities} history={history} />
+        <DownloadJson
+          activityManager={activityManager}
+          completedActivityManager={completedActivityManager}
+        />
         <ReloadPage />
       </Centered>
     </BlueprintThemeProvider>

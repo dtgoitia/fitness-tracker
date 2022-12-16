@@ -1,11 +1,6 @@
-import {
-  Activity,
-  ActivityId,
-  Duration,
-  findActivityById,
-  Intensity,
-  Notes,
-} from "./domain";
+import { ActivityManager } from "./domain/activities";
+import { ActivityId } from "./domain/model";
+import { Duration, Intensity, Notes } from "./domain/model";
 import { Button } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
@@ -18,17 +13,12 @@ const ButtonRibbon = styled.div`
 `;
 
 interface AddCompletedActivityProps {
-  activities: Activity[];
+  activityManager: ActivityManager;
   selectedActivityId: ActivityId | undefined;
-  add: (
-    id: ActivityId,
-    intensity: Intensity,
-    duration: Duration,
-    notes: Notes
-  ) => void;
+  add: (id: ActivityId, intensity: Intensity, duration: Duration, notes: Notes) => void;
 }
 function AddCompletedActivity({
-  activities,
+  activityManager,
   selectedActivityId,
   add,
 }: AddCompletedActivityProps) {
@@ -38,19 +28,14 @@ function AddCompletedActivity({
 
   function handleSubmit(event: any) {
     event.preventDefault();
-    if (!selectedActivityId) return;
+    if (selectedActivityId === undefined) return;
     if (!intensity || !duration) {
       console.debug(
         `Both intensity and duration are required to add a completed activity`
       );
       return;
     }
-    add(
-      selectedActivityId,
-      intensity as Intensity,
-      duration as Duration,
-      notes
-    );
+    add(selectedActivityId, intensity as Intensity, duration as Duration, notes);
     setIntensity(undefined);
     setDuration(undefined);
     setNotes("");
@@ -62,8 +47,7 @@ function AddCompletedActivity({
 
   const intensityButtons = Object.keys(Intensity).map((key) => {
     const buttonIntensity = key as Intensity;
-    const classNameIfSelected =
-      buttonIntensity === intensity ? "bp4-intent-success" : "";
+    const classNameIfSelected = buttonIntensity === intensity ? "bp4-intent-success" : "";
     return (
       <button
         key={key}
@@ -78,8 +62,7 @@ function AddCompletedActivity({
 
   const durationButtons = Object.keys(Duration).map((key) => {
     const buttonDuration = key as Duration;
-    const classNameIfSelected =
-      buttonDuration === duration ? "bp4-intent-success" : "";
+    const classNameIfSelected = buttonDuration === duration ? "bp4-intent-success" : "";
     return (
       <button
         key={key}
@@ -93,13 +76,11 @@ function AddCompletedActivity({
   });
 
   const canSubmit =
-    selectedActivityId !== undefined &&
-    intensity !== undefined &&
-    duration !== undefined;
+    selectedActivityId !== undefined && intensity !== undefined && duration !== undefined;
 
   let selectedActivity = undefined;
   if (selectedActivityId) {
-    selectedActivity = findActivityById(activities, selectedActivityId);
+    selectedActivity = activityManager.get(selectedActivityId);
   }
 
   return (

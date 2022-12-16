@@ -1,5 +1,6 @@
 import App from "./App";
 import "./blueprint.css";
+import { initialize } from "./domain/initialize";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
@@ -8,10 +9,15 @@ import { activeTheme } from "./style/globalStyle";
 import React from "react";
 import ReactDOM from "react-dom";
 
+const { activityManager, completedActivityManager } = initialize();
+
 ReactDOM.render(
   <React.StrictMode>
     <GlobalStyle theme={activeTheme} />
-    <App />
+    <App
+      activityManager={activityManager}
+      completedActivityManager={completedActivityManager}
+    />
   </React.StrictMode>,
   document.getElementById("root")
 );
