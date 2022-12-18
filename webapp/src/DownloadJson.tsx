@@ -5,6 +5,10 @@ import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+// Using `application/json` does not allow to share the file easily on the phone but
+// `text/plain` provides the desired behaviour
+const JSON_MIME_TYPE = "text/plain";
+
 const Container = styled.div`
   padding: 1rem 0;
 `;
@@ -22,9 +26,9 @@ export function DownloadJson({ activityManager, completedActivityManager }: Prop
   }, []);
 
   const date = now();
-  const fileName = generateFilename({ date });
 
   function download(): void {
+    const fileName = generateFilename({ date });
     const blob = generateBlob({ activityManager, completedActivityManager, date });
     downloadFile(blob, fileName);
   }
@@ -35,8 +39,14 @@ export function DownloadJson({ activityManager, completedActivityManager }: Prop
       return;
     }
 
-    const blob = generateBlob({ activityManager, completedActivityManager, date });
-    shareFile(blob, fileName);
+    const fileName = generateFilename({ date });
+    const file = generateFile({
+      activityManager,
+      completedActivityManager,
+      date,
+      fileName,
+    });
+    shareFile(file);
   }
 
   return (
@@ -44,7 +54,7 @@ export function DownloadJson({ activityManager, completedActivityManager }: Prop
       <Button intent="success" text="Download JSON" onClick={() => download()} />
       <Button
         intent="success"
-        text="Share JSON"
+        text="Share"
         onClick={() => share()}
         disabled={shareApiIsAvailable === false}
       />
@@ -69,7 +79,7 @@ function generateBlob({
   };
 
   const formattedJson = JSON.stringify(data, null, 2);
-  const blob = new Blob([formattedJson], { type: "application/json" });
+  const blob = new Blob([formattedJson], { type: JSON_MIME_TYPE });
 
   return blob;
 }
@@ -81,7 +91,7 @@ function generateFilename({ date }: { date: Date }): string {
     .replaceAll(":", "")
     .replace("T", "-")
     .slice(0, 15);
-  return `fitness-tracker__backup_${formattedDate}.json`;
+  return `fitness-tracker__backup_${formattedDate}.txt`;
 }
 
 function isShareApiAvailable(): boolean {
@@ -119,9 +129,30 @@ function downloadFile(blob: Blob, filename: string): void {
   xhr.send();
 }
 
-function shareFile(blob: Blob, fileName: string): void {
-  const file = new File([blob], fileName, { type: "application/json" });
+interface GenerateFileArgs {
+  activityManager: ActivityManager;
+  completedActivityManager: CompletedActivityManager;
+  date: Date;
+  fileName: string;
+}
+function generateFile({
+  activityManager,
+  completedActivityManager,
+  date,
+  fileName,
+}: GenerateFileArgs): File {
+  const data = {
+    date: date.toISOString(),
+    activities: activityManager.getAll(),
+    completedActivities: completedActivityManager.getAll(),
+  };
 
+  const formattedJson = JSON.stringify(data, null, 2);
+  const file = new File([formattedJson], fileName, { type: JSON_MIME_TYPE });
+
+  return file;
+}
+function shareFile(file: File): void {
   const dataToShare: ShareData = {
     title: "fitness-tracker CSV",
     files: [file],
