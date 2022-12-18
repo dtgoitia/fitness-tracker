@@ -21,6 +21,7 @@ import {
   CompletedActivityId,
 } from "./domain/model";
 import { filterInventory } from "./domain/search";
+import { findVersionHash } from "./findVersion";
 import BlueprintThemeProvider from "./style/theme";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -148,6 +149,7 @@ function App({ activityManager, completedActivityManager }: Props) {
           completedActivityManager={completedActivityManager}
         />
         <ReloadPage />
+        <p>{findVersionHash()}</p>
       </Centered>
     </BlueprintThemeProvider>
   );

@@ -154,7 +154,7 @@ function generateFile({
 }
 function shareFile(file: File): void {
   const dataToShare: ShareData = {
-    title: "fitness-tracker CSV",
+    title: "fitness-tracker JSON",
     files: [file],
   };
 
