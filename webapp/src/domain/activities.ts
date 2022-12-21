@@ -128,14 +128,14 @@ export class ActivityManager {
 }
 
 function sortActivitiesAlphabetically(a: Activity, b: Activity): SortAction {
-  const name_a = a.name;
-  const name_b = b.name;
+  const name_a = a.name.toLowerCase();
+  const name_b = b.name.toLowerCase();
   switch (true) {
     case name_a === name_b:
       return SortAction.PRESERVE_ORDER;
-    case name_a > name_b:
-      return SortAction.FIRST_A_THEN_B;
     case name_a < name_b:
+      return SortAction.FIRST_A_THEN_B;
+    case name_a > name_b:
       return SortAction.FIRST_B_THEN_A;
     default:
       throw unreachable();
