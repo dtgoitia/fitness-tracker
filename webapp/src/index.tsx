@@ -1,6 +1,6 @@
 import App from "./App";
 import "./blueprint.css";
-import { initialize } from "./domain/initialize";
+import { BASE_URL } from "./constants";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
@@ -8,16 +8,14 @@ import { GlobalStyle } from "./style/globalStyle";
 import { activeTheme } from "./style/globalStyle";
 import React from "react";
 import ReactDOM from "react-dom";
-
-const { activityManager, completedActivityManager } = initialize();
+import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <GlobalStyle theme={activeTheme} />
-    <App
-      activityManager={activityManager}
-      completedActivityManager={completedActivityManager}
-    />
+    <BrowserRouter basename={BASE_URL}>
+      <GlobalStyle theme={activeTheme} />
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );
