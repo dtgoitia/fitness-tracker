@@ -1,4 +1,5 @@
-import { Activity, CompletedActivity } from "../../domain/model";
+import { unreachable } from "../../domain/devex";
+import { Activity, CompletedActivity, Duration, Intensity } from "../../domain/model";
 import { formatTime } from "./datetime";
 import { Button, Dialog, EditableText } from "@blueprintjs/core";
 import { TimePrecision, DatePicker } from "@blueprintjs/datetime";
@@ -25,12 +26,12 @@ const ActivityName = styled.div`
   flex-shrink: 0;
   align-self: center;
 `;
-const Intensity = styled.div`
+const IntensityValue = styled.div`
   flex-basis: 4rem;
   flex-shrink: 0;
   align-self: center;
 `;
-const Duration = styled.div`
+const DurationValue = styled.div`
   flex-basis: 4rem;
   flex-shrink: 0;
   align-self: center;
@@ -41,6 +42,12 @@ const DeleteActivity = styled.div`
   flex-grow: 0;
   align-self: center;
 `;
+
+const ButtonRibbon = styled.div`
+  display: flex;
+  margin: 0 0.5rem;
+`;
+
 const Notes = styled.div`
   align-self: center;
   padding-left: ${selectWidth + editWidth}rem;
@@ -86,17 +93,57 @@ function EditableRow({
 
   const time: string = formatTime(completedActivity.date);
 
-  function onDateInputChange(newDate: Date) {
+  function handleDateInputChange(newDate: Date): void {
     const updated: CompletedActivity = { ...completedActivity, date: newDate };
     onChange(updated);
   }
-  function onNotesChange(newNotes: string) {
-    const updated: CompletedActivity = {
-      ...completedActivity,
-      notes: newNotes,
-    };
+
+  function handleIntensityChange(newIntensity: Intensity): void {
+    const updated: CompletedActivity = { ...completedActivity, intensity: newIntensity };
     onChange(updated);
   }
+
+  function handleDurationChange(newDuration: Duration): void {
+    const updated: CompletedActivity = { ...completedActivity, duration: newDuration };
+    onChange(updated);
+  }
+
+  function handleNotesChange(newNotes: string): void {
+    const updated: CompletedActivity = { ...completedActivity, notes: newNotes };
+    onChange(updated);
+  }
+
+  const intensityButtons = Object.keys(Intensity).map((key) => {
+    const buttonIntensity = key as Intensity;
+    const classNameIfSelected =
+      buttonIntensity === completedActivity.intensity ? "bp4-intent-success" : "";
+    return (
+      <button
+        key={key}
+        type="button"
+        className={`bp4-button bp4 ${classNameIfSelected}`}
+        onClick={() => handleIntensityChange(buttonIntensity)}
+      >
+        {getIntensityLevelShorthand(buttonIntensity)}
+      </button>
+    );
+  });
+
+  const durationButtons = Object.keys(Duration).map((key) => {
+    const buttonDuration = key as Duration;
+    const classNameIfSelected =
+      buttonDuration === completedActivity.duration ? "bp4-intent-success" : "";
+    return (
+      <button
+        key={key}
+        type="button"
+        className={`bp4-button bp4 ${classNameIfSelected}`}
+        onClick={() => handleDurationChange(buttonDuration)}
+      >
+        {getDurationLevelShorthand(buttonDuration)}
+      </button>
+    );
+  });
 
   return (
     <Container>
@@ -118,7 +165,7 @@ function EditableRow({
             shortcuts={true}
             highlightCurrentDay={true}
             timePickerProps={{ showArrowButtons: true }}
-            onChange={onDateInputChange}
+            onChange={handleDateInputChange}
           />
         </div>
         <div className="bp4-dialog-footer">Changes are saved automatically</div>
@@ -138,8 +185,18 @@ function EditableRow({
         </EditTime>
         <ActivityName>{activity.name}</ActivityName>
 
-        <Intensity>{completedActivity.intensity}</Intensity>
-        <Duration>{completedActivity.duration}</Duration>
+        <IntensityValue>
+          <ButtonRibbon className="bp4-button-group .modifier">
+            {intensityButtons}
+          </ButtonRibbon>
+        </IntensityValue>
+
+        <DurationValue>
+          <ButtonRibbon className="bp4-button-group .modifier">
+            {durationButtons}
+          </ButtonRibbon>
+        </DurationValue>
+
         <DeleteActivity>
           <Button icon="trash" minimal={true} onClick={onDelete} />
         </DeleteActivity>
@@ -151,7 +208,7 @@ function EditableRow({
             multiline={false}
             placeholder={`observations...`}
             value={completedActivity.notes}
-            onChange={onNotesChange}
+            onChange={handleNotesChange}
           />
         </Notes>
       </BottomLine>
@@ -160,3 +217,29 @@ function EditableRow({
 }
 
 export default EditableRow;
+
+function getIntensityLevelShorthand(intensity: Intensity): string {
+  switch (intensity) {
+    case Intensity.low:
+      return "L";
+    case Intensity.medium:
+      return "M";
+    case Intensity.high:
+      return "H";
+    default:
+      throw unreachable(`unhandled Intensity variant: ${intensity}`);
+  }
+}
+
+function getDurationLevelShorthand(duration: Duration): string {
+  switch (duration) {
+    case Duration.short:
+      return "S";
+    case Duration.medium:
+      return "M";
+    case Duration.long:
+      return "L";
+    default:
+      throw unreachable(`unhandled Duration variant: ${duration}`);
+  }
+}

@@ -88,6 +88,7 @@ function HistoryView({
         onClick={toggleEditMode}
         readOnly
       />
+
       {isEditModeOn ? (
         <Button
           icon="duplicate"
@@ -96,18 +97,17 @@ function HistoryView({
           onClick={handleDuplicate}
         />
       ) : null}
+
       {activitiesByDay.map(([day, dayActivities]) => {
         return (
           <div key={day}>
             <DayHeader>{day}</DayHeader>
             {dayActivities.map((completedActivity) => {
-              const activity = activityManager.get(
-                completedActivity.activityId
-              ) as Activity;
+              const { id, activityId } = completedActivity;
+              const activity = activityManager.get(activityId) as Activity;
               if (activity === undefined) {
                 throw unreachable();
               }
-              const id = completedActivity.id;
               if (isEditModeOn) {
                 return (
                   <EditableRow
