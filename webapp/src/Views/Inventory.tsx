@@ -3,8 +3,39 @@ import { Collapse } from "@blueprintjs/core";
 import { Button } from "@blueprintjs/core";
 import styled from "styled-components";
 
-const GrayedOut = styled.span`
+const Container = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+`;
+
+const OrderedList = styled.ol`
+  padding: 0 0.5rem;
+`;
+
+const Clickable = styled.div`
+  flex-grow: 1;
+  column-gap: 1rem;
+  justify-content: flex-start;
+
+  display: flex;
+  flex-flow: row wrap;
+`;
+
+const GrayedOut = styled.div`
+  flex-shrink: 1;
+  flex-grow: 1;
+  align-self: center;
+
   opacity: 0.3;
+`;
+
+const GrayedOutCodeAtEnd = styled.pre`
+  align-self: center;
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  opacity: 0.5;
+  font-size: 0.65rem;
 `;
 
 interface SelectableItempProps {
@@ -15,18 +46,18 @@ interface SelectableItempProps {
 function SelectableItem({ item, onClick, onDelete }: SelectableItempProps) {
   const otherNames = item.otherNames ? item.otherNames.join(", ") : "";
   return (
-    <div>
+    <Container>
+      <Clickable onClick={() => onClick(item.id)} className="bp4-button bp4-minimal">
+        {item.name}
+        <GrayedOut>{otherNames}</GrayedOut>
+      </Clickable>
+      <GrayedOutCodeAtEnd>{item.id}</GrayedOutCodeAtEnd>
       <Button
         onClick={() => onDelete(item.id)}
         className="bp4-button bp4-minimal"
         icon="trash"
       />
-      <Button onClick={() => onClick(item.id)} className="bp4-button bp4-minimal">
-        <span>
-          ({item.id}) {item.name} <GrayedOut>{otherNames}</GrayedOut>
-        </span>
-      </Button>
-    </div>
+    </Container>
   );
 }
 interface InventoryViewProps {
@@ -36,29 +67,27 @@ interface InventoryViewProps {
   collapse: boolean;
 }
 function InventoryView({
-  activities: items,
+  activities,
   selectActivity,
   removeActivity,
   collapse,
 }: InventoryViewProps) {
   const isOpen = !collapse;
   return (
-    <div>
-      <Collapse isOpen={isOpen}>
-        <ol>
-          {items.map((item) => {
-            return (
-              <SelectableItem
-                key={`item-${item.id}`}
-                item={item}
-                onClick={selectActivity}
-                onDelete={removeActivity}
-              />
-            );
-          })}
-        </ol>
-      </Collapse>
-    </div>
+    <Collapse isOpen={isOpen}>
+      <OrderedList>
+        {activities.map((activity) => {
+          return (
+            <SelectableItem
+              key={`item-${activity.id}`}
+              item={activity}
+              onClick={selectActivity}
+              onDelete={removeActivity}
+            />
+          );
+        })}
+      </OrderedList>
+    </Collapse>
   );
 }
 
