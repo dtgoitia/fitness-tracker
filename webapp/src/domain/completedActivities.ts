@@ -3,7 +3,6 @@ import {
   ActivityChange,
   ActivityDeleted,
   ActivityManager,
-  ActivityMigrated,
   ActivityUpdated,
 } from "./activities";
 import { now } from "./datetimeUtils";
@@ -22,7 +21,7 @@ import {
 import { SortAction } from "./sort";
 import { Observable, Subject } from "rxjs";
 
-const COMPLETED_ACTIVITY_PREFIX = "cpa";
+export const COMPLETED_ACTIVITY_PREFIX = "cpa";
 
 interface ConstructorArgs {
   activityManager: ActivityManager;
@@ -71,38 +70,6 @@ export class CompletedActivityManager {
   public initialize({ completedActivities }: InitializeArgs): void {
     for (const completedActivity of completedActivities) {
       this.completedActivities.set(completedActivity.id, completedActivity);
-    }
-  }
-
-  /* Temporary code to run migration */
-  public migrate(): void {
-    function isOld(id: CompletedActivityId): boolean {
-      switch (typeof id) {
-        case "number":
-          return true;
-        case "string":
-          return false;
-        default:
-          throw unreachable(`expected a string or a number, but got ${typeof id}: ${id}`);
-      }
-    }
-
-    for (const entry of this.completedActivities.entries()) {
-      const [completedActivityId, completedActivity] = entry;
-
-      const needsMigration = isOld(completedActivityId);
-      if (needsMigration === false) {
-        continue;
-      }
-
-      let migratedId: Hash = this.generateCompletedActivityId();
-      const migratedCompletedActivity = { ...completedActivity, id: migratedId };
-
-      this.completedActivities.delete(completedActivityId);
-      this.completedActivities.set(migratedId, migratedCompletedActivity);
-      this.changesSubject.next(
-        new CompletedActivityMigrated(completedActivityId, migratedId)
-      );
     }
   }
 
@@ -213,28 +180,8 @@ export class CompletedActivityManager {
         return;
       case change instanceof ActivityDeleted:
         return;
-      case change instanceof ActivityMigrated:
-        this.handleActivityMigrated(change as ActivityMigrated);
-        return;
       default:
         throw unreachable(`unsupported change type: ${change}`);
-    }
-  }
-
-  /* Temporary event for migration */
-  private handleActivityMigrated(change: ActivityMigrated): void {
-    // console.debug(`CompletedActivityManager.handleActivityMigrated::change`, change);
-    for (const oldCompletedActivity of this.completedActivities.values()) {
-      if (oldCompletedActivity.activityId !== change.oldId) {
-        continue;
-      }
-
-      const completedActivity: CompletedActivity = {
-        ...oldCompletedActivity,
-        activityId: change.migratedId,
-      };
-
-      this.update({ completedActivity });
     }
   }
 }
@@ -300,15 +247,7 @@ export class CompletedActivityDeleted {
   constructor(public readonly id: CompletedActivityId) {}
 }
 
-export class CompletedActivityMigrated {
-  constructor(
-    public readonly oldId: CompletedActivityId,
-    public readonly migratedId: CompletedActivityId
-  ) {}
-}
-
 export type CompletedActivityChange =
   | CompletedActivityAdded
   | CompletedActivityUpdated
-  | CompletedActivityDeleted
-  | CompletedActivityMigrated;
+  | CompletedActivityDeleted;

@@ -32,11 +32,5 @@ export function initialize(): App {
   completedActivityManager.initialize({ completedActivities });
   console.log(`initialize.ts::initialize::Initialization completed`);
 
-  console.log(`initialize.ts::initialize::Migrating activities...`);
-  activityManager.migrate();
-  console.log(`initialize.ts::initialize::Migrating completed activities...`);
-  completedActivityManager.migrate();
-  console.log(`initialize.ts::initialize::Migration completed`);
-
   return { activityManager, completedActivityManager };
 }

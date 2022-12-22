@@ -4,7 +4,7 @@ import { Activity, ActivityId, ActivityName, Hash } from "./model";
 import { SortAction } from "./sort";
 import { Observable, Subject } from "rxjs";
 
-const ACTIVITY_PREFIX = "act";
+export const ACTIVITY_PREFIX = "act";
 
 interface InitializeArgs {
   activities: Activity[];
@@ -39,34 +39,6 @@ export class ActivityManager {
   public initialize({ activities }: InitializeArgs): void {
     for (const activity of activities) {
       this.activities.set(activity.id, activity);
-    }
-  }
-
-  /* Temporary code to run migration */
-  public migrate(): void {
-    function isOld(id: ActivityId): boolean {
-      switch (typeof id) {
-        case "number":
-          return true;
-        case "string":
-          return false;
-        default:
-          throw unreachable(`expected a string or a number, but got ${typeof id}: ${id}`);
-      }
-    }
-
-    for (const [activityId, activity] of this.activities.entries()) {
-      const needsMigration = isOld(activityId);
-      if (needsMigration === false) {
-        continue;
-      }
-
-      const migratedId = this.generateActivityId();
-      const migratedActivity = { ...activity, id: migratedId };
-
-      this.activities.delete(activityId);
-      this.activities.set(migratedId, migratedActivity);
-      this.changesSubject.next(new ActivityMigrated(activityId, migratedId));
     }
   }
 
@@ -154,16 +126,4 @@ export class ActivityDeleted {
   constructor(public readonly id: ActivityId) {}
 }
 
-/* Temporary event for migration */
-export class ActivityMigrated {
-  constructor(
-    public readonly oldId: ActivityId,
-    public readonly migratedId: ActivityId
-  ) {}
-}
-
-export type ActivityChange =
-  | ActivityAdded
-  | ActivityUpdated
-  | ActivityDeleted
-  | ActivityMigrated;
+export type ActivityChange = ActivityAdded | ActivityUpdated | ActivityDeleted;
