@@ -34,4 +34,9 @@ export const GlobalStyle = createGlobalStyle<Props>`
   html {
     background-color: ${({ theme }) => get_theme(theme).backgroundColor};
   }
+  ol, ul, li {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+  }
 `;
