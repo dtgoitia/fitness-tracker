@@ -1,3 +1,4 @@
+import { NO_CLASS } from "../../constants";
 import { unreachable } from "../../domain/devex";
 import { Activity, CompletedActivity, Duration, Intensity } from "../../domain/model";
 import { formatTime } from "./datetime";
@@ -116,7 +117,7 @@ function EditableRow({
   const intensityButtons = Object.keys(Intensity).map((key) => {
     const buttonIntensity = key as Intensity;
     const classNameIfSelected =
-      buttonIntensity === completedActivity.intensity ? "bp4-intent-success" : "";
+      buttonIntensity === completedActivity.intensity ? "bp4-intent-success" : NO_CLASS;
     return (
       <button
         key={key}
@@ -132,7 +133,7 @@ function EditableRow({
   const durationButtons = Object.keys(Duration).map((key) => {
     const buttonDuration = key as Duration;
     const classNameIfSelected =
-      buttonDuration === completedActivity.duration ? "bp4-intent-success" : "";
+      buttonDuration === completedActivity.duration ? "bp4-intent-success" : NO_CLASS;
     return (
       <button
         key={key}

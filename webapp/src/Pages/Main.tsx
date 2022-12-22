@@ -7,6 +7,7 @@ import ReloadPage from "../ReloadPage";
 import SearchBox from "../SearchBox";
 import HistoryView from "../Views/History";
 import InventoryView from "../Views/Inventory";
+import { EMPTY_STRING } from "../constants";
 import { ActivityManager } from "../domain/activities";
 import { CompletedActivityManager } from "../domain/completedActivities";
 import { now } from "../domain/datetimeUtils";
@@ -26,6 +27,8 @@ import { findVersionHash } from "../findVersion";
 import BlueprintThemeProvider from "../style/theme";
 import { useEffect, useState } from "react";
 
+const NO_QUERY = EMPTY_STRING;
+
 interface Props {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
@@ -36,7 +39,7 @@ function Main({ activityManager, completedActivityManager }: Props) {
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
   const [history, setHistory] = useState<CompletedActivity[]>([]);
   const [userIsSearching, setUserIsSearching] = useState(false);
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>(NO_QUERY);
 
   const itemsInInventory = activities;
 
@@ -106,7 +109,7 @@ function Main({ activityManager, completedActivityManager }: Props) {
   }
 
   const clearSearch = () => {
-    setFilterQuery("");
+    setFilterQuery(NO_QUERY);
     setUserIsSearching(false);
   };
 

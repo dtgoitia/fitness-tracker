@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from "./constants";
 import { ActivityManager } from "./domain/activities";
 import { CompletedActivityManager } from "./domain/completedActivities";
 import { now } from "./domain/datetimeUtils";
@@ -87,8 +88,8 @@ function generateBlob({
 function generateFilename({ date }: { date: Date }): string {
   const formattedDate = date
     .toISOString()
-    .replaceAll("-", "")
-    .replaceAll(":", "")
+    .replaceAll("-", EMPTY_STRING)
+    .replaceAll(":", EMPTY_STRING)
     .replace("T", "-")
     .slice(0, 15);
   return `fitness-tracker__backup_${formattedDate}.txt`;
@@ -122,7 +123,7 @@ function downloadFile(blob: Blob, filename: string): void {
         `\n`,
         `fileUrl=${fileUrl}\n`,
         `\n`,
-      ].join("");
+      ].join(EMPTY_STRING);
       throw new Error(error);
     }
   };

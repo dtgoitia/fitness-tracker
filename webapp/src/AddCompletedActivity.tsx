@@ -1,9 +1,12 @@
+import { EMPTY_STRING, NO_CLASS } from "./constants";
 import { ActivityManager } from "./domain/activities";
 import { ActivityId } from "./domain/model";
 import { Duration, Intensity, Notes } from "./domain/model";
 import { Button } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
+
+const NO_NOTES = EMPTY_STRING;
 
 const ButtonsLabel = styled.label`
   padding-right: 1rem;
@@ -24,7 +27,7 @@ function AddCompletedActivity({
 }: AddCompletedActivityProps) {
   const [intensity, setIntensity] = useState<Intensity | undefined>();
   const [duration, setDuration] = useState<Duration | undefined>();
-  const [notes, setNotes] = useState<string>("");
+  const [notes, setNotes] = useState<string>(NO_NOTES);
 
   function handleSubmit(event: any) {
     event.preventDefault();
@@ -38,7 +41,7 @@ function AddCompletedActivity({
     add(selectedActivityId, intensity as Intensity, duration as Duration, notes);
     setIntensity(undefined);
     setDuration(undefined);
-    setNotes("");
+    setNotes(NO_NOTES);
   }
 
   function handleNotesChange(event: any) {
@@ -47,7 +50,8 @@ function AddCompletedActivity({
 
   const intensityButtons = Object.keys(Intensity).map((key) => {
     const buttonIntensity = key as Intensity;
-    const classNameIfSelected = buttonIntensity === intensity ? "bp4-intent-success" : "";
+    const classNameIfSelected =
+      buttonIntensity === intensity ? "bp4-intent-success" : NO_CLASS;
     return (
       <button
         key={key}
@@ -62,7 +66,8 @@ function AddCompletedActivity({
 
   const durationButtons = Object.keys(Duration).map((key) => {
     const buttonDuration = key as Duration;
-    const classNameIfSelected = buttonDuration === duration ? "bp4-intent-success" : "";
+    const classNameIfSelected =
+      buttonDuration === duration ? "bp4-intent-success" : NO_CLASS;
     return (
       <button
         key={key}

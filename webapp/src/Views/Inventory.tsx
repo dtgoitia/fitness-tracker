@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from "../constants";
 import { Activity, ActivityId } from "../domain/model";
 import { Collapse } from "@blueprintjs/core";
 import { Button } from "@blueprintjs/core";
@@ -44,7 +45,7 @@ interface SelectableItempProps {
   onDelete: (id: ActivityId) => void;
 }
 function SelectableItem({ item, onClick, onDelete }: SelectableItempProps) {
-  const otherNames = item.otherNames ? item.otherNames.join(", ") : "";
+  const otherNames = item.otherNames ? item.otherNames.join(", ") : EMPTY_STRING;
   return (
     <Container>
       <Clickable onClick={() => onClick(item.id)} className="bp4-button bp4-minimal">

@@ -1,4 +1,5 @@
 import { STORAGE_PREFIX } from "./config";
+import { EMPTY_STRING } from "./constants";
 
 enum ValueType {
   string = "string",
@@ -44,7 +45,7 @@ class StoredItem<T> {
   public set(value: T) {
     this.assertType(value);
 
-    let serializedValue = "";
+    let serializedValue = EMPTY_STRING;
 
     switch (this.type) {
       case ValueType.string:

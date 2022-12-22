@@ -1,4 +1,5 @@
 import { buildTrie, findWords, TrieNode, Word } from "../autocomplete";
+import { EMPTY_STRING } from "../constants";
 import { Activity, FilterQuery } from "./model";
 
 interface WordsToItemMap {
@@ -78,7 +79,7 @@ export class ItemAutocompleter {
 }
 
 export function filterInventory(activity: Activity[], query: FilterQuery): Activity[] {
-  if (query === "") return activity;
+  if (query === EMPTY_STRING) return activity;
   const completer = new ItemAutocompleter(activity);
 
   const prefixes = query.split(" ").filter((prefix) => !!prefix);
