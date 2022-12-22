@@ -23,18 +23,23 @@ import {
   CompletedActivityId,
 } from "../domain/model";
 import { filterInventory } from "../domain/search";
+import { TrainingManager } from "../domain/trainings";
 import { findVersionHash } from "../findVersion";
+import Paths from "../routes";
 import BlueprintThemeProvider from "../style/theme";
+import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const NO_QUERY = EMPTY_STRING;
 
 interface Props {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
+  trainingManager: TrainingManager;
 }
 
-function Main({ activityManager, completedActivityManager }: Props) {
+function MainPage({ activityManager, completedActivityManager, trainingManager }: Props) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
   const [history, setHistory] = useState<CompletedActivity[]>([]);
@@ -69,6 +74,11 @@ function Main({ activityManager, completedActivityManager }: Props) {
     console.log(`App.handleRemoveActivity::Removing activity (ID: ${id})`);
     if (completedActivityManager.isActivityUsedInHistory({ activityId: id })) {
       alert(`This activity is used in the history, cannot be removed!`);
+      return;
+    }
+
+    if (trainingManager.isActivityUsedInTrainings({ activityId: id })) {
+      alert(`This activity is used in Trainings, cannot be removed!`);
       return;
     }
 
@@ -116,6 +126,12 @@ function Main({ activityManager, completedActivityManager }: Props) {
   return (
     <BlueprintThemeProvider>
       <CenteredPage>
+        <Link to={Paths.trainings}>
+          <Button large icon="arrow-right">
+            Go to Trainings
+          </Button>
+        </Link>
+
         <SearchBox
           query={filterQuery}
           onChange={setFilterQuery}
@@ -152,4 +168,4 @@ function Main({ activityManager, completedActivityManager }: Props) {
   );
 }
 
-export default Main;
+export default MainPage;

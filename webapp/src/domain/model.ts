@@ -4,6 +4,8 @@ export type Hash = string;
 export type ActivityId = Hash;
 export type ActivityName = string;
 export type CompletedActivityId = string;
+export type TrainingId = string;
+export type TrainingName = string;
 export type Notes = string;
 export type FilterQuery = string;
 
@@ -32,4 +34,15 @@ export interface CompletedActivity {
   duration: Duration;
   date: Date;
   notes: Notes;
+}
+
+export interface TrainingActivity {
+  activityId: ActivityId;
+  notes: Notes;
+}
+
+export interface Training {
+  id: TrainingId;
+  name: TrainingName;
+  trainingActivities: TrainingActivity[];
 }

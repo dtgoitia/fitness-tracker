@@ -104,6 +104,7 @@ export class CompletedActivityManager {
       // );
       return;
     }
+    // TODO: check that trainings are not using the Activity
 
     this.completedActivities.set(id, completedActivity);
 
@@ -118,6 +119,7 @@ export class CompletedActivityManager {
       // );
       return;
     }
+    // TODO: check that trainings are not using the Activity
 
     this.completedActivities.delete(id);
     this.changesSubject.next(new CompletedActivityDeleted(id));
@@ -151,7 +153,7 @@ export class CompletedActivityManager {
     }
   }
 
-  private generateCompletedActivityId(): Hash {
+  private generateCompletedActivityId(): CompletedActivityId {
     let id: Hash = generateId({ prefix: COMPLETED_ACTIVITY_PREFIX });
     // Make sure that no IDs are duplicated - rare, but very painful
     while (this.completedActivities.has(id)) {

@@ -87,7 +87,7 @@ export class ActivityManager {
     return [...this.activities.values()].sort(sortActivitiesAlphabetically);
   }
 
-  private generateActivityId() {
+  private generateActivityId(): ActivityId {
     let id: Hash = generateId({ prefix: ACTIVITY_PREFIX });
 
     // Make sure that no IDs are duplicated - rare, but very painful

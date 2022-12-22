@@ -1,5 +1,6 @@
 enum Paths {
   root = "/",
+  trainings = "/trainings",
   notFound = "/*",
 }
 
