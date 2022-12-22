@@ -1,10 +1,4 @@
-import {
-  ActivityAdded,
-  ActivityChange,
-  ActivityDeleted,
-  ActivityManager,
-  ActivityUpdated,
-} from "./activities";
+import { ActivityManager } from "./activities";
 import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
 import { generateId } from "./hash";
@@ -61,10 +55,6 @@ export class CompletedActivityManager {
     this.activityManager = activityManager;
 
     this.completedActivities = new Map<CompletedActivityId, CompletedActivity>();
-
-    this.activityManager.changes$.subscribe((change) => {
-      this.handleActivityChange(change);
-    });
   }
 
   public initialize({ completedActivities }: InitializeArgs): void {
@@ -169,20 +159,6 @@ export class CompletedActivityManager {
     }
 
     return id;
-  }
-
-  private handleActivityChange(change: ActivityChange): void {
-    // console.debug(`CompletedActivityManager.handleActivityChange:`, change);
-    switch (true) {
-      case change instanceof ActivityAdded:
-        return;
-      case change instanceof ActivityUpdated:
-        return;
-      case change instanceof ActivityDeleted:
-        return;
-      default:
-        throw unreachable(`unsupported change type: ${change}`);
-    }
   }
 }
 
