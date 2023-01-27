@@ -2,6 +2,7 @@ import { unreachable } from "./devex";
 import { generateId } from "./hash";
 import { Activity, ActivityId, ActivityName, Hash } from "./model";
 import { SortAction } from "./sort";
+import { Err, Ok, Result } from "./success";
 import { Observable, Subject } from "rxjs";
 
 export const ACTIVITY_PREFIX = "act";
@@ -53,18 +54,18 @@ export class ActivityManager {
     this.changesSubject.next(new ActivityAdded(id));
   }
 
-  public update({ activity }: UpdateActivityArgs): void {
+  public update({ activity }: UpdateActivityArgs): Result {
     const { id } = activity;
     if (this.activities.has(id) === false) {
-      console.debug(
+      return Err(
         `ActivityManager.update::No activity found with ID ${id}, nothing will be updated`
       );
-      return;
     }
 
     this.activities.set(id, activity);
 
     this.changesSubject.next(new ActivityUpdated(id));
+    return Ok(undefined);
   }
 
   public delete({ id }: DeleteteActivityArgs): void {
@@ -127,3 +128,14 @@ export class ActivityDeleted {
 }
 
 export type ActivityChange = ActivityAdded | ActivityUpdated | ActivityDeleted;
+
+export function setActivityName(activity: Activity, name: ActivityName): Activity {
+  return { ...activity, name };
+}
+
+export function setActivityOtherNames(
+  activity: Activity,
+  otherNames: ActivityName[]
+): Activity {
+  return { ...activity, otherNames };
+}

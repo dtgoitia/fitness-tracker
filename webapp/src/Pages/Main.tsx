@@ -1,12 +1,13 @@
 import AddActivity from "../AddActivity";
 import AddCompletedActivity from "../AddCompletedActivity";
 import "../App.css";
-import CenteredPage from "../CenteredPage";
 import { DownloadJson } from "../DownloadJson";
 import ReloadPage from "../ReloadPage";
 import SearchBox from "../SearchBox";
 import HistoryView from "../Views/History";
 import InventoryView from "../Views/Inventory";
+import CenteredPage from "../components/CenteredPage";
+import NavBar from "../components/NavBar";
 import { ActivityManager } from "../domain/activities";
 import { CompletedActivityManager } from "../domain/completedActivities";
 import { now } from "../domain/datetimeUtils";
@@ -113,6 +114,7 @@ function Main({ activityManager, completedActivityManager }: Props) {
   return (
     <BlueprintThemeProvider>
       <CenteredPage>
+        <NavBar />
         <SearchBox
           query={filterQuery}
           onChange={setFilterQuery}

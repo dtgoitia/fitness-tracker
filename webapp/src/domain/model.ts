@@ -11,6 +11,7 @@ export interface Activity {
   id: ActivityId;
   name: ActivityName;
   otherNames: ActivityName[];
+  // lastModified: Date;  // usefull to later reconcile data offline
 }
 
 export enum Intensity {

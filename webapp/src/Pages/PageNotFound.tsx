@@ -1,4 +1,4 @@
-import CenteredPage from "../CenteredPage";
+import CenteredPage from "../components/CenteredPage";
 import styled from "styled-components";
 
 const CenteredItem = styled.div`
