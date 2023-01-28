@@ -37,7 +37,12 @@ function App() {
       />
       <Route
         path={Paths.trainingEditor}
-        element={<TrainingEditor trainingManager={trainingManager} />}
+        element={
+          <TrainingEditor
+            trainingManager={trainingManager}
+            activityManager={activityManager}
+          />
+        }
       />
       <Route path={Paths.notFound} element={<PageNotFound />} />
     </Routes>

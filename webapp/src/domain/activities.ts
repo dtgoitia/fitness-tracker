@@ -1,7 +1,7 @@
 import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
 import { generateId } from "./hash";
-import { Activity, ActivityId, ActivityName, Hash } from "./model";
+import { Activity, ActivityId, ActivityName, Duration, Hash, Intensity } from "./model";
 import { SortAction } from "./sort";
 import { Err, Ok, Result } from "./success";
 import { Observable, Subject } from "rxjs";
@@ -140,4 +140,30 @@ export function setActivityOtherNames(
   otherNames: ActivityName[]
 ): Activity {
   return { ...activity, otherNames, lastModified: now() };
+}
+
+export function getIntensityLevelShorthand(intensity: Intensity): string {
+  switch (intensity) {
+    case Intensity.low:
+      return "L";
+    case Intensity.medium:
+      return "M";
+    case Intensity.high:
+      return "H";
+    default:
+      throw unreachable(`unhandled Intensity variant: ${intensity}`);
+  }
+}
+
+export function getDurationLevelShorthand(duration: Duration): string {
+  switch (duration) {
+    case Duration.short:
+      return "S";
+    case Duration.medium:
+      return "M";
+    case Duration.long:
+      return "L";
+    default:
+      throw unreachable(`unhandled Duration variant: ${duration}`);
+  }
 }

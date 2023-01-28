@@ -39,7 +39,7 @@ export interface CompletedActivity {
 export type TrainingId = string;
 export type TrainingName = string;
 
-interface TrainingActivity {
+export interface TrainingActivity {
   activityId: ActivityId;
   intensity: Intensity;
   duration: Duration;

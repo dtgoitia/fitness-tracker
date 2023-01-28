@@ -1,30 +1,52 @@
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { Training, TrainingName } from "../../domain/model";
+import { ActivityManager } from "../../domain/activities";
+import { unreachable } from "../../domain/devex";
 import {
+  Activity,
+  ActivityId,
+  Training,
+  TrainingActivity,
+  TrainingName,
+} from "../../domain/model";
+import {
+  addActivityToTraining,
+  deleteTrainingActivity,
   DRAFT_TRAINING,
   setTrainingName,
   TrainingAdded,
   TrainingManager,
+  trainingsAreDifferent,
+  updateTrainingActivity,
 } from "../../domain/trainings";
 import { notify } from "../../notify";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
-import { Button, Label } from "@blueprintjs/core";
+import TrainingActivityAdder from "./TrainingActivityAdder";
+import TrainingActivityEditor from "./TrainingActivityEditor";
+import { Button, Card, Label } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { filter } from "rxjs";
+import styled from "styled-components";
 
 interface Props {
   trainingManager: TrainingManager;
+  activityManager: ActivityManager;
 }
 
-function TrainingEditor({ trainingManager }: Props) {
+function TrainingEditor({ trainingManager, activityManager }: Props) {
   const { trainingId } = useParams();
 
   const navigate = useNavigate();
 
+  const [originalTraining, setOriginalTraining] = useState<Training>(DRAFT_TRAINING);
   const [training, setTraining] = useState<Training>(DRAFT_TRAINING);
+
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  // dirty = form has unsaved changes
+  const [formIsDirty, setFormIsDirty] = useState<boolean>(false);
 
   const inCreationMode = trainingId === DRAFT_TRAINING.id;
 
@@ -39,12 +61,52 @@ function TrainingEditor({ trainingManager }: Props) {
       return;
     }
 
+    setOriginalTraining(training);
     setTraining(training);
   }, [trainingManager, inCreationMode, navigate, trainingId]);
 
+  useEffect(() => {
+    setActivities(activityManager.getAll() || []);
+  }, [activityManager]);
+
   function handleNameChange(event: any): void {
     const name: TrainingName = event.target.value;
-    setTraining(setTrainingName(training, name));
+    const updatedTraining = setTrainingName(training, name);
+    setTraining(updatedTraining);
+    recomputeDirtyStatus(updatedTraining);
+  }
+
+  function getActivityById(id: ActivityId): Activity {
+    const activity = activityManager.get(id);
+    if (activity === undefined) {
+      throw unreachable(
+        `TrainingEditor.getActivityById::Expected to find Activity ${id} but` +
+          ` ActivityManager returned undefined`
+      );
+    }
+
+    return activity;
+  }
+
+  function handleTrainingActivityAdded(trainingActivity: TrainingActivity): void {
+    const updatedTraining = addActivityToTraining(training, trainingActivity);
+    setTraining(updatedTraining);
+    recomputeDirtyStatus(updatedTraining);
+  }
+
+  function handleTrainingActivityUpdated(
+    trainingActivity: TrainingActivity,
+    index: number
+  ): void {
+    const updatedTraining = updateTrainingActivity(training, trainingActivity, index);
+    setTraining(updatedTraining);
+    recomputeDirtyStatus(updatedTraining);
+  }
+
+  function handleTrainingActivityDeleted(index: number): void {
+    const updatedTraining = deleteTrainingActivity(training, index);
+    setTraining(updatedTraining);
+    recomputeDirtyStatus(updatedTraining);
   }
 
   function handleSave(): void {
@@ -61,12 +123,15 @@ function TrainingEditor({ trainingManager }: Props) {
       trainingManager.add({ name: training.name, activities: training.activities });
     } else {
       trainingManager.update({ training }).match({
-        ok: () => {
+        ok: (x) => {
+          const updated = x as Training;
           // Show pop up
           notify({
-            message: `Training "${training.name}" successfully saved`,
+            message: `Training "${updated.name}" successfully saved`,
             intent: "success",
           });
+          setOriginalTraining(updated);
+          setAllChangesAreSaved();
         },
         err: (reason) => {
           notify({
@@ -79,15 +144,28 @@ function TrainingEditor({ trainingManager }: Props) {
     }
   }
 
+  function recomputeDirtyStatus(updatedTraining: Training): void {
+    trainingsAreDifferent(originalTraining, updatedTraining)
+      ? setFormIsDirty(true)
+      : setAllChangesAreSaved();
+  }
+
+  function setAllChangesAreSaved(): void {
+    setFormIsDirty(false);
+  }
+
+  function handleDiscardChanges(): void {
+    setTraining(originalTraining);
+    setAllChangesAreSaved();
+  }
+
   return (
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
-        <h1>Training editor</h1>
-
-        <p>
-          training ID:&nbsp;&nbsp;&nbsp;<code>{training.id}</code>
-        </p>
+        <h2>
+          Training ID:&nbsp;&nbsp;&nbsp;<code>{training.id}</code>
+        </h2>
 
         <Label>
           name:
@@ -99,7 +177,47 @@ function TrainingEditor({ trainingManager }: Props) {
             onChange={handleNameChange}
           />
         </Label>
-        <Button intent="success" text="Save" onClick={handleSave} />
+
+        <ActivitiesSection>
+          <Card>
+            {training.activities.map((activity, index) => (
+              <TrainingActivityEditor
+                key={`training-activity-${activity.activityId}-${index}`}
+                trainingActivity={activity}
+                activities={activities}
+                getActivityById={getActivityById}
+                onChange={(updatedTrainingActivity) =>
+                  handleTrainingActivityUpdated(updatedTrainingActivity, index)
+                }
+                onDelete={() => handleTrainingActivityDeleted(index)}
+              />
+            ))}
+
+            <TrainingActivityAdder
+              activities={activities}
+              getActivityById={getActivityById}
+              onSave={handleTrainingActivityAdded}
+            />
+          </Card>
+        </ActivitiesSection>
+
+        <Button
+          intent="success"
+          text="Save"
+          onClick={handleSave}
+          disabled={!formIsDirty}
+          large
+        />
+
+        {formIsDirty && (
+          <Button
+            intent="none"
+            text="Discard changes"
+            onClick={handleDiscardChanges}
+            large
+          />
+        )}
+
         <pre>{JSON.stringify(training, null, 2)}</pre>
       </CenteredPage>
     </BlueprintThemeProvider>
@@ -107,3 +225,7 @@ function TrainingEditor({ trainingManager }: Props) {
 }
 
 export default TrainingEditor;
+
+const ActivitiesSection = styled.div`
+  margin-bottom: 1rem;
+`;

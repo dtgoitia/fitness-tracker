@@ -1,11 +1,14 @@
 import {
+  getDurationLevelShorthand,
+  getIntensityLevelShorthand,
+} from "../../domain/activities";
+import {
   setCompletedActivityDate,
   setCompletedActivityDuration,
   setCompletedActivityIntensity,
   setCompletedActivityNotes,
 } from "../../domain/completedActivities";
 import { isoDateFormatter } from "../../domain/datetimeUtils";
-import { unreachable } from "../../domain/devex";
 import { Activity, CompletedActivity, Duration, Intensity } from "../../domain/model";
 import { formatTime } from "./datetime";
 import { Button, Dialog, EditableText } from "@blueprintjs/core";
@@ -226,29 +229,3 @@ function EditableRow({
 }
 
 export default EditableRow;
-
-function getIntensityLevelShorthand(intensity: Intensity): string {
-  switch (intensity) {
-    case Intensity.low:
-      return "L";
-    case Intensity.medium:
-      return "M";
-    case Intensity.high:
-      return "H";
-    default:
-      throw unreachable(`unhandled Intensity variant: ${intensity}`);
-  }
-}
-
-function getDurationLevelShorthand(duration: Duration): string {
-  switch (duration) {
-    case Duration.short:
-      return "S";
-    case Duration.medium:
-      return "M";
-    case Duration.long:
-      return "L";
-    default:
-      throw unreachable(`unhandled Duration variant: ${duration}`);
-  }
-}

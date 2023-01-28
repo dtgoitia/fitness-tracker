@@ -8,7 +8,16 @@ import {
 import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
 import { generateId } from "./hash";
-import { Hash, Training, TrainingId, TrainingName } from "./model";
+import {
+  ActivityId,
+  Duration,
+  Hash,
+  Intensity,
+  Training,
+  TrainingActivity,
+  TrainingId,
+  TrainingName,
+} from "./model";
 import { SortAction } from "./sort";
 import { Err, Ok, Result } from "./success";
 import { Observable, Subject } from "rxjs";
@@ -19,6 +28,14 @@ export const DRAFT_TRAINING: Training = {
   name: "",
   activities: [],
   lastModified: now(),
+};
+
+export const TRAINING_ACTIVITY_PREFIX = "tra_act";
+export const DRAFT_TRAINING_ACTIVITY: TrainingActivity = {
+  activityId: `${TRAINING_ACTIVITY_PREFIX}_DRAFT`,
+  duration: Duration.medium,
+  intensity: Intensity.medium,
+  notes: "",
 };
 
 interface ConstructorArgs {
@@ -105,7 +122,7 @@ export class TrainingManager {
     this.trainings.set(id, training);
 
     this.changesSubject.next(new TrainingUpdated(id));
-    return Ok(undefined);
+    return Ok(training);
   }
 
   public delete({ id }: DeleteteTrainingArgs): void {
@@ -186,4 +203,84 @@ export type TrainingChange = TrainingAdded | TrainingUpdated | TrainingDeleted;
 
 export function setTrainingName(training: Training, name: TrainingName): Training {
   return { ...training, name, lastModified: now() };
+}
+
+export function setTrainingActivityActivity(
+  trainingActivity: TrainingActivity,
+  activityId: ActivityId
+): TrainingActivity {
+  return { ...trainingActivity, activityId };
+}
+
+export function setTrainingActivityIntensity(
+  trainingActivity: TrainingActivity,
+  intensity: Intensity
+): TrainingActivity {
+  return { ...trainingActivity, intensity };
+}
+
+export function setTrainingActivityDuration(
+  trainingActivity: TrainingActivity,
+  duration: Duration
+): TrainingActivity {
+  return { ...trainingActivity, duration };
+}
+
+export function addActivityToTraining(
+  training: Training,
+  trainingActivity: TrainingActivity
+): Training {
+  return {
+    ...training,
+    activities: [...training.activities, trainingActivity],
+    lastModified: now(),
+  };
+}
+
+export function updateTrainingActivity(
+  training: Training,
+  trainingActivity: TrainingActivity,
+  trainingActivityIndex: number
+): Training {
+  const updatedActivities: TrainingActivity[] = training.activities.map(
+    (originalTrainingActivity, i) => {
+      if (i === trainingActivityIndex) return trainingActivity;
+      return originalTrainingActivity;
+    }
+  );
+
+  return { ...training, activities: updatedActivities, lastModified: now() };
+}
+export function deleteTrainingActivity(training: Training, index: number): Training {
+  const updatedActivities = training.activities.filter((_, i) => i !== index);
+  return { ...training, activities: updatedActivities, lastModified: now() };
+}
+
+export function trainingsAreDifferent(a: Training, b: Training): boolean {
+  return trainingsAreEqual(a, b) === false;
+}
+
+export function trainingsAreEqual(a: Training, b: Training): boolean {
+  if (a.id !== b.id) return false;
+  if (a.name !== b.name) return false;
+  if (a.activities.length !== b.activities.length) return false;
+
+  for (let index = 0; index < a.activities.length; index++) {
+    const trainingActivityA = a.activities[index];
+    const trainingActivityB = b.activities[index];
+    if (trainingActivitiesAreEqual(trainingActivityA, trainingActivityB)) {
+      continue;
+    }
+    return false;
+  }
+
+  return true;
+}
+
+function trainingActivitiesAreEqual(a: TrainingActivity, b: TrainingActivity): boolean {
+  if (a.activityId !== b.activityId) return false;
+  if (a.intensity !== b.intensity) return false;
+  if (a.duration !== b.duration) return false;
+  if (a.notes !== b.notes) return false;
+  return true;
 }
