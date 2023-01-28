@@ -77,6 +77,10 @@ function ActivityEditor({ activityManager }: Props) {
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
+        <p>
+          activity ID:&nbsp;&nbsp;&nbsp;<code>{activity.id}</code>
+        </p>
+
         <Label>
           name:
           <input
@@ -87,7 +91,6 @@ function ActivityEditor({ activityManager }: Props) {
             onChange={handleNameChange}
           />
         </Label>
-
         <Label>
           other names:
           <input
@@ -98,9 +101,7 @@ function ActivityEditor({ activityManager }: Props) {
             onChange={handleOtherNamesChange}
           />
         </Label>
-
         <Button intent="success" text="Save" onClick={handleSave} />
-
         <pre>{JSON.stringify(activity, null, 2)}</pre>
       </CenteredPage>
     </BlueprintThemeProvider>
