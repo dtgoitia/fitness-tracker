@@ -33,4 +33,5 @@ export interface CompletedActivity {
   duration: Duration;
   date: Date;
   notes: Notes;
+  lastModified: Date; // usefull to later reconcile data offline
 }

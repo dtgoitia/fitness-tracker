@@ -90,8 +90,15 @@ function deserializeCompletedActivity(raw: any): CompletedActivity {
 
   const completedActivity: CompletedActivity = {
     ...raw,
-    date: new Date(raw.date),
+    date: deserializeDate(raw.date),
+    lastModified:
+      // Remove once all items have been migrated
+      "lastModified" in raw === false ? now() : deserializeDate(raw.lastModified),
   };
 
   return completedActivity;
+}
+
+function deserializeDate(raw: string): Date {
+  return new Date(raw);
 }

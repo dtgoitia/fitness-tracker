@@ -13,6 +13,7 @@ function buildCompletedActivity({ date }: { date?: Date }): CompletedActivity {
     duration: Duration.short,
     intensity: Intensity.low,
     notes: "test notes",
+    lastModified: now(),
   };
 }
 

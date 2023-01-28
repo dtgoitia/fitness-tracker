@@ -1,3 +1,10 @@
+import {
+  setCompletedActivityDate,
+  setCompletedActivityDuration,
+  setCompletedActivityIntensity,
+  setCompletedActivityNotes,
+} from "../../domain/completedActivities";
+import { isoDateFormatter } from "../../domain/datetimeUtils";
 import { unreachable } from "../../domain/devex";
 import { Activity, CompletedActivity, Duration, Intensity } from "../../domain/model";
 import { formatTime } from "./datetime";
@@ -49,10 +56,14 @@ const ButtonRibbon = styled.div`
 `;
 
 const Notes = styled.div`
-  align-self: center;
-  padding-left: ${selectWidth + editWidth}rem;
   font-size: 0.8rem;
   max-width: 100%;
+`;
+
+const LastModified = styled.div`
+  font-size: 0.8rem;
+  max-width: 100%;
+  opacity: 0.6;
 `;
 
 const Container = styled.div`
@@ -68,9 +79,10 @@ const TopLine = styled.div`
 
 const BottomLine = styled.div`
   display: flex;
-  flex-flow: row nowrap;
-  align-items: stretch;
+  flex-flow: column nowrap;
+  align-items: flex-start;
   margin-bottom: 0.2rem;
+  padding-left: ${selectWidth + editWidth}rem;
 `;
 
 interface RowProps {
@@ -93,24 +105,20 @@ function EditableRow({
 
   const time: string = formatTime(completedActivity.date);
 
-  function handleDateInputChange(newDate: Date): void {
-    const updated: CompletedActivity = { ...completedActivity, date: newDate };
-    onChange(updated);
+  function handleDateInputChange(date: Date): void {
+    onChange(setCompletedActivityDate(completedActivity, date));
   }
 
-  function handleIntensityChange(newIntensity: Intensity): void {
-    const updated: CompletedActivity = { ...completedActivity, intensity: newIntensity };
-    onChange(updated);
+  function handleIntensityChange(intensity: Intensity): void {
+    onChange(setCompletedActivityIntensity(completedActivity, intensity));
   }
 
-  function handleDurationChange(newDuration: Duration): void {
-    const updated: CompletedActivity = { ...completedActivity, duration: newDuration };
-    onChange(updated);
+  function handleDurationChange(duration: Duration): void {
+    onChange(setCompletedActivityDuration(completedActivity, duration));
   }
 
-  function handleNotesChange(newNotes: string): void {
-    const updated: CompletedActivity = { ...completedActivity, notes: newNotes };
-    onChange(updated);
+  function handleNotesChange(notes: string): void {
+    onChange(setCompletedActivityNotes(completedActivity, notes));
   }
 
   const intensityButtons = Object.keys(Intensity).map((key) => {
@@ -211,6 +219,7 @@ function EditableRow({
             onChange={handleNotesChange}
           />
         </Notes>
+        <LastModified>{isoDateFormatter(completedActivity.lastModified)}</LastModified>
       </BottomLine>
     </Container>
   );

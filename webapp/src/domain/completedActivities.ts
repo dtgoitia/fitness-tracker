@@ -96,6 +96,7 @@ export class CompletedActivityManager {
       duration,
       date,
       notes,
+      lastModified: now(),
     };
     this.completedActivities.set(id, completedActivity);
     this.changesSubject.next(new CompletedActivityAdded(id));
@@ -251,3 +252,31 @@ export type CompletedActivityChange =
   | CompletedActivityAdded
   | CompletedActivityUpdated
   | CompletedActivityDeleted;
+
+export function setCompletedActivityDate(
+  completedActivity: CompletedActivity,
+  date: Date
+): CompletedActivity {
+  return { ...completedActivity, date, lastModified: now() };
+}
+
+export function setCompletedActivityIntensity(
+  completedActivity: CompletedActivity,
+  intensity: Intensity
+): CompletedActivity {
+  return { ...completedActivity, intensity, lastModified: now() };
+}
+
+export function setCompletedActivityDuration(
+  completedActivity: CompletedActivity,
+  duration: Duration
+): CompletedActivity {
+  return { ...completedActivity, duration, lastModified: now() };
+}
+
+export function setCompletedActivityNotes(
+  completedActivity: CompletedActivity,
+  notes: Notes
+): CompletedActivity {
+  return { ...completedActivity, notes, lastModified: now() };
+}
