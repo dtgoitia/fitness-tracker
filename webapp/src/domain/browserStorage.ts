@@ -1,6 +1,7 @@
 import { Storage } from "../localStorage";
 import { ActivityManager } from "./activities";
 import { CompletedActivityManager } from "./completedActivities";
+import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
 import { Activity, CompletedActivity } from "./model";
 
@@ -72,6 +73,11 @@ export class BrowserStorage {
 function deserializeActivity(raw: object): Activity {
   if (raw === null || raw === undefined) {
     throw unreachable();
+  }
+
+  // Remove once all items have been migrated
+  if ("lastModified" in raw === false) {
+    return { ...raw, lastModified: now() } as Activity;
   }
 
   return raw as Activity;

@@ -1,3 +1,4 @@
+import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
 import { generateId } from "./hash";
 import { Activity, ActivityId, ActivityName, Hash } from "./model";
@@ -49,6 +50,7 @@ export class ActivityManager {
       id,
       name,
       otherNames,
+      lastModified: now(),
     };
     this.activities.set(id, activity);
     this.changesSubject.next(new ActivityAdded(id));
@@ -130,12 +132,12 @@ export class ActivityDeleted {
 export type ActivityChange = ActivityAdded | ActivityUpdated | ActivityDeleted;
 
 export function setActivityName(activity: Activity, name: ActivityName): Activity {
-  return { ...activity, name };
+  return { ...activity, name, lastModified: now() };
 }
 
 export function setActivityOtherNames(
   activity: Activity,
   otherNames: ActivityName[]
 ): Activity {
-  return { ...activity, otherNames };
+  return { ...activity, otherNames, lastModified: now() };
 }

@@ -5,6 +5,7 @@ import {
   setActivityName,
   setActivityOtherNames,
 } from "../../domain/activities";
+import { now } from "../../domain/datetimeUtils";
 import { Activity, ActivityName } from "../../domain/model";
 import { notify } from "../../notify";
 import Paths from "../../routes";
@@ -17,6 +18,7 @@ const DRAFT_ACTIVITY: Activity = {
   id: "act_DRAFT",
   name: "",
   otherNames: [],
+  lastModified: now(),
 };
 
 interface Props {

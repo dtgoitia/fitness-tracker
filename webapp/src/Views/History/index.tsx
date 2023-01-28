@@ -2,6 +2,7 @@ import { ActivityManager } from "../../domain/activities";
 import { groupByDay } from "../../domain/completedActivities";
 import { unreachable } from "../../domain/devex";
 import { Activity, CompletedActivity, CompletedActivityId } from "../../domain/model";
+import { notify } from "../../notify";
 import EditableRow from "./EditableRow";
 import Row from "./Row";
 import { Button, Switch } from "@blueprintjs/core";
@@ -106,7 +107,13 @@ function HistoryView({
               const { id, activityId } = completedActivity;
               const activity = activityManager.get(activityId) as Activity;
               if (activity === undefined) {
-                throw unreachable();
+                notify({
+                  message:
+                    `CompletedActivity ${id} points an Activity ${activityId} that` +
+                    ` does not exist`,
+                  intent: "warning",
+                });
+                return null;
               }
               if (isEditModeOn) {
                 return (

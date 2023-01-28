@@ -1,4 +1,5 @@
 import { ACTIVITY_PREFIX } from "./activities";
+import { now } from "./datetimeUtils";
 import { generateId } from "./hash";
 import { Activity, ActivityName } from "./model";
 import { ItemAutocompleter } from "./search";
@@ -9,6 +10,7 @@ function buildActivity({ name }: { name: ActivityName }): Activity {
     id: generateId({ prefix: ACTIVITY_PREFIX }),
     name,
     otherNames: [],
+    lastModified: now(),
   };
 }
 
