@@ -1,6 +1,5 @@
 import { ActivityManager } from "../../domain/activities";
 import { groupByDay } from "../../domain/completedActivities";
-import { unreachable } from "../../domain/devex";
 import { Activity, CompletedActivity, CompletedActivityId } from "../../domain/model";
 import { notify } from "../../notify";
 import EditableRow from "./EditableRow";

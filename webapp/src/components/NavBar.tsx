@@ -22,8 +22,9 @@ const Container = styled.div`
 function NavBar() {
   return (
     <Container>
-      <NavBarButton text="Log" path={Paths.root} />
+      <NavBarButton text="History" path={Paths.root} />
       <NavBarButton text="Activities" path={Paths.activities} />
+      <NavBarButton text="Trainings" path={Paths.trainings} />
     </Container>
   );
 }

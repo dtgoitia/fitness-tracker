@@ -35,3 +35,20 @@ export interface CompletedActivity {
   notes: Notes;
   lastModified: Date; // usefull to later reconcile data offline
 }
+
+export type TrainingId = string;
+export type TrainingName = string;
+
+interface TrainingActivity {
+  activityId: ActivityId;
+  intensity: Intensity;
+  duration: Duration;
+  notes: Notes;
+}
+
+export interface Training {
+  id: TrainingId;
+  name: TrainingName;
+  activities: TrainingActivity[];
+  lastModified: Date; // usefull to later reconcile data offline
+}

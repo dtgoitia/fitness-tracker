@@ -2,6 +2,7 @@ import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import {
   ActivityManager,
+  ACTIVITY_PREFIX,
   setActivityName,
   setActivityOtherNames,
 } from "../../domain/activities";
@@ -15,7 +16,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const DRAFT_ACTIVITY: Activity = {
-  id: "act_DRAFT",
+  id: `${ACTIVITY_PREFIX}_DRAFT`,
   name: "",
   otherNames: [],
   lastModified: now(),
@@ -59,7 +60,7 @@ function ActivityEditor({ activityManager }: Props) {
       ok: () => {
         // Show pop up
         notify({
-          message: `Item "${activity.name}" successfully saved`,
+          message: `Activity "${activity.name}" successfully saved`,
           intent: "success",
         });
       },

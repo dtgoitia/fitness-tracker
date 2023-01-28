@@ -6,6 +6,8 @@ enum Paths {
   root = "/",
   activities = "/activities",
   activityEditor = "/activities/:activityId",
+  trainings = "/trainings",
+  trainingEditor = "/trainings/:trainingId",
   notFound = "/*",
 }
 

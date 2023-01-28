@@ -3,26 +3,31 @@ import { ActivityManager } from "./activities";
 import { CompletedActivityManager } from "./completedActivities";
 import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
-import { Activity, CompletedActivity } from "./model";
+import { Activity, CompletedActivity, Training } from "./model";
+import { TrainingManager } from "./trainings";
 
 interface BrowserStorageArgs {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
+  trainingManager: TrainingManager;
   storage: Storage;
 }
 
 export class BrowserStorage {
   private activityManager: ActivityManager;
   private completedActivityManager: CompletedActivityManager;
+  private trainingManager: TrainingManager;
   private storage: Storage;
 
   constructor({
     activityManager,
     completedActivityManager,
+    trainingManager,
     storage,
   }: BrowserStorageArgs) {
     this.activityManager = activityManager;
     this.completedActivityManager = completedActivityManager;
+    this.trainingManager = trainingManager;
     this.storage = storage;
 
     this.activityManager.changes$.subscribe((_) => {
@@ -30,6 +35,9 @@ export class BrowserStorage {
     });
     this.completedActivityManager.changes$.subscribe((_) => {
       this.handleCompletedActivityChanges();
+    });
+    this.trainingManager.changes$.subscribe((_) => {
+      this.handleTrainingChanges();
     });
   }
 
@@ -61,12 +69,29 @@ export class BrowserStorage {
     return completedActivities;
   }
 
+  public getTrainings(): Training[] {
+    if (this.storage.trainings.exists() === false) {
+      return [];
+    }
+
+    const rawTrainings = this.storage.trainings.read();
+    if (!rawTrainings) {
+      return [];
+    }
+
+    const trainings = rawTrainings.map(deserializeTraining);
+    return trainings;
+  }
+
   private handleActivityChanges(): void {
     this.storage.activities.set(this.activityManager.getAll());
   }
 
   private handleCompletedActivityChanges(): void {
     this.storage.history.set(this.completedActivityManager.getAll());
+  }
+  private handleTrainingChanges(): void {
+    this.storage.trainings.set(this.trainingManager.getAll());
   }
 }
 
@@ -97,6 +122,19 @@ function deserializeCompletedActivity(raw: any): CompletedActivity {
   };
 
   return completedActivity;
+}
+
+function deserializeTraining(raw: any): Training {
+  if (raw === null || raw === undefined) {
+    throw unreachable();
+  }
+
+  const training: Training = {
+    ...raw,
+    lastModified: deserializeDate(raw.lastModified),
+  };
+
+  return training;
 }
 
 function deserializeDate(raw: string): Date {
