@@ -4,7 +4,7 @@ import { Training } from "../../domain/model";
 import { DRAFT_TRAINING, TrainingManager } from "../../domain/trainings";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
-import { Button } from "@blueprintjs/core";
+import { Button, Switch } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -17,6 +17,7 @@ interface Props {
 function TrainingExplorer({ trainingManager }: Props) {
   // This path has a known special ID that will only be used to create Trainings
   const [trainings, setTrainings] = useState<Training[]>([]);
+  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
 
   useEffect(() => {
     const subscription = trainingManager.changes$.subscribe((_) => {
@@ -28,11 +29,35 @@ function TrainingExplorer({ trainingManager }: Props) {
     };
   }, [trainingManager]);
 
+  function toggleEditMode(): void {
+    setIsEditModeOn(!isEditModeOn);
+  }
+
+  if (trainings.length === 0) {
+    if (isEditModeOn) setIsEditModeOn(false);
+
+    return (
+      <BlueprintThemeProvider>
+        <CenteredPage>
+          <NavBar />
+          <h1>Training explorer</h1>
+          <p>There no trainings :)</p>
+        </CenteredPage>
+      </BlueprintThemeProvider>
+    );
+  }
+
   return (
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
         <h1>Training explorer</h1>
+        <Switch
+          label={"edit mode"}
+          checked={isEditModeOn}
+          onClick={toggleEditMode}
+          readOnly
+        />
 
         {trainings.map((training) => (
           <OpenTrainingEditor training={training} />
