@@ -53,6 +53,10 @@ function TrainingEditor({ trainingManager }: Props) {
         .pipe(filter((change) => change instanceof TrainingAdded))
         .subscribe((added) => {
           navigate(`${Paths.trainings}/${added.id}`);
+          notify({
+            message: `Training "${training.name}" successfully saved`,
+            intent: "success",
+          });
         });
       trainingManager.add({ name: training.name, activities: training.activities });
     } else {
