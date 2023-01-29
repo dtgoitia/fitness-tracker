@@ -1,4 +1,4 @@
-import { Activity, CompletedActivity } from "../../domain/model";
+import { Activity, CompletedActivity } from "../../../domain/model";
 import { formatTime } from "./datetime";
 import styled from "styled-components";
 

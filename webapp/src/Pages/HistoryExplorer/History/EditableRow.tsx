@@ -1,15 +1,15 @@
 import {
   getDurationLevelShorthand,
   getIntensityLevelShorthand,
-} from "../../domain/activities";
+} from "../../../domain/activities";
 import {
   setCompletedActivityDate,
   setCompletedActivityDuration,
   setCompletedActivityIntensity,
   setCompletedActivityNotes,
-} from "../../domain/completedActivities";
-import { isoDateFormatter } from "../../domain/datetimeUtils";
-import { Activity, CompletedActivity, Duration, Intensity } from "../../domain/model";
+} from "../../../domain/completedActivities";
+import { isoDateFormatter } from "../../../domain/datetimeUtils";
+import { Activity, CompletedActivity, Duration, Intensity } from "../../../domain/model";
 import { formatTime } from "./datetime";
 import { Button, Dialog, EditableText } from "@blueprintjs/core";
 import { TimePrecision, DatePicker } from "@blueprintjs/datetime";

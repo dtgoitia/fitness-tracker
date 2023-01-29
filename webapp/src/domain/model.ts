@@ -43,7 +43,6 @@ export interface TrainingActivity {
   activityId: ActivityId;
   intensity: Intensity;
   duration: Duration;
-  notes: Notes;
 }
 
 export interface Training {

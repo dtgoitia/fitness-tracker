@@ -1,4 +1,4 @@
-import { FilterQuery } from "./domain/model";
+import { FilterQuery } from "../../domain/model";
 
 interface Props {
   query: FilterQuery;

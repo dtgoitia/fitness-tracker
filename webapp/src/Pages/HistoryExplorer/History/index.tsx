@@ -1,7 +1,7 @@
-import { ActivityManager } from "../../domain/activities";
-import { groupByDay } from "../../domain/completedActivities";
-import { Activity, CompletedActivity, CompletedActivityId } from "../../domain/model";
-import { notify } from "../../notify";
+import { ActivityManager } from "../../../domain/activities";
+import { groupByDay } from "../../../domain/completedActivities";
+import { Activity, CompletedActivity, CompletedActivityId } from "../../../domain/model";
+import { notify } from "../../../notify";
 import EditableRow from "./EditableRow";
 import Row from "./Row";
 import { Button, Switch } from "@blueprintjs/core";

@@ -1,16 +1,8 @@
-import AddActivity from "../AddActivity";
-import AddCompletedActivity from "../AddCompletedActivity";
-import "../App.css";
-import { DownloadJson } from "../DownloadJson";
-import ReloadPage from "../ReloadPage";
-import SearchBox from "../SearchBox";
-import HistoryView from "../Views/History";
-import InventoryView from "../Views/Inventory";
-import CenteredPage from "../components/CenteredPage";
-import NavBar from "../components/NavBar";
-import { ActivityManager } from "../domain/activities";
-import { CompletedActivityManager } from "../domain/completedActivities";
-import { now } from "../domain/datetimeUtils";
+import CenteredPage from "../../components/CenteredPage";
+import NavBar from "../../components/NavBar";
+import { ActivityManager } from "../../domain/activities";
+import { CompletedActivityManager } from "../../domain/completedActivities";
+import { now } from "../../domain/datetimeUtils";
 import {
   ActivityId,
   ActivityName,
@@ -21,18 +13,32 @@ import {
   Notes,
   FilterQuery,
   CompletedActivityId,
-} from "../domain/model";
-import { filterInventory } from "../domain/search";
-import { findVersionHash } from "../findVersion";
-import BlueprintThemeProvider from "../style/theme";
+} from "../../domain/model";
+import { filterInventory } from "../../domain/search";
+import { TrainingManager } from "../../domain/trainings";
+import { findVersionHash } from "../../findVersion";
+import BlueprintThemeProvider from "../../style/theme";
+import AddActivity from "./AddActivity";
+import AddCompletedActivity from "./AddCompletedActivity";
+import AddCompletedActivityFromTraining from "./AddCompletedActivityFromTraining";
+import { DownloadJson } from "./DownloadJson";
+import HistoryView from "./History";
+import InventoryView from "./Inventory";
+import ReloadPage from "./ReloadPage";
+import SearchBox from "./SearchBox";
 import { useEffect, useState } from "react";
 
 interface Props {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
+  trainingManager: TrainingManager;
 }
 
-function Main({ activityManager, completedActivityManager }: Props) {
+function HistoryPage({
+  activityManager,
+  completedActivityManager,
+  trainingManager,
+}: Props) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
   const [history, setHistory] = useState<CompletedActivity[]>([]);
@@ -115,6 +121,11 @@ function Main({ activityManager, completedActivityManager }: Props) {
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
+        <AddCompletedActivityFromTraining
+          trainingManager={trainingManager}
+          activityManager={activityManager}
+          completedActivityManager={completedActivityManager}
+        />
         <SearchBox
           query={filterQuery}
           onChange={setFilterQuery}
@@ -151,4 +162,4 @@ function Main({ activityManager, completedActivityManager }: Props) {
   );
 }
 
-export default Main;
+export default HistoryPage;

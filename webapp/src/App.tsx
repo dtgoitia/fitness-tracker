@@ -1,7 +1,7 @@
 import "./App.css";
 import ActivityEditor from "./Pages/ActivityEditor";
 import ActivityExplorer from "./Pages/ActivityExplorer";
-import Main from "./Pages/Main";
+import HistoryPage from "./Pages/HistoryExplorer";
 import PageNotFound from "./Pages/PageNotFound";
 import TrainingEditor from "./Pages/TrainingEditor";
 import TrainingExplorer from "./Pages/TrainingExplorer";
@@ -17,9 +17,10 @@ function App() {
       <Route
         path={Paths.root}
         element={
-          <Main
+          <HistoryPage
             activityManager={activityManager}
             completedActivityManager={completedActivityManager}
+            trainingManager={trainingManager}
           />
         }
       />

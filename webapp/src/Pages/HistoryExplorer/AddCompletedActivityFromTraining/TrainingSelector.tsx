@@ -2,26 +2,26 @@
  * TODO: this probably can be reused by other pages, consider moving it to a more
  * general place when that moment arrives
  */
-import { Activity } from "../../domain/model";
+import { Training } from "../../../domain/model";
 import { MenuItem } from "@blueprintjs/core";
 import { ItemPredicate, ItemRenderer, Suggest2 } from "@blueprintjs/select";
 
-const NO_SELECTED_ACTIVITY = null;
+const NO_SELECTED_TRAINING = null;
 
 interface Props {
-  selectedActivity?: Activity;
-  activities: Activity[];
-  onSelect: (activity: Activity) => void;
+  selectedTraining?: Training;
+  trainings: Training[];
+  onSelect: (training: Training) => void;
 }
-function ActivitySelector({ selectedActivity, activities, onSelect }: Props) {
+function TrainingSelector({ selectedTraining, trainings, onSelect }: Props) {
   return (
     <div>
-      <Suggest2<Activity>
-        selectedItem={selectedActivity || NO_SELECTED_ACTIVITY}
-        items={activities}
-        itemPredicate={activityFilterer}
-        itemRenderer={activityRenderer}
-        inputValueRenderer={(activity: Activity) => activity.name}
+      <Suggest2<Training>
+        selectedItem={selectedTraining || NO_SELECTED_TRAINING}
+        items={trainings}
+        itemPredicate={trainingFilterer}
+        itemRenderer={trainingRenderer}
+        inputValueRenderer={(training: Training) => training.name}
         noResults={
           <MenuItem disabled={true} text="No results." roleStructure="listoption" />
         }
@@ -32,10 +32,10 @@ function ActivitySelector({ selectedActivity, activities, onSelect }: Props) {
   );
 }
 
-export default ActivitySelector;
+export default TrainingSelector;
 
-const activityRenderer: ItemRenderer<Activity> = (
-  activity,
+const trainingRenderer: ItemRenderer<Training> = (
+  training,
   { handleClick, handleFocus, modifiers, query }
 ) => {
   if (!modifiers.matchesPredicate) {
@@ -45,25 +45,25 @@ const activityRenderer: ItemRenderer<Activity> = (
     <MenuItem
       active={modifiers.active}
       disabled={modifiers.disabled}
-      key={activity.id}
-      label={activity.id}
+      key={training.id}
+      label={training.id}
       onClick={handleClick}
       onFocus={handleFocus}
       roleStructure="listoption"
-      text={activity.name}
+      text={training.name}
     />
   );
 };
 
-const activityFilterer: ItemPredicate<Activity> = (
+const trainingFilterer: ItemPredicate<Training> = (
   query,
   activity,
   _index,
   exactMatch
 ) => {
-  const { name, otherNames } = activity;
+  const { name } = activity;
   const normalizedTitle = name.toLowerCase();
-  const normalizedContent = [name, ...otherNames].join(" ").toLowerCase();
+  const normalizedContent = normalizedTitle;
   const normalizedQuery = query.toLowerCase();
 
   if (exactMatch) {

@@ -65,7 +65,7 @@ function TrainingActivityAdder({ activities, getActivityById, onSave }: Props) {
           <ActivitySelector
             selectedActivity={selectedActivity}
             activities={activities}
-            onItemSelection={handleTrainingActivitySelection}
+            onSelect={handleTrainingActivitySelection}
           />
 
           <Row>

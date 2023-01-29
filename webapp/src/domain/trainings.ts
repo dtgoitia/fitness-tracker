@@ -35,7 +35,6 @@ export const DRAFT_TRAINING_ACTIVITY: TrainingActivity = {
   activityId: `${TRAINING_ACTIVITY_PREFIX}_DRAFT`,
   duration: Duration.medium,
   intensity: Intensity.medium,
-  notes: "",
 };
 
 interface ConstructorArgs {
@@ -281,6 +280,5 @@ function trainingActivitiesAreEqual(a: TrainingActivity, b: TrainingActivity): b
   if (a.activityId !== b.activityId) return false;
   if (a.intensity !== b.intensity) return false;
   if (a.duration !== b.duration) return false;
-  if (a.notes !== b.notes) return false;
   return true;
 }

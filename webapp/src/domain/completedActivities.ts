@@ -162,6 +162,24 @@ export class CompletedActivityManager {
     }
   }
 
+  public getLastActivityNotes({ activityId }: { activityId: ActivityId }): Notes {
+    let latestDate: Date = new Date(2000, 0, 0);
+    let latestNote: Notes = "";
+
+    for (const completedActivity of this.completedActivities.values()) {
+      if (
+        completedActivity.activityId === activityId &&
+        completedActivity.date > latestDate
+      ) {
+        const { date, notes } = completedActivity;
+        latestDate = date;
+        latestNote = notes;
+      }
+    }
+
+    return latestNote;
+  }
+
   private generateCompletedActivityId(): Hash {
     let id: Hash = generateId({ prefix: COMPLETED_ACTIVITY_PREFIX });
     // Make sure that no IDs are duplicated - rare, but very painful

@@ -49,7 +49,7 @@ function TrainingActivityEditor({
       <ActivitySelector
         selectedActivity={selectedActivity}
         activities={activities}
-        onItemSelection={handleTrainingActivitySelection}
+        onSelect={handleTrainingActivitySelection}
       />
 
       <Row>

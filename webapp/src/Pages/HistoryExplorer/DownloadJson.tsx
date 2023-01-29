@@ -1,6 +1,6 @@
-import { ActivityManager } from "./domain/activities";
-import { CompletedActivityManager } from "./domain/completedActivities";
-import { now } from "./domain/datetimeUtils";
+import { ActivityManager } from "../../domain/activities";
+import { CompletedActivityManager } from "../../domain/completedActivities";
+import { now } from "../../domain/datetimeUtils";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";

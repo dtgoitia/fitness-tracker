@@ -1,6 +1,6 @@
-import { ActivityManager } from "./domain/activities";
-import { ActivityId } from "./domain/model";
-import { Duration, Intensity, Notes } from "./domain/model";
+import { ActivityManager } from "../../domain/activities";
+import { ActivityId } from "../../domain/model";
+import { Duration, Intensity, Notes } from "../../domain/model";
 import { Button } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
