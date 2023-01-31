@@ -148,7 +148,7 @@ function HistoryPage({
           activityManager={activityManager}
           updateCompletedActivity={handleCompletedActivityUpdate}
           deleteCompletedActivity={handleCompletedActivityDeletion}
-          duplicateCompletedActivity={handleCompletedActivityDuplication}
+          duplicateCompletedActivities={handleCompletedActivityDuplication}
         />
         <AddActivity add={handleAddNewActivity} />
         <DownloadJson

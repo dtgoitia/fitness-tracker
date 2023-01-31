@@ -26,7 +26,7 @@ interface HistoryViewProps {
   activityManager: ActivityManager;
   updateCompletedActivity: (updated: CompletedActivity) => void;
   deleteCompletedActivity: (id: CompletedActivityId) => void;
-  duplicateCompletedActivity: (ids: Set<CompletedActivityId>) => void;
+  duplicateCompletedActivities: (ids: Set<CompletedActivityId>) => void;
 }
 
 function HistoryView({
@@ -34,7 +34,7 @@ function HistoryView({
   activityManager,
   updateCompletedActivity,
   deleteCompletedActivity,
-  duplicateCompletedActivity,
+  duplicateCompletedActivities,
 }: HistoryViewProps) {
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
   const [selection, setSelected] = useState<Set<CompletedActivityId>>(new Set([]));
@@ -61,12 +61,12 @@ function HistoryView({
   }
 
   function select(id: CompletedActivityId): Set<CompletedActivityId> {
-    // the point here is that you want to avoid mutating the existing set
+    // recreate the set to avoid mutations
     return new Set([...selection, id]);
   }
 
   function unselect(id: CompletedActivityId): Set<CompletedActivityId> {
-    // the point here is that you want to avoid mutating the existing set
+    // recreate the set to avoid mutations
     return new Set([...selection].filter((selectedId) => selectedId !== id));
   }
 
@@ -76,7 +76,7 @@ function HistoryView({
   }
 
   function handleDuplicate(): void {
-    duplicateCompletedActivity(selection);
+    duplicateCompletedActivities(selection);
     unselectAll();
   }
 
