@@ -250,9 +250,86 @@ export function updateTrainingActivity(
 
   return { ...training, activities: updatedActivities, lastModified: now() };
 }
+
 export function deleteTrainingActivity(training: Training, index: number): Training {
   const updatedActivities = training.activities.filter((_, i) => i !== index);
   return { ...training, activities: updatedActivities, lastModified: now() };
+}
+
+/**
+ * Shift activity in position `indexToMoveUp` towards the start of the training activity
+ * list.
+ * @param indexToMoveUp index of the TrainingActivity to move up
+ */
+export function moveTrainingActivityUp(
+  training: Training,
+  indexToMoveUp: number
+): Training {
+  if (indexToMoveUp === 0) {
+    console.debug(
+      `First training activity cannot be moved higher up, as it is already the first one`
+    );
+    return training;
+  }
+
+  if (indexToMoveUp > training.activities.length - 1) {
+    throw new Error(
+      `Targetted activity index (${indexToMoveUp}) is out of range, valid range:` +
+        ` 0 <= index <= ${training.activities.length - 1}.`
+    );
+  }
+
+  const activityToMoveUp = training.activities[indexToMoveUp];
+
+  // Find the counterpart that will be swapped
+  const indexToMoveDown: number = indexToMoveUp - 1;
+  const activityToMoveDown = training.activities[indexToMoveDown];
+
+  const reorderedActivities = training.activities.map((activity, currentIndex) => {
+    if (currentIndex === indexToMoveDown) return activityToMoveUp;
+    if (currentIndex === indexToMoveUp) return activityToMoveDown;
+    return activity;
+  });
+
+  return { ...training, activities: reorderedActivities, lastModified: now() };
+}
+
+/**
+ * Shift activity in position `indexToMoveDown` towards the end of the training
+ * activity list.
+ * @param indexToMoveDown index of the TrainingActivity to move down
+ */
+export function moveTrainingActivityDown(
+  training: Training,
+  indexToMoveDown: number
+): Training {
+  if (indexToMoveDown === training.activities.length - 1) {
+    console.debug(
+      `Last training activity cannot be moved further down, as it is already the last one`
+    );
+    return training;
+  }
+
+  if (indexToMoveDown > training.activities.length - 1) {
+    throw new Error(
+      `Targetted activity index (${indexToMoveDown}) is out of range, valid range:` +
+        ` 0 <= index <= ${training.activities.length - 1}.`
+    );
+  }
+
+  const activityToMoveDown = training.activities[indexToMoveDown];
+
+  // Find the counterpart that will be swapped
+  const indexToMoveUp: number = indexToMoveDown + 1;
+  const activityToMoveUp = training.activities[indexToMoveUp];
+
+  const reorderedActivities = training.activities.map((activity, currentIndex) => {
+    if (currentIndex === indexToMoveUp) return activityToMoveDown;
+    if (currentIndex === indexToMoveDown) return activityToMoveUp;
+    return activity;
+  });
+
+  return { ...training, activities: reorderedActivities, lastModified: now() };
 }
 
 export function trainingsAreDifferent(a: Training, b: Training): boolean {

@@ -21,6 +21,8 @@ interface Props {
   activities: Activity[];
   getActivityById: (id: ActivityId) => Activity;
   onChange: (trainingActivity: TrainingActivity) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
   onDelete: () => void;
 }
 function TrainingActivityEditor({
@@ -28,6 +30,8 @@ function TrainingActivityEditor({
   activities,
   getActivityById,
   onChange,
+  onMoveUp,
+  onMoveDown,
   onDelete,
 }: Props) {
   const selectedActivity: Activity = getActivityById(trainingActivity.activityId);
@@ -63,6 +67,8 @@ function TrainingActivityEditor({
           onSelect={handleDurationChange}
         />
 
+        <Button icon="arrow-up" intent="none" minimal onClick={() => onMoveUp()} />
+        <Button icon="arrow-down" intent="none" minimal onClick={() => onMoveDown()} />
         <Button icon="trash" intent="none" minimal onClick={() => onDelete()} />
       </Row>
     </Container>

@@ -13,6 +13,8 @@ import {
   addActivityToTraining,
   deleteTrainingActivity,
   DRAFT_TRAINING,
+  moveTrainingActivityDown,
+  moveTrainingActivityUp,
   setTrainingName,
   TrainingAdded,
   TrainingManager,
@@ -109,6 +111,24 @@ function TrainingEditor({ trainingManager, activityManager }: Props) {
     recomputeDirtyStatus(updatedTraining);
   }
 
+  /**
+   * @param index index of the TrainingActivity to move up
+   */
+  function handleTrainingActivityMovedUp(index: number): void {
+    const updatedTraining = moveTrainingActivityUp(training, index);
+    setTraining(updatedTraining);
+    recomputeDirtyStatus(updatedTraining);
+  }
+
+  /**
+   * @param index index of the TrainingActivity to move down
+   */
+  function handleTrainingActivityMovedDown(index: number): void {
+    const updatedTraining = moveTrainingActivityDown(training, index);
+    setTraining(updatedTraining);
+    recomputeDirtyStatus(updatedTraining);
+  }
+
   function handleSave(): void {
     if (inCreationMode) {
       trainingManager.changes$
@@ -189,6 +209,8 @@ function TrainingEditor({ trainingManager, activityManager }: Props) {
                 onChange={(updatedTrainingActivity) =>
                   handleTrainingActivityUpdated(updatedTrainingActivity, index)
                 }
+                onMoveUp={() => handleTrainingActivityMovedUp(index)}
+                onMoveDown={() => handleTrainingActivityMovedDown(index)}
                 onDelete={() => handleTrainingActivityDeleted(index)}
               />
             ))}
