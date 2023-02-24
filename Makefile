@@ -1,4 +1,5 @@
 WEBAPP_NAME:=fitness-tracker-webapp
+API_NAME:=fitness-tracker-api
 
 set-up-development-environment:
 	@echo ""
@@ -53,3 +54,21 @@ deploy-webapp-from-local:
 
 build-webapp:
 	scripts/build_webapp.sh
+
+shell-api:
+	docker-compose run --rm $(API_NAME) /bin/bash
+
+shell-api-as-root:
+	docker-compose run --rm $(API_NAME)-root /bin/bash
+
+compile-api-dependencies:
+	docker-compose run --rm $(API_NAME) ./bin/compile_development_dependencies
+	@echo ""
+	@echo "Remember to rebuild api to install new compiled deps"
+
+# Recreate web app docker image
+rebuild-api:
+	docker-compose down
+	docker image rm $(API_NAME) || (echo "No $(API_NAME) found, all good."; exit 0)
+
+	docker-compose build --no-cache $(API_NAME)

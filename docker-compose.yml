@@ -1,4 +1,4 @@
-version: "3.4"
+version: "3.8"
 
 services:
   fitness-tracker-webapp:
@@ -10,9 +10,9 @@ services:
     command: "npm start"
     ports:
       - "3000:3000"
-    environment:
-      - REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
-      - REACT_APP_API_ADMIN_SECRET=${REACT_APP_API_ADMIN_SECRET}
+    # environment:
+    #   - REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
+    #   - REACT_APP_API_ADMIN_SECRET=${REACT_APP_API_ADMIN_SECRET}
     volumes:
       - ./webapp:/app
 
@@ -29,3 +29,24 @@ services:
     container_name: qr
     volumes:
       - ./qr:/app
+
+  fitness-tracker-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      args:
+        USER_ID: "${UID}"
+        GROUP_ID: "${GID}"
+    image: fitness-tracker-api
+    container_name: fitness-tracker-api
+    user: "${UID}:${GID}"
+    environment:
+      - USER_ID="${UID}"
+      - GROUP_ID="${GID}"
+    volumes:
+      - ./api:/app
+
+  fitness-tracker-api-root:
+    extends:
+      service: fitness-tracker-api
+    user: "0:0"
