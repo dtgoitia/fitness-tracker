@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+requirements_dir="requirements"
+dev_dependencies_filename="dev.txt"
+dev_dependencies_path=$requirements_dir/$dev_dependencies_filename
+
+echo "Compiling development dependencies..."
+pip-compile ./requirements/prod.in ./requirements/dev.in \
+    --cache-dir="$HOME/.cache" \
+    --output-file $dev_dependencies_path \
+    --no-header \
+    --no-emit-index-url \
+    --verbose
+
+echo ""
+echo "Development dependencies compiled, see: $dev_dependencies_path"

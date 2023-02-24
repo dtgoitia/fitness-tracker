@@ -1,0 +1,41 @@
+Table fitness.activities {
+  id varchar [pk]
+  name varchar
+  othernames varchar  // comma separated, but still a single string - perhaps later you can make a second table for faster search if needed
+  last_modified timestamp
+}
+
+Enum fitness.intensity {
+  low
+  medium
+  high
+}
+
+Enum fitness.duration {
+  short
+  medium
+  long
+}
+
+Table fitness.completed_activities {
+  id varchar
+  activity_id varchar [ref: > fitness.activities.id] // inline relationship (many-to-one)
+  intensity Intensity
+  duration Duration
+  date timestamp
+  notes varchar
+  last_modified timestamp
+}
+
+Table fitness.trainings {
+  id varchar [pk]
+  name varchar
+  last_modified timestamp
+}
+
+Table fitness.training_activities {
+  training_id varchar [ref: > fitness.trainings.id]
+  activity_id varchar [ref: > fitness.activities.id]
+  intensity Intensity
+  duration Duration
+}
