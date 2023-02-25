@@ -1,7 +1,7 @@
 Table fitness.activities {
   id varchar [pk]
   name varchar
-  othernames varchar  // comma separated, but still a single string - perhaps later you can make a second table for faster search if needed
+  other_names varchar  // comma separated, but still a single string - perhaps later you can make a second table for faster search if needed
   last_modified timestamp
 }
 
