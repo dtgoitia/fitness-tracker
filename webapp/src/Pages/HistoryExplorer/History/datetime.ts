@@ -10,7 +10,11 @@
  * Return the time (not date) as HH:MM format, in the locale.
  */
 export function formatTime(date: Date): string {
-  const time = date.toLocaleTimeString(); // "00:00:00" (HH:MM:SS)
-  const hhmm = time.slice(0, 5);
+  const hhmmss = date.toLocaleTimeString(undefined, {
+    hourCycle: "h24",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const hhmm = hhmmss.slice(0, 5);
   return hhmm;
 }
