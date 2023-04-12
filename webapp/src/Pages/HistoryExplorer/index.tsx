@@ -112,6 +112,10 @@ function HistoryPage({
     completedActivityManager.duplicate({ ids });
   }
 
+  function handleDeletionUntilDate(date: Date): void {
+    completedActivityManager.deleteUntil({ date });
+  }
+
   const clearSearch = () => {
     setFilterQuery("");
     setUserIsSearching(false);
@@ -149,6 +153,7 @@ function HistoryPage({
           updateCompletedActivity={handleCompletedActivityUpdate}
           deleteCompletedActivity={handleCompletedActivityDeletion}
           duplicateCompletedActivities={handleCompletedActivityDuplication}
+          deleteUntilDate={handleDeletionUntilDate}
         />
         <AddActivity add={handleAddNewActivity} />
         <DownloadJson

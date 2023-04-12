@@ -3,7 +3,9 @@ import { groupByDay } from "../../../domain/completedActivities";
 import { Activity, CompletedActivity, CompletedActivityId } from "../../../domain/model";
 import EditableRow from "./EditableRow";
 import Row from "./Row";
+import { Dialog } from "@blueprintjs/core";
 import { Button, Switch } from "@blueprintjs/core";
+import { DatePicker } from "@blueprintjs/datetime";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { useState } from "react";
 import styled from "styled-components";
@@ -20,12 +22,22 @@ const Container = styled.div`
   padding: 1rem 0;
 `;
 
+const HeaderButtons = styled.div`
+  display: flex;
+  flex-flow: column no-wrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+  column-gap: 2rem;
+`;
+
 interface HistoryViewProps {
   history: CompletedActivity[];
   activityManager: ActivityManager;
   updateCompletedActivity: (updated: CompletedActivity) => void;
   deleteCompletedActivity: (id: CompletedActivityId) => void;
   duplicateCompletedActivities: (ids: Set<CompletedActivityId>) => void;
+  deleteUntilDate: (date: Date) => void;
 }
 
 function HistoryView({
@@ -34,9 +46,12 @@ function HistoryView({
   updateCompletedActivity,
   deleteCompletedActivity,
   duplicateCompletedActivities,
+  deleteUntilDate,
 }: HistoryViewProps) {
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
   const [selection, setSelected] = useState<Set<CompletedActivityId>>(new Set([]));
+  const [showDeletionDatePicker, setShowDeletionDatePicker] = useState<boolean>(false);
+  const [deletionDate, setDeletionDate] = useState<Date | undefined>();
 
   if (history.length === 0) {
     // Problem: if the edit mode is ON and all the transactions are deleted, the switch
@@ -79,8 +94,40 @@ function HistoryView({
     unselectAll();
   }
 
+  function handleClickOnDeleteUntilDateButton(): void {
+    if (deletionDate === undefined) {
+      setShowDeletionDatePicker(true);
+      return;
+    }
+
+    deleteUntilDate(deletionDate);
+    setDeletionDate(undefined);
+  }
+
   return (
     <Container>
+      <Dialog
+        title="Select a date"
+        isOpen={showDeletionDatePicker}
+        autoFocus={true}
+        canOutsideClickClose={true}
+        isCloseButtonShown={true}
+        canEscapeKeyClose={true}
+        transitionDuration={0}
+        onClose={() => setShowDeletionDatePicker(false)}
+      >
+        <div className="bp4-dialog-body">
+          <DatePicker
+            value={deletionDate}
+            defaultValue={new Date()}
+            shortcuts={true}
+            highlightCurrentDay={true}
+            onChange={(date) => setDeletionDate(date)}
+          />
+        </div>
+        <div className="bp4-dialog-footer">Changes are saved automatically</div>
+      </Dialog>
+
       <Switch
         label={"edit mode"}
         checked={isEditModeOn}
@@ -89,12 +136,25 @@ function HistoryView({
       />
 
       {isEditModeOn ? (
-        <Button
-          icon="duplicate"
-          text="duplicate"
-          minimal={true}
-          onClick={handleDuplicate}
-        />
+        <HeaderButtons>
+          <Button
+            icon="duplicate"
+            text="duplicate"
+            minimal={true}
+            onClick={handleDuplicate}
+          />
+          <Button
+            text={
+              deletionDate
+                ? `Delete until ${deletionDate.toISOString().slice(0, 10)}`
+                : "Delete until..."
+            }
+            icon={deletionDate ? "warning-sign" : undefined}
+            intent={deletionDate ? "danger" : undefined}
+            large
+            onClick={handleClickOnDeleteUntilDateButton}
+          />
+        </HeaderButtons>
       ) : null}
 
       {activitiesByDay.map(([day, dayActivities]) => {

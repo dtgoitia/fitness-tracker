@@ -14,8 +14,8 @@ import {
   CompletedActivityId,
   Duration,
   Hash,
-  Intensity,
   ISODateString,
+  Intensity,
   Notes,
 } from "./model";
 import { SortAction } from "./sort";
@@ -43,8 +43,12 @@ interface UpdateCompletedActivityArgs {
   completedActivity: CompletedActivity;
 }
 
-interface DeleteteCompletedActivityArgs {
+interface DeleteCompletedActivityArgs {
   id: CompletedActivityId;
+}
+
+interface DeleteUntilDateArgs {
+  date: Date;
 }
 
 export class CompletedActivityManager {
@@ -121,7 +125,7 @@ export class CompletedActivityManager {
     this.changesSubject.next(new CompletedActivityUpdated(id));
   }
 
-  public delete({ id }: DeleteteCompletedActivityArgs): void {
+  public delete({ id }: DeleteCompletedActivityArgs): void {
     if (this.completedActivities.has(id) === false) {
       // console.debug(
       //   `CompletedActivityManager.delete::No activity found with ID ${id},` +
@@ -132,6 +136,40 @@ export class CompletedActivityManager {
 
     this.completedActivities.delete(id);
     this.changesSubject.next(new CompletedActivityDeleted(id));
+  }
+
+  /**
+   * Delete every completed activity on or before the specified date.
+   * Calculation are done using locale date.
+   */
+  public deleteUntil({ date }: DeleteUntilDateArgs): void {
+    // Find the latest millisecond withing the provided date, to discard anything on or
+    // before that instant
+    const edgeDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      23,
+      59,
+      59,
+      999
+    );
+
+    const toDelete: CompletedActivityId[] = [];
+    for (const activity of this.completedActivities.values()) {
+      if (activity.date <= edgeDate) toDelete.push(activity.id);
+    }
+
+    console.debug(
+      `CompletedActivityManager.deleteUntil::${toDelete.length} completed activities` +
+        ` will be deleted out of ${this.completedActivities.size}`
+    );
+
+    for (const activityId of toDelete) {
+      this.completedActivities.delete(activityId);
+    }
+
+    this.changesSubject.next(new CompletedActivitiesDeleted(new Set(toDelete)));
   }
 
   public get(id: CompletedActivityId): CompletedActivity | undefined {
@@ -266,10 +304,15 @@ export class CompletedActivityDeleted {
   constructor(public readonly id: CompletedActivityId) {}
 }
 
+export class CompletedActivitiesDeleted {
+  constructor(public readonly ids: Set<CompletedActivityId>) {}
+}
+
 export type CompletedActivityChange =
   | CompletedActivityAdded
   | CompletedActivityUpdated
-  | CompletedActivityDeleted;
+  | CompletedActivityDeleted
+  | CompletedActivitiesDeleted;
 
 export function setCompletedActivityDate(
   completedActivity: CompletedActivity,
