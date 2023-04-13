@@ -8,7 +8,7 @@ import {
   setCompletedActivityIntensity,
   setCompletedActivityNotes,
 } from "../../../domain/completedActivities";
-import { isoDateFormatter } from "../../../domain/datetimeUtils";
+import { isoDateTimeFormatter } from "../../../domain/datetimeUtils";
 import { Activity, CompletedActivity, Duration, Intensity } from "../../../domain/model";
 import { formatTime } from "./datetime";
 import { Button, Dialog, EditableText } from "@blueprintjs/core";
@@ -222,7 +222,9 @@ function EditableRow({
             onChange={handleNotesChange}
           />
         </Notes>
-        <LastModified>{isoDateFormatter(completedActivity.lastModified)}</LastModified>
+        <LastModified>
+          {isoDateTimeFormatter(completedActivity.lastModified)}
+        </LastModified>
       </BottomLine>
     </Container>
   );

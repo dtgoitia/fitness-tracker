@@ -5,7 +5,7 @@ export function now(): Date {
 // https://devhints.io/wip/intl-datetime
 const LANGUAGE_SIMILAR_TO_ISO8601 = "sv-SE";
 
-export const isoDateFormatter = new Intl.DateTimeFormat(LANGUAGE_SIMILAR_TO_ISO8601, {
+export const isoDateTimeFormatter = new Intl.DateTimeFormat(LANGUAGE_SIMILAR_TO_ISO8601, {
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
