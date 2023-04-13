@@ -2,7 +2,7 @@ import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { ActivityManager } from "../../domain/activities";
 import { CompletedActivityManager } from "../../domain/completedActivities";
-import { now } from "../../domain/datetimeUtils";
+import { isoDateFormatter, now } from "../../domain/datetimeUtils";
 import {
   ActivityId,
   ActivityName,
@@ -116,6 +116,11 @@ function HistoryPage({
     completedActivityManager.deleteUntil({ date });
   }
 
+  function handlePurge(): void {
+    const earliestPresetvedDate = completedActivityManager.purge();
+    alert(`Deleted everything before ${isoDateFormatter(earliestPresetvedDate)}`);
+  }
+
   const clearSearch = () => {
     setFilterQuery("");
     setUserIsSearching(false);
@@ -154,6 +159,7 @@ function HistoryPage({
           deleteCompletedActivity={handleCompletedActivityDeletion}
           duplicateCompletedActivities={handleCompletedActivityDuplication}
           deleteUntilDate={handleDeletionUntilDate}
+          purge={handlePurge}
         />
         <AddActivity add={handleAddNewActivity} />
         <DownloadJson

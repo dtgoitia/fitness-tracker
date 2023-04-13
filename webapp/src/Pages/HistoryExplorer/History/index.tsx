@@ -38,6 +38,7 @@ interface HistoryViewProps {
   deleteCompletedActivity: (id: CompletedActivityId) => void;
   duplicateCompletedActivities: (ids: Set<CompletedActivityId>) => void;
   deleteUntilDate: (date: Date) => void;
+  purge: () => void;
 }
 
 function HistoryView({
@@ -47,6 +48,7 @@ function HistoryView({
   deleteCompletedActivity,
   duplicateCompletedActivities,
   deleteUntilDate,
+  purge,
 }: HistoryViewProps) {
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
   const [selection, setSelected] = useState<Set<CompletedActivityId>>(new Set([]));
@@ -142,6 +144,13 @@ function HistoryView({
             text="duplicate"
             minimal={true}
             onClick={handleDuplicate}
+          />
+          <Button
+            text="Purge"
+            icon="warning-sign"
+            intent="danger"
+            large
+            onClick={purge}
           />
           <Button
             text={
