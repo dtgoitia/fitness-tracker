@@ -172,6 +172,31 @@ export class CompletedActivityManager {
     this.changesSubject.next(new CompletedActivitiesDeleted(new Set(toDelete)));
   }
 
+  public purge(): Date {
+    type DateAsInt = number;
+    const m = new Map<ActivityId, DateAsInt>();
+
+    for (const completed of this.completedActivities.values()) {
+      const { activityId, date } = completed;
+      const t = date.getTime();
+      m.set(
+        activityId,
+        // find latest date where the activity was completed
+        Math.max(m.get(activityId) || t, t)
+      );
+    }
+
+    // Find the earliest date among all activities
+    const earliest = new Date(Math.min(...m.values()));
+
+    const beforeEarliest = new Date(earliest.getTime());
+    beforeEarliest.setDate(earliest.getDate() - 1);
+
+    this.deleteUntil({ date: beforeEarliest });
+
+    return earliest;
+  }
+
   public get(id: CompletedActivityId): CompletedActivity | undefined {
     return this.completedActivities.get(id);
   }
