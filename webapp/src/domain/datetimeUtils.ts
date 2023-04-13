@@ -13,3 +13,9 @@ export const isoDateTimeFormatter = new Intl.DateTimeFormat(LANGUAGE_SIMILAR_TO_
   minute: "2-digit",
   second: "2-digit",
 }).format;
+
+export const isoDateFormatter = new Intl.DateTimeFormat(LANGUAGE_SIMILAR_TO_ISO8601, {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format;
