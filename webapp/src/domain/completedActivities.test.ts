@@ -2,6 +2,7 @@ import { ACTIVITY_PREFIX, ActivityManager } from "./activities";
 import {
   COMPLETED_ACTIVITY_PREFIX,
   CompletedActivityManager,
+  getLastOccurrences,
   groupByDay,
 } from "./completedActivities";
 import { now } from "./datetimeUtils";
@@ -136,5 +137,41 @@ describe(`CompletedActivityManager`, () => {
     const remaining = new Set(completedActivityManager.getAll());
     const expected = new Set([completedA2, completedA3, completedB2]);
     expect(setsAreEqual(remaining, expected)).toBe(true);
+  });
+});
+
+describe(`${getLastOccurrences.name}`, () => {
+  it("drop all completed activities but the latest occurrence of each completed activity", () => {
+    const activityA = buildActivity({ id: "act_aaaaaa" });
+    const activityB = buildActivity({ id: "act_bbbbbb" });
+
+    const completedA1 = buildCompletedActivity({
+      activityId: activityA.id,
+      date: new Date(2022, 10, 1),
+    });
+    const completedA2 = buildCompletedActivity({
+      activityId: activityA.id,
+      date: new Date(2022, 10, 4),
+    });
+    const completedA3 = buildCompletedActivity({
+      activityId: activityA.id,
+      date: new Date(2022, 10, 5),
+    });
+
+    const completedB1 = buildCompletedActivity({
+      activityId: activityB.id,
+      date: new Date(2022, 10, 2),
+    });
+    const completedB2 = buildCompletedActivity({
+      activityId: activityB.id,
+      date: new Date(2022, 10, 3),
+    });
+
+    // Assumption: history is sorted from newest to oldest
+    const history = [completedA3, completedA2, completedA1, completedB2, completedB1];
+
+    const last = getLastOccurrences(history);
+
+    expect(last).toEqual([completedB2, completedA3]);
   });
 });
