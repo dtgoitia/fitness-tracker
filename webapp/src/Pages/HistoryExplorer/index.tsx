@@ -21,6 +21,7 @@ import BlueprintThemeProvider from "../../style/theme";
 import AddActivity from "./AddActivity";
 import AddCompletedActivity from "./AddCompletedActivity";
 import AddCompletedActivityFromTraining from "./AddCompletedActivityFromTraining";
+import Countdown from "./Countdown";
 import { DownloadJson } from "./DownloadJson";
 import HistoryView from "./History";
 import InventoryView from "./Inventory";
@@ -152,6 +153,7 @@ function HistoryPage({
           selectedActivityId={selected}
           add={handleNewCompleteActity}
         />
+        <Countdown />
         <HistoryView
           history={history}
           activityManager={activityManager}
