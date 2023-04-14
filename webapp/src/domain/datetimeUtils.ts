@@ -4,6 +4,7 @@ const SECONDS_PER_DAY = 60 * 60 * 24;
 const SECONDS_PER_HOUR = 60 * 60;
 const SECONDS_PER_MINUTE = 60;
 
+type UTCSeconds = number; // Seconds ellapsed since 1970-01-01 00:00:00 (+00:00)
 export type Seconds = number; // duration in seconds - generic, nothing to do with epoch
 
 export function now(): Date {
@@ -54,4 +55,13 @@ export function formatTimedelta(delta: Seconds): string {
   chunks.push(`${s}s`);
 
   return chunks.join(" ");
+}
+
+export function epochSecondsToDate(secs: UTCSeconds): Date {
+  return new Date(secs * 1000);
+}
+
+export function dateToEpochSeconds(date: Date): UTCSeconds {
+  const epochMs = date.getTime();
+  return (epochMs - date.getMilliseconds()) / 1000;
 }
