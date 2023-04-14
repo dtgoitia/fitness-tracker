@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fitness-tracker/static/css/main.17a72dcd.css",
-    "main.js": "/fitness-tracker/static/js/main.01ef7d3e.js",
+    "main.js": "/fitness-tracker/static/js/main.f5bb9cce.js",
     "static/js/377.9fdc6ec2.chunk.js": "/fitness-tracker/static/js/377.9fdc6ec2.chunk.js",
     "static/media/blueprint-icons-20.eot?": "/fitness-tracker/static/media/blueprint-icons-20.157fc7a37a71b9495da1.eot",
     "static/media/blueprint-icons-20.ttf?": "/fitness-tracker/static/media/blueprint-icons-20.8a525ab91769f6d60c94.ttf",
@@ -14,11 +14,11 @@
     "static/media/blueprint-icons-16.woff2?": "/fitness-tracker/static/media/blueprint-icons-16.8b1c5e35bad17bae103e.woff2",
     "index.html": "/fitness-tracker/index.html",
     "main.17a72dcd.css.map": "/fitness-tracker/static/css/main.17a72dcd.css.map",
-    "main.01ef7d3e.js.map": "/fitness-tracker/static/js/main.01ef7d3e.js.map",
+    "main.f5bb9cce.js.map": "/fitness-tracker/static/js/main.f5bb9cce.js.map",
     "377.9fdc6ec2.chunk.js.map": "/fitness-tracker/static/js/377.9fdc6ec2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.17a72dcd.css",
-    "static/js/main.01ef7d3e.js"
+    "static/js/main.f5bb9cce.js"
   ]
 }
