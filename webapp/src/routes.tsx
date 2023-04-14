@@ -8,6 +8,7 @@ enum Paths {
   activityEditor = "/activities/:activityId",
   trainings = "/trainings",
   trainingEditor = "/trainings/:trainingId",
+  stats = "/stats",
   notFound = "/*",
 }
 
