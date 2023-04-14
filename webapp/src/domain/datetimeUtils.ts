@@ -65,3 +65,7 @@ export function dateToEpochSeconds(date: Date): UTCSeconds {
   const epochMs = date.getTime();
   return (epochMs - date.getMilliseconds()) / 1000;
 }
+
+export function nSecondsAfter(date: Date, n: Seconds): Date {
+  return epochSecondsToDate(dateToEpochSeconds(date) + n);
+}
