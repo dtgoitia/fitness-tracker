@@ -7,19 +7,27 @@ const Time = styled.span`
 `;
 
 const TimeLeft = styled.span`
-  font-size: 4rem;
+  font-size: 10rem;
+`;
+
+const Paused = styled.div``;
+
+const Running = styled.div`
+  background-color: #425971;
 `;
 
 interface CounterProps {
   time: Seconds;
   left: Seconds;
   onClick: () => void;
+  running: boolean;
 }
 
-export function Counter({ time, onClick: handleClick, left }: CounterProps) {
+export function Counter({ time, onClick: handleClick, left, running }: CounterProps) {
+  const Container = running ? Running : Paused;
   return (
-    <div onClick={handleClick}>
+    <Container onClick={handleClick}>
       <TimeLeft>{left}"</TimeLeft> / <Time>{time}"</Time>
-    </div>
+    </Container>
   );
 }

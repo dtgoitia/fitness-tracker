@@ -81,7 +81,12 @@ function Countdown() {
         <Button text="60s" large onClick={() => handleButtonClick({ time: 60 })} />
       </ButtonContainer>
       {isCounterVisible ? (
-        <Counter time={time} onClick={handleCounterClick} left={timeLeft} />
+        <Counter
+          time={time}
+          onClick={handleCounterClick}
+          left={timeLeft}
+          running={isCounting}
+        />
       ) : null}
     </Container>
   );
