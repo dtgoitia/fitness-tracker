@@ -11,6 +11,11 @@ export function now(): Date {
   return new Date(new Date().setMilliseconds(0));
 }
 
+export function today(): Date {
+  const _now = now();
+  return new Date(_now.getFullYear(), _now.getMonth(), _now.getDate());
+}
+
 // https://devhints.io/wip/intl-datetime
 const LANGUAGE_SIMILAR_TO_ISO8601 = "sv-SE";
 
