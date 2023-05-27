@@ -4,6 +4,7 @@
  */
 enum Paths {
   root = "/",
+  history = "/history",
   activities = "/activities",
   activityEditor = "/activities/:activityId",
   trainings = "/trainings",

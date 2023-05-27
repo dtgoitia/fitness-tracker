@@ -22,7 +22,8 @@ const Container = styled.div`
 function NavBar() {
   return (
     <Container>
-      <NavBarButton text="History" path={Paths.root} />
+      <NavBarButton text="Record" path={Paths.root} />
+      <NavBarButton text="History" path={Paths.history} />
       <NavBarButton text="Activities" path={Paths.activities} />
       <NavBarButton text="Trainings" path={Paths.trainings} />
       <NavBarButton text="Stats" path={Paths.stats} />

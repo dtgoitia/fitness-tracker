@@ -3,6 +3,7 @@ import ActivityEditor from "./Pages/ActivityEditor";
 import ActivityExplorer from "./Pages/ActivityExplorer";
 import HistoryPage from "./Pages/HistoryExplorer";
 import PageNotFound from "./Pages/PageNotFound";
+import { RecordActivityPage } from "./Pages/RecordActivity";
 import StatsPage from "./Pages/Stats";
 import TrainingEditor from "./Pages/TrainingEditor";
 import TrainingExplorer from "./Pages/TrainingExplorer";
@@ -17,6 +18,16 @@ function App() {
     <Routes>
       <Route
         path={Paths.root}
+        element={
+          <RecordActivityPage
+            activityManager={activityManager}
+            completedActivityManager={completedActivityManager}
+            trainingManager={trainingManager}
+          />
+        }
+      />
+      <Route
+        path={Paths.history}
         element={
           <HistoryPage
             activityManager={activityManager}
