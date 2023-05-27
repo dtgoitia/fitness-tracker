@@ -1,7 +1,7 @@
 import { ActivityManager } from "../../domain/activities";
 import { ActivityId } from "../../domain/model";
 import { Duration, Intensity, Notes } from "../../domain/model";
-import { Button } from "@blueprintjs/core";
+import { Button, Collapse, Intent } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -9,6 +9,9 @@ const ButtonsLabel = styled.label`
   padding-right: 1rem;
 `;
 const ButtonRibbon = styled.div`
+  margin: 1rem 0;
+`;
+const Container = styled.div`
   margin: 1rem 0;
 `;
 
@@ -22,6 +25,7 @@ function AddCompletedActivity({
   selectedActivityId,
   add,
 }: AddCompletedActivityProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [intensity, setIntensity] = useState<Intensity | undefined>();
   const [duration, setDuration] = useState<Duration | undefined>();
   const [notes, setNotes] = useState<string>("");
@@ -45,35 +49,40 @@ function AddCompletedActivity({
     setNotes(event.target.value);
   }
 
-  const intensityButtons = Object.keys(Intensity).map((key) => {
-    const buttonIntensity = key as Intensity;
-    const classNameIfSelected = buttonIntensity === intensity ? "bp4-intent-success" : "";
-    return (
-      <button
-        key={key}
-        type="button"
-        className={`bp4-button bp4-large ${classNameIfSelected}`}
-        onClick={() => setIntensity(buttonIntensity)}
-      >
-        {buttonIntensity}
-      </button>
-    );
-  });
+  const intensityButtons =
+    isOpen &&
+    Object.keys(Intensity).map((key) => {
+      const buttonIntensity = key as Intensity;
+      const classNameIfSelected =
+        buttonIntensity === intensity ? "bp4-intent-success" : "";
+      return (
+        <button
+          key={key}
+          type="button"
+          className={`bp4-button bp4-large ${classNameIfSelected}`}
+          onClick={() => setIntensity(buttonIntensity)}
+        >
+          {buttonIntensity}
+        </button>
+      );
+    });
 
-  const durationButtons = Object.keys(Duration).map((key) => {
-    const buttonDuration = key as Duration;
-    const classNameIfSelected = buttonDuration === duration ? "bp4-intent-success" : "";
-    return (
-      <button
-        key={key}
-        type="button"
-        className={`bp4-button bp4-large ${classNameIfSelected}`}
-        onClick={() => setDuration(buttonDuration)}
-      >
-        {buttonDuration}
-      </button>
-    );
-  });
+  const durationButtons =
+    isOpen &&
+    Object.keys(Duration).map((key) => {
+      const buttonDuration = key as Duration;
+      const classNameIfSelected = buttonDuration === duration ? "bp4-intent-success" : "";
+      return (
+        <button
+          key={key}
+          type="button"
+          className={`bp4-button bp4-large ${classNameIfSelected}`}
+          onClick={() => setDuration(buttonDuration)}
+        >
+          {buttonDuration}
+        </button>
+      );
+    });
 
   const canSubmit =
     selectedActivityId !== undefined && intensity !== undefined && duration !== undefined;
@@ -84,27 +93,42 @@ function AddCompletedActivity({
   }
 
   return (
-    <form onSubmit={canSubmit ? handleSubmit : () => {}}>
-      <p>Add a new completed activity:</p>
-      <div>{selectedActivity?.name}</div>
-      <ButtonRibbon>
-        <ButtonsLabel>intensity</ButtonsLabel>
-        <div className="bp4-button-group .modifier">{intensityButtons}</div>
-      </ButtonRibbon>
-      <ButtonRibbon>
-        <ButtonsLabel>duration</ButtonsLabel>
-        <div className="bp4-button-group .modifier">{durationButtons}</div>
-      </ButtonRibbon>
-      <input
-        id="form-group-input"
-        type="text"
-        className="bp4-input"
-        value={notes}
-        placeholder="add observations here..."
-        onChange={handleNotesChange}
+    <Container>
+      <Button
+        large
+        intent={Intent.NONE}
+        text={isOpen ? "Close" : "Record activity"}
+        icon={isOpen ? "collapse-all" : "menu-open"}
+        onClick={() => setIsOpen(!isOpen)}
       />
-      <Button disabled={!canSubmit} intent="success" text="Add" type="submit" />
-    </form>
+
+      <Collapse isOpen={isOpen}>
+        <form onSubmit={canSubmit ? handleSubmit : () => {}}>
+          <div>{selectedActivity?.name}</div>
+
+          <ButtonRibbon>
+            <ButtonsLabel>intensity</ButtonsLabel>
+            <div className="bp4-button-group .modifier">{intensityButtons}</div>
+          </ButtonRibbon>
+
+          <ButtonRibbon>
+            <ButtonsLabel>duration</ButtonsLabel>
+            <div className="bp4-button-group .modifier">{durationButtons}</div>
+          </ButtonRibbon>
+
+          <input
+            id="form-group-input"
+            type="text"
+            className="bp4-input"
+            value={notes}
+            placeholder="add observations here..."
+            onChange={handleNotesChange}
+          />
+
+          <Button disabled={!canSubmit} intent="success" text="Add" type="submit" />
+        </form>
+      </Collapse>
+    </Container>
   );
 }
 export default AddCompletedActivity;
