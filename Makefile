@@ -15,8 +15,17 @@ set-up-development-environment:
 
 	@echo ""
 	@echo ""
+	@echo Installing Python dependencies outside of the container, so that the IDE can detect them
+	@# this step is necessary because otherwise docker compose creates a node_modules
+	@# folder with root permissions and outside-container build fails
+	cd api;~/.pyenv/versions/3.11.2/bin/python -m venv .venv/
+	bash api/bin/dev/install_dev_deps
+
+	@echo ""
+	@echo ""
 	@echo Creating development docker images...
-	make rebuild-webapp
+	make rebuild_webapp
+	make rebuild_api
 
 	@echo ""
 	@echo ""
@@ -72,3 +81,6 @@ rebuild-api:
 	docker image rm $(API_NAME) || (echo "No $(API_NAME) found, all good."; exit 0)
 
 	docker-compose build --no-cache $(API_NAME)
+
+run_api:
+	docker compose up $(API_NAME)

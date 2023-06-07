@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from fitness_api import model, schema
+from src import model, schema
 
 
 def create_activity(db: Session, activity: schema.Activity) -> None:

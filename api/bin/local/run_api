@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+current_dir="$(basename $(pwd))"
+
+if [[ "$current_dir" == "api" ]]; then
+    # Move to the root of the monorepo
+    cd ..
+fi
+
+
+# Make sure that the python environment is enabled
+echo -n "Activating the Python environment... "
+source api/.venv/bin/activate
+echo "done"
+
+PYTHONPATH=./api python -m src.api
+# PYTHONPATH=./api uvicorn src.api:app --reload

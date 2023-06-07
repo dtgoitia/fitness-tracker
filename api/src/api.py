@@ -1,8 +1,12 @@
+import logging
+import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from fitness_api.db import SessionLocal, engine
-from fitness_api import domain, model, schema
+from src.db import SessionLocal, engine
+from src import domain, model, schema
+
+logger = logging.getLogger(__name__)
 
 
 # TODO: use alembic instead/here?
@@ -38,3 +42,15 @@ def get_activity(activity_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Activity not found")
 
     return db_activity
+
+if __name__ == "__main__":
+    # config = get_config()
+    logging.basicConfig(level=logging.INFO)
+
+    # logger.info(f"config: {config}")
+
+    # By default, flask serves in `localhost`, which makes the webserver
+    # inaccessible once you containerize it.
+    host = "0.0.0.0"
+
+    uvicorn.run("__main__:app", host=host, port=5000, reload=True)

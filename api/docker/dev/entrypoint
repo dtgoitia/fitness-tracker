@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 
-echo "hi"
+set -o errexit
+set -o pipefail
+set -o nounset
+
+>&2 echo 'Executing entrypoint script -- nothing set here yet'
+
+exec "$@"

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -eu
+
+current_dir="$(basename $(pwd))"
+
+if [[ "$current_dir" != "fitness-tracker" ]]; then
+    echo "ERROR: you must execute this from the root of the repo" >&2
+    exit 1
+fi
+
+# Make sure that the python environment is enabled
+echo -n "Activating the Python environment... "
+source api/.venv/bin/activate
+echo "done"

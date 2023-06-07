@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from fitness_api.model import (
+from src.model import (
     ActivityId,
     ActivityName,
     CompletedActivityId,

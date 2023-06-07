@@ -34,19 +34,9 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-      args:
-        USER_ID: "${UID}"
-        GROUP_ID: "${GID}"
     image: fitness-tracker-api
     container_name: fitness-tracker-api
     user: "${UID}:${GID}"
-    environment:
-      - USER_ID="${UID}"
-      - GROUP_ID="${GID}"
     volumes:
       - ./api:/app
-
-  fitness-tracker-api-root:
-    extends:
-      service: fitness-tracker-api
-    user: "0:0"
+    # TODO: pors

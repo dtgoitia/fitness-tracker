@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -eu
+
+current_dir="$(basename $(pwd))"
+
+if [[ "$current_dir" != "fitness-tracker" ]]; then
+    echo "ERROR: you must execute this from the root of the repo" >&2
+    exit 1
+fi
+
+source api/bin/dev/_activate_venv
+
+find api/requirements -type f -name "dev.txt" -delete
+pip-compile api/requirements/prod.in api/requirements/dev.in \
+    --output-file api/requirements/dev.txt \
+    --no-header \
+    --no-emit-index-url \
+    --verbose
