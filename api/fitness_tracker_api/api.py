@@ -1,10 +1,10 @@
 import logging
-import uvicorn
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
 
-from src.db import SessionLocal, engine
-from src import domain, model, schema
+import uvicorn
+from fastapi import Depends, FastAPI, HTTPException
+from fitness_tracker_api import domain, model, schema
+from fitness_tracker_api.db import SessionLocal, engine
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ def get_db():
     finally:
         db.close()
 
+
 @app.get("/")
 def read_root():
     return "Hey! Have a look at /docs :)"
@@ -42,6 +43,7 @@ def get_activity(activity_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Activity not found")
 
     return db_activity
+
 
 if __name__ == "__main__":
     # config = get_config()

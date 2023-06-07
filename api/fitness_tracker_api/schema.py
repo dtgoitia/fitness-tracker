@@ -1,12 +1,10 @@
-from pydantic import BaseModel
-
-from src.model import (
+from fitness_tracker_api.model import (
     ActivityId,
     ActivityName,
     CompletedActivityId,
     CompletedActivityNotes,
 )
-
+from pydantic import BaseModel
 
 """
 `orm_mode`
@@ -16,6 +14,7 @@ Without orm_mode, if you returned a SQLAlchemy model from your path operation, i
 docs: https://fastapi.tiangolo.com/tutorial/sql-databases/
 """
 
+
 class Activity(BaseModel):
     id: ActivityId
     name: ActivityName
@@ -24,6 +23,7 @@ class Activity(BaseModel):
     class Config:
         # See comment at the top of the file
         orm_mode = True
+
 
 class ActivityCreate(Activity):
     ...

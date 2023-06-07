@@ -1,10 +1,8 @@
 from typing import TypeAlias
 
-from src.db import Base
-
+from fitness_tracker_api.db import Base
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 
 ActivityId: TypeAlias = str  # act_whaizrjaxj
 ActivityName: TypeAlias = str
