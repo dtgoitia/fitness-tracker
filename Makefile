@@ -122,3 +122,6 @@ autogenerate_db_migration:
 delete_local_db:
 	find ./api -maxdepth 1 -type f -name $(DB_PATH) -delete
 	touch ./api/$(DB_PATH)
+
+api_test:
+	bash api/bin/dev/test
