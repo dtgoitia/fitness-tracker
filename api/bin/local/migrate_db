@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+#  Apply any pending migration on the database
+#
+
 set -o errexit
 set -o pipefail
 set -o nounset
@@ -13,4 +17,6 @@ fi
 
 
 source api/bin/dev/_activate_venv
-PYTHONPATH=./api python -m fitness_tracker_api.api
+
+cd api
+alembic upgrade head

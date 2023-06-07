@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
+#
+#  Apply any pending migration on the database
+#
+
 set -o errexit
 set -o pipefail
 set -o nounset
+
+migration_message="${1}"
 
 current_dir="$(basename $(pwd))"
 
@@ -13,4 +19,6 @@ fi
 
 
 source api/bin/dev/_activate_venv
-PYTHONPATH=./api python -m fitness_tracker_api.api
+
+cd api
+alembic revision --autogenerate -m "${migration_message}"

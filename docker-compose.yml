@@ -34,9 +34,9 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
+      target: dev
     image: fitness-tracker-api
     container_name: fitness-tracker-api
-    user: "${UID}:${GID}"
     volumes:
       - ./api:/app
     # TODO: pors

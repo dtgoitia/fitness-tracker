@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -o errexit
-set -o pipefail
-set -o nounset
-
-echo "Running server..."
-uvicorn fitness_api.api:app

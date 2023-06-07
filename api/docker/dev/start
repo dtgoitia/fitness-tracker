@@ -4,5 +4,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# TODO: replace this with a good entrypoint with debugging enabled
+alembic upgrade head
+
 python -m src.api

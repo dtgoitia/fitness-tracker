@@ -40,6 +40,13 @@ uninstall-dev-tools:
 	pre-commit uninstall  # pre-commit is (default)
 	pre-commit uninstall --hook-type pre-push
 
+
+#===============================================================================
+#
+#   webapp
+#
+#===============================================================================
+
 run-webapp:
 	scripts/print_local_ip_via_qr.sh
 	docker-compose up $(WEBAPP_NAME)
@@ -75,12 +82,43 @@ compile-api-dependencies:
 	@echo ""
 	@echo "Remember to rebuild api to install new compiled deps"
 
-# Recreate web app docker image
-rebuild-api:
-	docker-compose down
-	docker image rm $(API_NAME) || (echo "No $(API_NAME) found, all good."; exit 0)
 
-	docker-compose build --no-cache $(API_NAME)
+#===============================================================================
+#
+#   API
+#
+#===============================================================================
 
 run_api:
-	docker compose up $(API_NAME)
+	# Disabled until containerization is sorted
+	# docker compose up $(API_NAME)
+
+	bash api/bin/local/run_api
+
+compile_api_development_dependencies:
+	bash api/bin/dev/compile_dev_deps
+
+compile_api_production_dependencies:
+	bash api/bin/dev/compile_prod_deps
+
+install_api_development_dependencies:
+	bash api/bin/dev/install_dev_deps
+
+rebuild_api:
+	docker compose down
+	docker image rm $(API_NAME) || (echo "No $(API_NAME) found, all good."; exit 0)
+	docker compose build --no-cache $(API_NAME)
+
+shell_into_api_container:
+	docker compose run --rm $(API_NAME) /bin/bash
+
+migrate_db:
+	bash api/bin/local/migrate_db
+
+autogenerate_db_migration:
+	bash api/bin/local/autogenerate_db_migration
+	# docker-compose run --rm $(API_NAME) alembic revision --autogenerate
+
+delete_local_db:
+	find ./api -maxdepth 1 -type f -name $(DB_PATH) -delete
+	touch ./api/$(DB_PATH)
