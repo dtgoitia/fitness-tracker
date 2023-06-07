@@ -1,8 +1,11 @@
+import logging
 import os
 from dataclasses import dataclass, replace
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Self
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -36,3 +39,13 @@ def get_config() -> Config:
     return Config(
         db_path=_optional_path_from_env("DB_PATH"),
     )
+
+
+@lru_cache
+def get_repo_path() -> Path:
+    path = Path(__file__)
+    while True:
+        if (path / "Makefile").exists():
+            return path
+
+        path = path.parent

@@ -3,6 +3,7 @@ from fitness_tracker_api.model import (
     ActivityName,
     CompletedActivityId,
     CompletedActivityNotes,
+    LastModified,
 )
 from pydantic import BaseModel
 
@@ -19,6 +20,7 @@ class Activity(BaseModel):
     id: ActivityId
     name: ActivityName
     other_names: ActivityName
+    last_modified: LastModified
 
     class Config:
         # See comment at the top of the file

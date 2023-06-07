@@ -19,4 +19,5 @@ fi
 source api/bin/dev/_activate_venv
 
 cd api
+echo "Applying migrations at $( realpath "${DB_PATH}" )"
 alembic upgrade head

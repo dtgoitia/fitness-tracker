@@ -1,15 +1,15 @@
 """First migration
 
-Revision ID: d71bc2e7175c
+Revision ID: 48a400bc986f
 Revises:
-Create Date: 2023-06-07 18:48:46.418480
+Create Date: 2023-06-07 20:59:48.395540
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "d71bc2e7175c"
+revision = "48a400bc986f"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -20,6 +20,7 @@ def upgrade() -> None:
     op.create_table(
         "activities",
         sa.Column("id", sa.String(length=14), nullable=False),
+        sa.Column("last_modified", sa.DateTime(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("other_names", sa.String(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -29,7 +30,19 @@ def upgrade() -> None:
     op.create_table(
         "completed_activities",
         sa.Column("id", sa.String(length=14), nullable=False),
+        sa.Column("last_modified", sa.DateTime(), nullable=False),
         sa.Column("activity_id", sa.String(length=14), nullable=False),
+        sa.Column("date", sa.DateTime(), nullable=False),
+        sa.Column(
+            "intensity",
+            sa.Enum("low", "medium", "high", name="intensity"),
+            nullable=False,
+        ),
+        sa.Column(
+            "duration",
+            sa.Enum("short", "medium", "long", name="duration"),
+            nullable=False,
+        ),
         sa.Column("notes", sa.String(), nullable=False),
         sa.ForeignKeyConstraint(
             ["activity_id"],

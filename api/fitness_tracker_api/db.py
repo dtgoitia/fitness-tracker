@@ -1,14 +1,31 @@
+import logging
+
+from fitness_tracker_api.config import Config
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
-# TODO: load from envvars via AppConfig
-SQLALCHEMY_DATABASE_URL = "sqlite:///./fitness-tracker.db"
+logger = logging.getLogger(__name__)
 
-# TODO: build the below stuff lazily, aka: not on module import
-SQLITE_SPECIFIC_CONFIG={"check_same_thread": False}
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=SQLITE_SPECIFIC_CONFIG)
+_SQLITE_SPECIFIC_CONFIG = {"check_same_thread": False}
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db_session(config: Config) -> Session:
+    db_url = config.sqlite_db_uri
+
+    logger.info(f"Connecting to {db_url}")
+    print(f"Connecting to {db_url}")
+
+    engine = create_engine(
+        url=db_url,
+        connect_args=_SQLITE_SPECIFIC_CONFIG,
+    )
+
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    session = SessionLocal()
+
+    return session
+
 
 Base = declarative_base()

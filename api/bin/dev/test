@@ -11,6 +11,12 @@ if [[ "$current_dir" == "api" ]]; then
     cd ..
 fi
 
+db_file="api/${DB_PATH}"
+rm "${db_file}"
+touch "${db_file}"
+
+api/bin/local/migrate_db
 
 source api/bin/dev/_activate_venv
-PYTHONPATH=./api pytest -vv -s api/tests
+cd api
+pytest -vv -s tests

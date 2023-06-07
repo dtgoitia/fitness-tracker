@@ -1,0 +1,5 @@
+- [x] devex(api): add script to apply DB migrations
+- [x] devex(api): add script to autogenerate DB migrations
+- [x] feat(api): extend model.CompletedActivity to support date, intensity, duration and last_modified
+- [x] feat(api): support reading a backup file
+- [x] feat(api): add use case to dump backup file into DB
