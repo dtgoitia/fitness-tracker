@@ -1,15 +1,15 @@
-anyio==3.6.2
+alembic==1.11.1
+    # via -r api/requirements/prod.in
+anyio==3.7.0
     # via
     #   starlette
     #   watchfiles
 asttokens==2.2.1
     # via stack-data
-attrs==22.2.0
-    # via pytest
 backcall==0.2.0
     # via ipython
-black==23.1.0
-    # via -r ./requirements/dev.in
+black==23.3.0
+    # via -r api/requirements/dev.in
 build==0.10.0
     # via pip-tools
 click==8.1.3
@@ -23,10 +23,10 @@ decorator==5.1.1
     #   ipython
 executing==1.2.0
     # via stack-data
-fastapi==0.92.0
-    # via -r ./requirements/prod.in
+fastapi==0.96.0
+    # via -r api/requirements/prod.in
 flake8==6.0.0
-    # via -r ./requirements/dev.in
+    # via -r api/requirements/dev.in
 greenlet==2.0.2
     # via sqlalchemy
 h11==0.14.0
@@ -37,27 +37,31 @@ idna==3.4
     # via anyio
 iniconfig==2.0.0
     # via pytest
-ipdb==0.13.11
-    # via -r ./requirements/dev.in
-ipython==8.10.0
+ipdb==0.13.13
+    # via -r api/requirements/dev.in
+ipython==8.14.0
     # via ipdb
 isort==5.12.0
-    # via -r ./requirements/dev.in
+    # via -r api/requirements/dev.in
 jedi==0.18.2
     # via
     #   ipython
     #   pudb
+mako==1.2.4
+    # via alembic
+markupsafe==2.1.3
+    # via mako
 matplotlib-inline==0.1.6
     # via ipython
 mccabe==0.7.0
     # via flake8
-mypy==1.0.1
-    # via -r ./requirements/dev.in
+mypy==1.3.0
+    # via -r api/requirements/dev.in
 mypy-extensions==1.0.0
     # via
     #   black
     #   mypy
-packaging==23.0
+packaging==23.1
     # via
     #   black
     #   build
@@ -65,40 +69,40 @@ packaging==23.0
     #   pytest
 parso==0.8.3
     # via jedi
-pathspec==0.11.0
+pathspec==0.11.1
     # via black
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-pip-tools==6.12.2
-    # via -r ./requirements/dev.in
-platformdirs==3.0.0
+pip-tools==6.13.0
+    # via -r api/requirements/dev.in
+platformdirs==3.5.1
     # via black
 pluggy==1.0.0
     # via pytest
-prompt-toolkit==3.0.37
+prompt-toolkit==3.0.38
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
 pudb==2022.1.3
-    # via -r ./requirements/dev.in
+    # via -r api/requirements/dev.in
 pure-eval==0.2.2
     # via stack-data
 pycodestyle==2.10.0
     # via flake8
-pydantic==1.10.5
+pydantic==1.10.8
     # via fastapi
 pyflakes==3.0.1
     # via flake8
-pygments==2.14.0
+pygments==2.15.1
     # via
     #   ipython
     #   pudb
 pyproject-hooks==1.0.0
     # via build
-pytest==7.2.1
-    # via -r ./requirements/dev.in
+pytest==7.3.1
+    # via -r api/requirements/dev.in
 python-dotenv==1.0.0
     # via uvicorn
 pyyaml==6.0
@@ -107,18 +111,21 @@ six==1.16.0
     # via asttokens
 sniffio==1.3.0
     # via anyio
-sqlalchemy==2.0.4
-    # via -r ./requirements/prod.in
+sqlalchemy==2.0.15
+    # via
+    #   -r api/requirements/prod.in
+    #   alembic
 stack-data==0.6.2
     # via ipython
-starlette==0.25.0
+starlette==0.27.0
     # via fastapi
 traitlets==5.9.0
     # via
     #   ipython
     #   matplotlib-inline
-typing-extensions==4.5.0
+typing-extensions==4.6.3
     # via
+    #   alembic
     #   mypy
     #   pydantic
     #   sqlalchemy
@@ -128,17 +135,17 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-uvicorn[standard]==0.20.0
-    # via -r ./requirements/prod.in
+uvicorn[standard]==0.22.0
+    # via -r api/requirements/prod.in
 uvloop==0.17.0
     # via uvicorn
-watchfiles==0.18.1
+watchfiles==0.19.0
     # via uvicorn
 wcwidth==0.2.6
     # via prompt-toolkit
-websockets==10.4
+websockets==11.0.3
     # via uvicorn
-wheel==0.38.4
+wheel==0.40.0
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
