@@ -161,6 +161,7 @@ export function RecordActivityPage({
         <DownloadJson
           activityManager={activityManager}
           completedActivityManager={completedActivityManager}
+          trainingManager={trainingManager}
         />
         <ReloadPage />
         <p>{findVersionHash()}</p>

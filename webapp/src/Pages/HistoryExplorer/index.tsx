@@ -167,6 +167,7 @@ function HistoryPage({
         <DownloadJson
           activityManager={activityManager}
           completedActivityManager={completedActivityManager}
+          trainingManager={trainingManager}
         />
         <ReloadPage />
         <p>{findVersionHash()}</p>

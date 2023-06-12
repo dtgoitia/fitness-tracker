@@ -1,6 +1,7 @@
 import { ActivityManager } from "../../domain/activities";
 import { CompletedActivityManager } from "../../domain/completedActivities";
 import { now } from "../../domain/datetimeUtils";
+import { TrainingManager } from "../../domain/trainings";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -16,9 +17,14 @@ const Container = styled.div`
 interface Props {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
+  trainingManager: TrainingManager;
 }
 
-export function DownloadJson({ activityManager, completedActivityManager }: Props) {
+export function DownloadJson({
+  activityManager,
+  completedActivityManager,
+  trainingManager,
+}: Props) {
   const [shareApiIsAvailable, setShareApiIsAvailable] = useState<boolean>(false);
 
   useEffect(() => {
@@ -29,7 +35,12 @@ export function DownloadJson({ activityManager, completedActivityManager }: Prop
 
   function download(): void {
     const fileName = generateFilename({ date });
-    const blob = generateBlob({ activityManager, completedActivityManager, date });
+    const blob = generateBlob({
+      activityManager,
+      completedActivityManager,
+      trainingManager,
+      date,
+    });
     downloadFile(blob, fileName);
   }
 
@@ -43,6 +54,7 @@ export function DownloadJson({ activityManager, completedActivityManager }: Prop
     const file = generateFile({
       activityManager,
       completedActivityManager,
+      trainingManager,
       date,
       fileName,
     });
@@ -65,17 +77,20 @@ export function DownloadJson({ activityManager, completedActivityManager }: Prop
 interface GenerateBlobArgs {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
+  trainingManager: TrainingManager;
   date: Date;
 }
 function generateBlob({
   activityManager,
   completedActivityManager,
+  trainingManager,
   date,
 }: GenerateBlobArgs): Blob {
   const data = {
     date: date.toISOString(),
     activities: activityManager.getAll(),
     completedActivities: completedActivityManager.getAll(),
+    trainings: trainingManager.getAll(),
   };
 
   const formattedJson = JSON.stringify(data, null, 2);
@@ -132,12 +147,14 @@ function downloadFile(blob: Blob, filename: string): void {
 interface GenerateFileArgs {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
+  trainingManager: TrainingManager;
   date: Date;
   fileName: string;
 }
 function generateFile({
   activityManager,
   completedActivityManager,
+  trainingManager,
   date,
   fileName,
 }: GenerateFileArgs): File {
@@ -145,6 +162,7 @@ function generateFile({
     date: date.toISOString(),
     activities: activityManager.getAll(),
     completedActivities: completedActivityManager.getAll(),
+    trainings: trainingManager.getAll(),
   };
 
   const formattedJson = JSON.stringify(data, null, 2);
