@@ -25,6 +25,7 @@ import HistoryView from "../HistoryExplorer/History";
 import InventoryView from "../HistoryExplorer/Inventory";
 import ReloadPage from "../HistoryExplorer/ReloadPage";
 import SearchBox from "../HistoryExplorer/SearchBox";
+import { Shortcuts } from "./Shortcuts";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -112,6 +113,20 @@ export function RecordActivityPage({
     completedActivityManager.deleteUntil({ date });
   }
 
+  function handleAddCompletedActivityFromShortcut(id: ActivityId): void {
+    console.log(
+      `App.handleAddCompletedActivityFromShortcut::Adding a new completed activity: id=${id}`
+    );
+
+    completedActivityManager.add({
+      activityId: id,
+      intensity: Intensity.medium,
+      duration: Duration.medium,
+      notes: "",
+      date: now(),
+    });
+  }
+
   function handlePurge(): void {
     const earliestPresetvedDate = completedActivityManager.purge();
     alert(`Deleted everything before ${isoDateFormatter(earliestPresetvedDate)}`);
@@ -126,6 +141,10 @@ export function RecordActivityPage({
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
+        <Shortcuts
+          activityManager={activityManager}
+          onAddCompletedActivity={handleAddCompletedActivityFromShortcut}
+        />
         <AddCompletedActivityFromTraining
           trainingManager={trainingManager}
           activityManager={activityManager}
