@@ -2,31 +2,17 @@ import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { ActivityManager } from "../../domain/activities";
 import { CompletedActivityManager } from "../../domain/completedActivities";
-import { isoDateFormatter, now } from "../../domain/datetimeUtils";
-import {
-  ActivityId,
-  ActivityName,
-  Activity,
-  CompletedActivity,
-  Duration,
-  Intensity,
-  Notes,
-  FilterQuery,
-  CompletedActivityId,
-} from "../../domain/model";
-import { filterInventory } from "../../domain/search";
+import { isoDateFormatter } from "../../domain/datetimeUtils";
+import { ActivityName, CompletedActivity, CompletedActivityId } from "../../domain/model";
 import { TrainingManager } from "../../domain/trainings";
 import { findVersionHash } from "../../findVersion";
 import BlueprintThemeProvider from "../../style/theme";
 import AddActivity from "./AddActivity";
 import AddCompletedActivity from "./AddCompletedActivity";
 import AddCompletedActivityFromTraining from "./AddCompletedActivityFromTraining";
-import Countdown from "./Countdown";
 import { DownloadJson } from "./DownloadJson";
 import HistoryView from "./History";
-import InventoryView from "./Inventory";
 import ReloadPage from "./ReloadPage";
-import SearchBox from "./SearchBox";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -40,27 +26,14 @@ function HistoryPage({
   completedActivityManager,
   trainingManager,
 }: Props) {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
   const [history, setHistory] = useState<CompletedActivity[]>([]);
-  const [userIsSearching, setUserIsSearching] = useState(false);
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
-
-  const itemsInInventory = activities;
 
   useEffect(() => {
-    activityManager.changes$.subscribe((_) => {
-      const sortedActivities = activityManager.getAll();
-      setActivities(sortedActivities);
-    });
-
     completedActivityManager.changes$.subscribe((_) => {
       const history = completedActivityManager.getAll();
       setHistory(history);
     });
 
-    const sortedActivities = activityManager.getAll();
-    setActivities(sortedActivities);
     const history = completedActivityManager.getAll();
     setHistory(history);
   }, [activityManager, completedActivityManager]);
@@ -68,37 +41,6 @@ function HistoryPage({
   const handleAddNewActivity = (name: ActivityName, otherNames: ActivityName[]) => {
     console.log(`App.handleAddNewActivity::Adding a new activity: ${name}`);
     activityManager.add({ name, otherNames });
-  };
-
-  const handleRemoveActivity = (id: ActivityId) => {
-    console.log(`App.handleRemoveActivity::Removing activity (ID: ${id})`);
-    if (completedActivityManager.isActivityUsedInHistory({ activityId: id })) {
-      alert(`This activity is used in the history, cannot be removed!`);
-      return;
-    }
-
-    activityManager.delete({ id });
-  };
-
-  const handleNewCompleteActity = (
-    id: ActivityId,
-    intensity: Intensity,
-    duration: Duration,
-    notes: Notes
-  ): void => {
-    console.log(`App.handleNewCompleteActity::Adding a new completed activity: id=${id}`);
-    completedActivityManager.add({
-      activityId: id,
-      intensity,
-      duration,
-      notes,
-      date: now(),
-    });
-    setSelected(undefined);
-  };
-
-  const handleSelectActivity = (id: ActivityId) => {
-    setSelected(id);
   };
 
   function handleCompletedActivityUpdate(updated: CompletedActivity): void {
@@ -122,11 +64,6 @@ function HistoryPage({
     alert(`Deleted everything before ${isoDateFormatter(earliestPresetvedDate)}`);
   }
 
-  const clearSearch = () => {
-    setFilterQuery("");
-    setUserIsSearching(false);
-  };
-
   return (
     <BlueprintThemeProvider>
       <CenteredPage>
@@ -136,24 +73,10 @@ function HistoryPage({
           activityManager={activityManager}
           completedActivityManager={completedActivityManager}
         />
-        <SearchBox
-          query={filterQuery}
-          onChange={setFilterQuery}
-          clearSearch={clearSearch}
-          onFocus={() => setUserIsSearching(true)}
-        />
-        <InventoryView
-          activities={filterInventory(itemsInInventory, filterQuery)}
-          removeActivity={handleRemoveActivity}
-          selectActivity={handleSelectActivity}
-          collapse={!userIsSearching}
-        />
         <AddCompletedActivity
           activityManager={activityManager}
-          selectedActivityId={selected}
-          add={handleNewCompleteActity}
+          completedActivityManager={completedActivityManager}
         />
-        <Countdown />
         <HistoryView
           history={history}
           activityManager={activityManager}

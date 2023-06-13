@@ -1,8 +1,13 @@
 import { ActivityManager } from "../../domain/activities";
-import { ActivityId } from "../../domain/model";
-import { Duration, Intensity, Notes } from "../../domain/model";
+import { CompletedActivityManager } from "../../domain/completedActivities";
+import { now } from "../../domain/datetimeUtils";
+import { Activity, ActivityId, FilterQuery } from "../../domain/model";
+import { Duration, Intensity } from "../../domain/model";
+import { filterInventory } from "../../domain/search";
+import InventoryView from "./Inventory";
+import SearchBox from "./SearchBox";
 import { Button, Collapse, Intent } from "@blueprintjs/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const ButtonsLabel = styled.label`
@@ -17,29 +22,53 @@ const Container = styled.div`
 
 interface AddCompletedActivityProps {
   activityManager: ActivityManager;
-  selectedActivityId: ActivityId | undefined;
-  add: (id: ActivityId, intensity: Intensity, duration: Duration, notes: Notes) => void;
+  completedActivityManager: CompletedActivityManager;
 }
 function AddCompletedActivity({
   activityManager,
-  selectedActivityId,
-  add,
+  completedActivityManager,
 }: AddCompletedActivityProps) {
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [intensity, setIntensity] = useState<Intensity | undefined>();
   const [duration, setDuration] = useState<Duration | undefined>();
   const [notes, setNotes] = useState<string>("");
 
+  const [userIsSearching, setUserIsSearching] = useState(false);
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
+
+  useEffect(() => {
+    activityManager.changes$.subscribe((_) => {
+      const sortedActivities = activityManager.getAll();
+      setActivities(sortedActivities);
+    });
+
+    const sortedActivities = activityManager.getAll();
+    setActivities(sortedActivities);
+  }, [activityManager]);
+
   function handleSubmit(event: any) {
     event.preventDefault();
-    if (selectedActivityId === undefined) return;
+    if (selected === undefined) return;
     if (!intensity || !duration) {
       console.debug(
         `Both intensity and duration are required to add a completed activity`
       );
       return;
     }
-    add(selectedActivityId, intensity as Intensity, duration as Duration, notes);
+
+    completedActivityManager.add({
+      activityId: selected,
+      intensity,
+      duration,
+      notes,
+      date: now(),
+    });
+
+    // Reset UI
+    setSelected(undefined);
     setIntensity(undefined);
     setDuration(undefined);
     setNotes("");
@@ -47,6 +76,25 @@ function AddCompletedActivity({
 
   function handleNotesChange(event: any) {
     setNotes(event.target.value);
+  }
+
+  function handleSelectActivity(id: ActivityId): void {
+    setSelected(id);
+  }
+
+  function handleRemoveActivity(id: ActivityId): void {
+    console.log(`App.handleRemoveActivity::Removing activity (ID: ${id})`);
+    if (completedActivityManager.isActivityUsedInHistory({ activityId: id })) {
+      alert(`This activity is used in the history, cannot be removed!`);
+      return;
+    }
+
+    activityManager.delete({ id });
+  }
+
+  function clearSearch(): void {
+    setUserIsSearching(false);
+    setFilterQuery("");
   }
 
   const intensityButtons =
@@ -85,11 +133,11 @@ function AddCompletedActivity({
     });
 
   const canSubmit =
-    selectedActivityId !== undefined && intensity !== undefined && duration !== undefined;
+    selected !== undefined && intensity !== undefined && duration !== undefined;
 
   let selectedActivity = undefined;
-  if (selectedActivityId) {
-    selectedActivity = activityManager.get(selectedActivityId);
+  if (selected) {
+    selectedActivity = activityManager.get(selected);
   }
 
   return (
@@ -103,6 +151,19 @@ function AddCompletedActivity({
       />
 
       <Collapse isOpen={isOpen}>
+        <SearchBox
+          query={filterQuery}
+          onChange={setFilterQuery}
+          clearSearch={clearSearch}
+          onFocus={() => setUserIsSearching(true)}
+        />
+        <InventoryView
+          activities={filterInventory(activities, filterQuery)}
+          removeActivity={handleRemoveActivity}
+          selectActivity={handleSelectActivity}
+          collapse={!userIsSearching}
+        />
+
         <form onSubmit={canSubmit ? handleSubmit : () => {}}>
           <div>{selectedActivity?.name}</div>
 
