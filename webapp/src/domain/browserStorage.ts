@@ -3,13 +3,15 @@ import { ActivityManager } from "./activities";
 import { CompletedActivityManager } from "./completedActivities";
 import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
-import { Activity, CompletedActivity, Training } from "./model";
+import { Activity, CompletedActivity, Shortcut, Training } from "./model";
+import { ShortcutManager } from "./shortcuts";
 import { TrainingManager } from "./trainings";
 
 interface BrowserStorageArgs {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
   trainingManager: TrainingManager;
+  shortcutManager: ShortcutManager;
   storage: Storage;
 }
 
@@ -17,27 +19,33 @@ export class BrowserStorage {
   private activityManager: ActivityManager;
   private completedActivityManager: CompletedActivityManager;
   private trainingManager: TrainingManager;
+  private shortcutManager: ShortcutManager;
   private storage: Storage;
 
   constructor({
     activityManager,
     completedActivityManager,
     trainingManager,
+    shortcutManager,
     storage,
   }: BrowserStorageArgs) {
     this.activityManager = activityManager;
     this.completedActivityManager = completedActivityManager;
     this.trainingManager = trainingManager;
+    this.shortcutManager = shortcutManager;
     this.storage = storage;
 
-    this.activityManager.changes$.subscribe((_) => {
+    this.activityManager.changes$.subscribe(() => {
       this.handleActivityChanges();
     });
-    this.completedActivityManager.changes$.subscribe((_) => {
+    this.completedActivityManager.changes$.subscribe(() => {
       this.handleCompletedActivityChanges();
     });
-    this.trainingManager.changes$.subscribe((_) => {
+    this.trainingManager.changes$.subscribe(() => {
       this.handleTrainingChanges();
+    });
+    this.shortcutManager.change$.subscribe(() => {
+      this.handleShortcutsChange();
     });
   }
 
@@ -83,6 +91,20 @@ export class BrowserStorage {
     return trainings;
   }
 
+  public getShortcuts(): Shortcut[] {
+    if (this.storage.shortcuts.exists() === false) {
+      return [];
+    }
+
+    const rawShortcuts = this.storage.shortcuts.read();
+    if (!rawShortcuts) {
+      return [];
+    }
+
+    const shortcuts = rawShortcuts.map(deserializeShortcut);
+    return shortcuts;
+  }
+
   private handleActivityChanges(): void {
     this.storage.activities.set(this.activityManager.getAll());
   }
@@ -90,8 +112,13 @@ export class BrowserStorage {
   private handleCompletedActivityChanges(): void {
     this.storage.history.set(this.completedActivityManager.getAll());
   }
+
   private handleTrainingChanges(): void {
     this.storage.trainings.set(this.trainingManager.getAll());
+  }
+
+  private handleShortcutsChange(): void {
+    this.storage.shortcuts.set(this.shortcutManager.getAll());
   }
 }
 
@@ -135,6 +162,16 @@ function deserializeTraining(raw: any): Training {
   };
 
   return training;
+}
+
+function deserializeShortcut(raw: any): Shortcut {
+  if (raw === null || raw === undefined) {
+    throw unreachable();
+  }
+
+  const shortcut: Shortcut = raw;
+
+  return shortcut;
 }
 
 function deserializeDate(raw: string): Date {

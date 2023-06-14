@@ -84,12 +84,14 @@ export class Storage {
   activities: StoredItem<object[] | undefined>;
   history: StoredItem<object[] | undefined>;
   trainings: StoredItem<object[] | undefined>;
+  shortcuts: StoredItem<string[] | undefined>;
 
   constructor() {
     const prefix = STORAGE_PREFIX;
     this.activities = new StoredItem(`${prefix}__activities`, ValueType.object);
     this.history = new StoredItem(`${prefix}__history`, ValueType.object);
     this.trainings = new StoredItem(`${prefix}__trainings`, ValueType.object);
+    this.shortcuts = new StoredItem(`${prefix}__shortcuts`, ValueType.object);
   }
 }
 

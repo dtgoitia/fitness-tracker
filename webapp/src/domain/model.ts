@@ -6,6 +6,7 @@ export type ActivityName = string;
 export type CompletedActivityId = string;
 export type Notes = string;
 export type FilterQuery = string;
+export type Shortcut = ActivityId;
 
 export interface Activity {
   id: ActivityId;

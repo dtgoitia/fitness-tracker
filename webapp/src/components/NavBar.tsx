@@ -26,6 +26,7 @@ function NavBar() {
       <NavBarButton text="History" path={Paths.history} />
       <NavBarButton text="Activities" path={Paths.activities} />
       <NavBarButton text="Trainings" path={Paths.trainings} />
+      <NavBarButton text="Shortcuts" path={Paths.shortcuts} />
       <NavBarButton text="Stats" path={Paths.stats} />
     </Container>
   );

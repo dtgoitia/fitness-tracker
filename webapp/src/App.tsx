@@ -4,6 +4,7 @@ import ActivityExplorer from "./Pages/ActivityExplorer";
 import HistoryPage from "./Pages/HistoryExplorer";
 import PageNotFound from "./Pages/PageNotFound";
 import { RecordActivityPage } from "./Pages/RecordActivity";
+import ShortcutsPage from "./Pages/ShortcutsEditor";
 import StatsPage from "./Pages/Stats";
 import TrainingEditor from "./Pages/TrainingEditor";
 import TrainingExplorer from "./Pages/TrainingExplorer";
@@ -12,7 +13,8 @@ import Paths from "./routes";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
-  const { activityManager, completedActivityManager, trainingManager } = initialize();
+  const { activityManager, completedActivityManager, trainingManager, shortcutManager } =
+    initialize();
 
   return (
     <Routes>
@@ -23,6 +25,7 @@ function App() {
             activityManager={activityManager}
             completedActivityManager={completedActivityManager}
             trainingManager={trainingManager}
+            shortcutManager={shortcutManager}
           />
         }
       />
@@ -47,6 +50,15 @@ function App() {
       <Route
         path={Paths.trainings}
         element={<TrainingExplorer trainingManager={trainingManager} />}
+      />
+      <Route
+        path={Paths.shortcuts}
+        element={
+          <ShortcutsPage
+            activityManager={activityManager}
+            shortcutManager={shortcutManager}
+          />
+        }
       />
       <Route
         path={Paths.stats}
