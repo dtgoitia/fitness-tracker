@@ -3,3 +3,4 @@
 - [x] feat(api): extend model.CompletedActivity to support date, intensity, duration and last_modified
 - [x] feat(api): support reading a backup file
 - [x] feat(api): add use case to dump backup file into DB
+- [ ] feat(ui): add shortcuts -- needs to store them in browser
