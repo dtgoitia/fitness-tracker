@@ -2,12 +2,14 @@ import { Storage } from "../localStorage";
 import { ActivityManager } from "./activities";
 import { BrowserStorage } from "./browserStorage";
 import { CompletedActivityManager } from "./completedActivities";
+import { ShortcutManager } from "./shortcuts";
 import { TrainingManager } from "./trainings";
 
 interface App {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
   trainingManager: TrainingManager;
+  shortcutManager: ShortcutManager;
 }
 
 export function initialize(): App {
@@ -16,6 +18,7 @@ export function initialize(): App {
   const activityManager = new ActivityManager();
   const completedActivityManager = new CompletedActivityManager({ activityManager });
   const trainingManager = new TrainingManager({ activityManager });
+  const shortcutsManager = new ShortcutManager({ activityManager });
   const browserStorage = new BrowserStorage({
     activityManager,
     completedActivityManager,
@@ -45,7 +48,14 @@ export function initialize(): App {
   console.log(`initialize.ts::initialize::Initializating ${TrainingManager.name} ...`);
   trainingManager.initialize({ trainings });
 
+  shortcutsManager.init({ shortcuts: [] });
+
   console.log(`initialize.ts::initialize::Initialization completed`);
 
-  return { activityManager, completedActivityManager, trainingManager };
+  return {
+    activityManager,
+    completedActivityManager,
+    trainingManager,
+    shortcutManager: shortcutsManager,
+  };
 }

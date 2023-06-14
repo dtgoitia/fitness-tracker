@@ -51,3 +51,5 @@ export interface Training {
   activities: TrainingActivity[];
   lastModified: Date; // usefull to later reconcile data offline
 }
+
+export type Shortcut = ActivityId;

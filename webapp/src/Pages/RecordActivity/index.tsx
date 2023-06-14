@@ -10,6 +10,7 @@ import {
   Duration,
   Intensity,
 } from "../../domain/model";
+import { ShortcutManager } from "../../domain/shortcuts";
 import { TrainingManager } from "../../domain/trainings";
 import { findVersionHash } from "../../findVersion";
 import BlueprintThemeProvider from "../../style/theme";
@@ -26,25 +27,33 @@ interface Props {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
   trainingManager: TrainingManager;
+  shortcutManager: ShortcutManager;
 }
 
 export function RecordActivityPage({
   activityManager,
   completedActivityManager,
   trainingManager,
+  shortcutManager,
 }: Props) {
   const [history, setHistory] = useState<CompletedActivity[]>([]);
 
   useEffect(() => {
-    completedActivityManager.changes$.subscribe((_) => {
-      const history = completedActivityManager.getAll();
-      const todayOrLater = keepTodayOrAfter(history);
-      setHistory(todayOrLater);
-    });
+    const completedActivitySubscription = completedActivityManager.changes$.subscribe(
+      (_) => {
+        const history = completedActivityManager.getAll();
+        const todayOrLater = keepTodayOrAfter(history);
+        setHistory(todayOrLater);
+      }
+    );
 
     const history = completedActivityManager.getAll();
     const todayOrLater = keepTodayOrAfter(history);
     setHistory(todayOrLater);
+
+    return () => {
+      completedActivitySubscription.unsubscribe();
+    };
   }, [activityManager, completedActivityManager]);
 
   function handleCompletedActivityUpdate(updated: CompletedActivity): void {
@@ -89,6 +98,7 @@ export function RecordActivityPage({
         <Shortcuts
           activityManager={activityManager}
           onAddCompletedActivity={handleAddCompletedActivityFromShortcut}
+          shortcutManager={shortcutManager}
         />
         <AddCompletedActivityFromTraining
           trainingManager={trainingManager}

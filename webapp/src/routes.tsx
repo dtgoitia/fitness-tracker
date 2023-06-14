@@ -10,6 +10,7 @@ enum Paths {
   trainings = "/trainings",
   trainingEditor = "/trainings/:trainingId",
   stats = "/stats",
+  shortcuts = "/shortcuts",
   notFound = "/*",
 }
 
