@@ -6,11 +6,13 @@ import {
   setActivityName,
   setActivityOtherNames,
 } from "../../domain/activities";
+import { CompletedActivityManager } from "../../domain/completedActivities";
 import { now } from "../../domain/datetimeUtils";
 import { Activity, ActivityName } from "../../domain/model";
 import { notify } from "../../notify";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
+import { CompletedActivityCalendar } from "./CompletedActivityCalendar";
 import { Button, Label } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -24,8 +26,9 @@ const DRAFT_ACTIVITY: Activity = {
 
 interface Props {
   activityManager: ActivityManager;
+  completedActivityManager: CompletedActivityManager;
 }
-function ActivityEditor({ activityManager }: Props) {
+function ActivityEditor({ activityManager, completedActivityManager }: Props) {
   const { activityId } = useParams();
   const navigate = useNavigate();
 
@@ -103,6 +106,12 @@ function ActivityEditor({ activityManager }: Props) {
           />
         </Label>
         <Button intent="success" text="Save" onClick={handleSave} />
+        {activityId && (
+          <CompletedActivityCalendar
+            activityId={activityId}
+            completedActivityManager={completedActivityManager}
+          />
+        )}
         <pre>{JSON.stringify(activity, null, 2)}</pre>
       </CenteredPage>
     </BlueprintThemeProvider>
