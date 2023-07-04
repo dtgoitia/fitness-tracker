@@ -11,9 +11,13 @@ export function now(): Date {
   return new Date(new Date().setMilliseconds(0));
 }
 
+/* Return the provided `Date` with hours, minutes, seconds and milliseconds to zero. */
+export function toDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
 export function today(): Date {
-  const _now = now();
-  return new Date(_now.getFullYear(), _now.getMonth(), _now.getDate());
+  return toDay(now());
 }
 
 // https://devhints.io/wip/intl-datetime
@@ -73,4 +77,8 @@ export function dateToEpochSeconds(date: Date): UTCSeconds {
 
 export function nSecondsAfter(date: Date, n: Seconds): Date {
   return epochSecondsToDate(dateToEpochSeconds(date) + n);
+}
+
+export function nextDay(date: Date): Date {
+  return new Date(date.getTime() + 24 * 3600 * 1000);
 }
