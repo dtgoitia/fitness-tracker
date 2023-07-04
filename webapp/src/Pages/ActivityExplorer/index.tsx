@@ -1,9 +1,11 @@
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { ActivityManager } from "../../domain/activities";
-import { Activity } from "../../domain/model";
+import { Activity, FilterQuery } from "../../domain/model";
+import { filterInventory } from "../../domain/search";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
+import SearchBox from "../HistoryExplorer/SearchBox";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -13,6 +15,8 @@ interface Props {
 }
 function ActivityExplorer({ activityManager }: Props) {
   const [activites, setActivities] = useState<Activity[]>([]);
+
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
 
   useEffect(() => {
     const subscription = activityManager.changes$.subscribe((_) => {
@@ -24,12 +28,22 @@ function ActivityExplorer({ activityManager }: Props) {
     };
   }, [activityManager]);
 
+  function clearSearch(): void {
+    setFilterQuery("");
+  }
+
   return (
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
-        <div>ActivitiesPage</div>
-        {activites.map((activity) => (
+        <h1>Activity explorer</h1>
+        <SearchBox
+          query={filterQuery}
+          onChange={setFilterQuery}
+          clearSearch={clearSearch}
+          onFocus={() => {}}
+        />
+        {filterInventory(activites, filterQuery).map((activity) => (
           <OpenActivityEditor activity={activity} />
         ))}
       </CenteredPage>
