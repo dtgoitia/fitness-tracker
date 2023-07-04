@@ -45,7 +45,12 @@ function App() {
       />
       <Route
         path={Paths.activityEditor}
-        element={<ActivityEditor activityManager={activityManager} />}
+        element={
+          <ActivityEditor
+            activityManager={activityManager}
+            completedActivityManager={completedActivityManager}
+          />
+        }
       />
       <Route
         path={Paths.trainings}

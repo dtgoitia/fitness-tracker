@@ -1,3 +1,4 @@
+import { Calendar } from "../../components/Calendar";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import {
@@ -6,6 +7,7 @@ import {
   setActivityName,
   setActivityOtherNames,
 } from "../../domain/activities";
+import { CompletedActivityManager } from "../../domain/completedActivities";
 import { now } from "../../domain/datetimeUtils";
 import { Activity, ActivityName } from "../../domain/model";
 import { notify } from "../../notify";
@@ -24,8 +26,9 @@ const DRAFT_ACTIVITY: Activity = {
 
 interface Props {
   activityManager: ActivityManager;
+  completedActivityManager: CompletedActivityManager;
 }
-function ActivityEditor({ activityManager }: Props) {
+function ActivityEditor({ activityManager, completedActivityManager }: Props) {
   const { activityId } = useParams();
   const navigate = useNavigate();
 
@@ -103,6 +106,13 @@ function ActivityEditor({ activityManager }: Props) {
           />
         </Label>
         <Button intent="success" text="Save" onClick={handleSave} />
+        {activityId && (
+          <Calendar
+            activityId={activityId}
+            activityManager={activityManager}
+            completedActivityManager={completedActivityManager}
+          />
+        )}
         <pre>{JSON.stringify(activity, null, 2)}</pre>
       </CenteredPage>
     </BlueprintThemeProvider>
