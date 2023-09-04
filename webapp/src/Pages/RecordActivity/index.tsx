@@ -2,7 +2,7 @@ import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { ActivityManager } from "../../domain/activities";
 import { CompletedActivityManager } from "../../domain/completedActivities";
-import { isoDateFormatter, now, today } from "../../domain/datetimeUtils";
+import { isoDateFormatter, now, yesterday } from "../../domain/datetimeUtils";
 import {
   ActivityId,
   CompletedActivity,
@@ -132,9 +132,11 @@ export function RecordActivityPage({
 }
 
 function keepTodayOrAfter(all: CompletedActivity[]): CompletedActivity[] {
-  const t = today().getTime();
-  function isTodayOrAfter(date: Date): boolean {
+  const t = yesterday().getTime();
+
+  function isYesterdayOrAfter(date: Date): boolean {
     return t < date.getTime();
   }
-  return all.filter((record) => isTodayOrAfter(record.date));
+
+  return all.filter((record) => isYesterdayOrAfter(record.date));
 }

@@ -20,6 +20,12 @@ export function today(): Date {
   return toDay(now());
 }
 
+export function yesterday(): Date {
+  const _today = toDay(now()).getTime();
+  const oneDay = 24 * 60 * 60 * 1000;
+  return new Date(_today - oneDay);
+}
+
 // https://devhints.io/wip/intl-datetime
 const LANGUAGE_SIMILAR_TO_ISO8601 = "sv-SE";
 
