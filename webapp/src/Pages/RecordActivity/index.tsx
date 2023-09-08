@@ -42,8 +42,8 @@ export function RecordActivityPage({
     const completedActivitySubscription = completedActivityManager.changes$.subscribe(
       (_) => {
         const history = completedActivityManager.getAll();
-        const todayOrLater = keepTodayOrAfter(history);
-        setHistory(todayOrLater);
+        const todayOrAfter = keepTodayOrAfter(history);
+        setHistory(todayOrAfter);
       }
     );
 
@@ -74,7 +74,8 @@ export function RecordActivityPage({
 
   function handleAddCompletedActivityFromShortcut(id: ActivityId): void {
     console.log(
-      `App.handleAddCompletedActivityFromShortcut::Adding a new completed activity: id=${id}`
+      `${RecordActivityPage}.${handleAddCompletedActivityFromShortcut}` +
+        `::Adding a new completed activity: id=${id}`
     );
 
     completedActivityManager.add({
