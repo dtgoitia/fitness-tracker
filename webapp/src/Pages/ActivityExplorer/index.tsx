@@ -1,10 +1,11 @@
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { ActivityManager } from "../../domain/activities";
-import { Activity, FilterQuery } from "../../domain/model";
+import { Activity, ActivityName, FilterQuery } from "../../domain/model";
 import { filterInventory } from "../../domain/search";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
+import AddActivity from "../HistoryExplorer/AddActivity";
 import SearchBox from "../HistoryExplorer/SearchBox";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -32,11 +33,21 @@ function ActivityExplorer({ activityManager }: Props) {
     setFilterQuery("");
   }
 
+  function handleAddNewActivity(name: ActivityName, otherNames: ActivityName[]): void {
+    console.log(`ActivityExplorer.handleAddNewActivity::Adding a new activity: ${name}`);
+    activityManager.add({ name, otherNames });
+  }
+
   return (
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
         <h1>Activity explorer</h1>
+
+        <AddActivity add={handleAddNewActivity} />
+
+        <hr />
+
         <SearchBox
           query={filterQuery}
           onChange={setFilterQuery}
