@@ -2,7 +2,7 @@ import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { ActivityManager } from "../../domain/activities";
 import { CompletedActivityManager } from "../../domain/completedActivities";
-import { isoDateFormatter, now, yesterday } from "../../domain/datetimeUtils";
+import { isoDateFormatter, now, toDay } from "../../domain/datetimeUtils";
 import {
   ActivityId,
   CompletedActivity,
@@ -23,6 +23,13 @@ import ReloadPage from "../HistoryExplorer/ReloadPage";
 import { Shortcuts } from "./Shortcuts";
 import { useEffect, useState } from "react";
 
+// How many days worth of data should be shown in the RecordActivity page
+// 0 - only today
+// 1 - today + yesterday
+// 2 - today + yesterday + day before
+// ...
+const DAY_AMOUNT_TO_SHOW = 2;
+
 interface Props {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
@@ -42,14 +49,14 @@ export function RecordActivityPage({
     const completedActivitySubscription = completedActivityManager.changes$.subscribe(
       (_) => {
         const history = completedActivityManager.getAll();
-        const todayOrAfter = keepTodayOrAfter(history);
-        setHistory(todayOrAfter);
+        const historySlice = keepLastNDays({ all: history, n: DAY_AMOUNT_TO_SHOW });
+        setHistory(historySlice);
       }
     );
 
     const history = completedActivityManager.getAll();
-    const todayOrLater = keepTodayOrAfter(history);
-    setHistory(todayOrLater);
+    const historySlice = keepLastNDays({ all: history, n: DAY_AMOUNT_TO_SHOW });
+    setHistory(historySlice);
 
     return () => {
       completedActivitySubscription.unsubscribe();
@@ -132,12 +139,18 @@ export function RecordActivityPage({
   );
 }
 
-function keepTodayOrAfter(all: CompletedActivity[]): CompletedActivity[] {
-  const t = yesterday().getTime();
+function keepLastNDays({
+  all,
+  n,
+}: {
+  all: CompletedActivity[];
+  n: number;
+}): CompletedActivity[] {
+  const _today = toDay(now()).getTime();
 
-  function isYesterdayOrAfter(date: Date): boolean {
-    return t < date.getTime();
-  }
+  const oneDay = 24 * 60 * 60 * 1000;
 
-  return all.filter((record) => isYesterdayOrAfter(record.date));
+  const t = _today - n * oneDay; // earliest desired timestamp
+
+  return all.filter((completedActivity) => t <= completedActivity.date.getTime());
 }
