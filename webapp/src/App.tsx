@@ -57,6 +57,15 @@ function App() {
         element={<TrainingExplorer trainingManager={trainingManager} />}
       />
       <Route
+        path={Paths.trainingEditor}
+        element={
+          <TrainingEditor
+            trainingManager={trainingManager}
+            activityManager={activityManager}
+          />
+        }
+      />
+      <Route
         path={Paths.shortcuts}
         element={
           <ShortcutsPage
@@ -71,15 +80,6 @@ function App() {
           <StatsPage
             activityManager={activityManager}
             completedActivityManager={completedActivityManager}
-          />
-        }
-      />
-      <Route
-        path={Paths.trainingEditor}
-        element={
-          <TrainingEditor
-            trainingManager={trainingManager}
-            activityManager={activityManager}
           />
         }
       />
