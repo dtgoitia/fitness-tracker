@@ -5,6 +5,7 @@
 enum Paths {
   root = "/",
   history = "/history",
+  historyRecord = "/history/:completedActivityId",
   activities = "/activities",
   activityEditor = "/activities/:activityId",
   trainings = "/trainings",

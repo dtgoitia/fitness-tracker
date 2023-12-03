@@ -1,6 +1,7 @@
 import "./App.css";
 import ActivityEditor from "./Pages/ActivityEditor";
 import ActivityExplorer from "./Pages/ActivityExplorer";
+import { CompletedActivityEditor } from "./Pages/CompletedActivityEditor";
 import HistoryPage from "./Pages/HistoryExplorer";
 import PageNotFound from "./Pages/PageNotFound";
 import { RecordActivityPage } from "./Pages/RecordActivity";
@@ -36,6 +37,15 @@ function App() {
             activityManager={activityManager}
             completedActivityManager={completedActivityManager}
             trainingManager={trainingManager}
+          />
+        }
+      />
+      <Route
+        path={Paths.historyRecord}
+        element={
+          <CompletedActivityEditor
+            activityManager={activityManager}
+            completedActivityManager={completedActivityManager}
           />
         }
       />

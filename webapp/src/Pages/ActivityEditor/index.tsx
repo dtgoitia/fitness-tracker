@@ -28,6 +28,7 @@ interface Props {
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
 }
+
 function ActivityEditor({ activityManager, completedActivityManager }: Props) {
   const { activityId } = useParams();
   const navigate = useNavigate();

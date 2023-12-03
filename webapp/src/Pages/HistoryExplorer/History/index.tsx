@@ -1,13 +1,14 @@
 import { ActivityManager } from "../../../domain/activities";
 import { groupByDay } from "../../../domain/completedActivities";
 import { Activity, CompletedActivity, CompletedActivityId } from "../../../domain/model";
-import EditableRow from "./EditableRow";
+import Paths from "../../../routes";
 import Row from "./Row";
 import { Dialog } from "@blueprintjs/core";
 import { Button, Switch } from "@blueprintjs/core";
 import { DatePicker } from "@blueprintjs/datetime";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const DayHeader = styled.div`
@@ -50,6 +51,8 @@ function HistoryView({
   deleteUntilDate,
   purge,
 }: HistoryViewProps) {
+  const navigate = useNavigate();
+
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
   const [selection, setSelected] = useState<Set<CompletedActivityId>>(new Set([]));
   const [showDeletionDatePicker, setShowDeletionDatePicker] = useState<boolean>(false);
@@ -179,19 +182,20 @@ function HistoryView({
                   ` not exist`;
                 return <div key={id}>{errorMessage}</div>;
               }
+
               if (isEditModeOn) {
+                const path = `${Paths.history}/${completedActivity.id}`;
                 return (
-                  <EditableRow
-                    key={id}
-                    activity={activity}
-                    completedActivity={completedActivity}
-                    selected={selection.has(id)}
-                    onDelete={() => deleteCompletedActivity(id)}
-                    onChange={updateCompletedActivity}
-                    onToggleSelect={() => handleToggleSelect(id)}
-                  />
+                  <Link to={path}>
+                    <Row
+                      key={id}
+                      activity={activity}
+                      completedActivity={completedActivity}
+                    />
+                  </Link>
                 );
               }
+
               return (
                 <Row key={id} activity={activity} completedActivity={completedActivity} />
               );
