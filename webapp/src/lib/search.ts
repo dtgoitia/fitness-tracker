@@ -7,7 +7,7 @@ interface WordsToItemMap {
 export class ItemAutocompleter {
   private trie: TrieNode;
   private wordToItems: WordsToItemMap;
-  constructor(private readonly items: Activity[]) {
+  constructor(items: Activity[]) {
     const [words, map] = this.activitiesToWords(items);
     this.trie = buildTrie(words);
     this.wordToItems = map;

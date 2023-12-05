@@ -297,7 +297,7 @@ export function groupByDay(history: CompletedActivity[]): DatedActivities[] {
   let groupedActivities: CompletedActivity[] = [];
   const result: DatedActivities[] = [];
 
-  history.forEach((activity, i) => {
+  history.forEach((activity) => {
     const day = getDay(activity.date);
     if (day === dayCursor) {
       groupedActivities.push(activity);

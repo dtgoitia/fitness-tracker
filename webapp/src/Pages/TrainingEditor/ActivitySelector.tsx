@@ -36,7 +36,7 @@ export default ActivitySelector;
 
 const activityRenderer: ItemRenderer<Activity> = (
   activity,
-  { handleClick, handleFocus, modifiers, query }
+  { handleClick, handleFocus, modifiers }
 ) => {
   if (!modifiers.matchesPredicate) {
     return null;

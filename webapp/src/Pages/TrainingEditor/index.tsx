@@ -28,7 +28,6 @@ import TrainingActivityEditor from "./TrainingActivityEditor";
 import { Button, Card, Label } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { filter } from "rxjs";
 import styled from "styled-components";
 
 function TrainingEditor() {

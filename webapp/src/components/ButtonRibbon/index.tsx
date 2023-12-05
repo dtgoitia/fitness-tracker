@@ -16,7 +16,7 @@ export function ButtonRibbon({ label, buttons }: Props) {
   return (
     <Container className="bp4-button-group .modifier">
       <Label>{label}</Label>
-      {buttons.map((button, i) => (
+      {buttons.map((button) => (
         <button
           key={button.key}
           type="button"

@@ -98,8 +98,8 @@ function generateBlob({
 function generateFilename({ date }: { date: Date }): string {
   const formattedDate = date
     .toISOString()
-    .replaceAll("-", "")
-    .replaceAll(":", "")
+    .replace(/-/, "")
+    .replace(/:/, "")
     .replace("T", "-")
     .slice(0, 15);
   return `fitness-tracker__backup_${formattedDate}.txt`;
@@ -115,7 +115,7 @@ function downloadFile(blob: Blob, filename: string): void {
   const xhr = new XMLHttpRequest();
   xhr.open("GET", fileUrl, true);
   xhr.responseType = "blob";
-  xhr.onload = function (e) {
+  xhr.onload = function () {
     if (this.status === 200) {
       const responseWithDesiredBlob = this.response;
       const anchor = document.createElement("a");

@@ -2,7 +2,7 @@ import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { Training, TrainingId } from "../../lib/model";
-import { DRAFT_TRAINING, TrainingManager } from "../../lib/trainings";
+import { DRAFT_TRAINING } from "../../lib/trainings";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
 import { Button, Switch } from "@blueprintjs/core";

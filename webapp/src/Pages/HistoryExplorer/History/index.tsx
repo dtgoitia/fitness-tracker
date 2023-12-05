@@ -1,5 +1,4 @@
 import { useApp } from "../../..";
-import { ActivityManager } from "../../../lib/activities";
 import { groupByDay } from "../../../lib/completedActivities";
 import { Activity, CompletedActivity, CompletedActivityId } from "../../../lib/model";
 import Row from "./Row";

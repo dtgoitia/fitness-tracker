@@ -36,7 +36,7 @@ export default TrainingSelector;
 
 const trainingRenderer: ItemRenderer<Training> = (
   training,
-  { handleClick, handleFocus, modifiers, query }
+  { handleClick, handleFocus, modifiers }
 ) => {
   if (!modifiers.matchesPredicate) {
     return null;
