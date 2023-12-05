@@ -1,6 +1,7 @@
 import { formatTimedelta } from "./datetimeUtils";
+import { describe, expect, it } from "vitest";
 
-fdescribe("format timedelta", () => {
+describe("format timedelta", () => {
   it(`s`, () => {
     expect(formatTimedelta(1)).toEqual("1s");
   });

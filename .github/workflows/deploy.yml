@@ -41,12 +41,12 @@ jobs:
         run: npm run build
 
       - name: Remove source files
-        run: rm -rf build/static/js/*.map
+        run: rm -rf dist/static/js/*.map
 
       - name: Deploy to GitHub pages
         run: |
           git remote set-url origin https://git:${PUBLIC_GITHUB_ACCOUNT_TOKEN}@github.com/${PUBLIC_GITHUB_REPOSITORY}.git
-          npx gh-pages --dist=build --branch=gh-pages -u "github-actions-bot <support+actions@github.com>"
+          npx gh-pages --dist=dist --branch=gh-pages -u "github-actions-bot <support+actions@github.com>"
         env:
           PUBLIC_GITHUB_ACCOUNT_TOKEN: ${{ secrets.PUBLIC_GITHUB_ACCOUNT_TOKEN }}
           PUBLIC_GITHUB_REPOSITORY: ${{ secrets.PUBLIC_GITHUB_REPOSITORY }}

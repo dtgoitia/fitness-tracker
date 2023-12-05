@@ -9,6 +9,7 @@ import { now } from "./datetimeUtils";
 import { generateId } from "./hash";
 import { Activity, ActivityId, CompletedActivity, Duration, Intensity } from "./model";
 import { setsAreEqual } from "./setOperations";
+import { describe, expect, it } from "vitest";
 
 // TODO: this probably needs to go to a more accessible module
 function buildCompletedActivity({

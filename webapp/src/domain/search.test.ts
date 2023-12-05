@@ -3,6 +3,7 @@ import { now } from "./datetimeUtils";
 import { generateId } from "./hash";
 import { Activity, ActivityName } from "./model";
 import { ItemAutocompleter } from "./search";
+import { describe, expect, it } from "vitest";
 
 // TODO: this probably needs to go to a more accessible module
 function buildActivity({ name }: { name: ActivityName }): Activity {

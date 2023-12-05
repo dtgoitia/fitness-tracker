@@ -1,5 +1,6 @@
 import { ActivityId, Duration, Intensity, Training, TrainingActivity } from "./model";
 import { moveTrainingActivityDown, moveTrainingActivityUp } from "./trainings";
+import { beforeEach, describe, expect, it } from "vitest";
 
 function buildTraining({ activities }: { activities: TrainingActivity[] }): Training {
   return {

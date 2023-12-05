@@ -1,8 +1,6 @@
-import { unreachable } from "./domain/devex";
-
 export function findVersionHash(): string {
   const headElements = document.getElementsByTagName("head")[0].children;
-  let scriptElements = [];
+  const scriptElements: Element[] = [];
   for (const headElement of headElements) {
     if (headElement.tagName === "SCRIPT") {
       scriptElements.push(headElement);
@@ -10,7 +8,7 @@ export function findVersionHash(): string {
   }
 
   if (scriptElements.length !== 1) {
-    throw unreachable();
+    return "no version found";
   }
 
   const scriptElement = scriptElements[0] as HTMLScriptElement;
