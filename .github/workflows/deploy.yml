@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run unit tests
+        run: npm run test:ci
+
       - name: Create a production build
         run: npm run build
 
