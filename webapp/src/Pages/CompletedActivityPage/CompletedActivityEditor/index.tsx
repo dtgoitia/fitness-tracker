@@ -1,15 +1,9 @@
 import { useApp } from "../../..";
 import { ButtonRibbon } from "../../../components/ButtonRibbon";
 import {
-  ActivityManager,
   getDurationLevelShorthand,
   getIntensityLevelShorthand,
 } from "../../../lib/activities";
-import {
-  CompletedActivityDeleted,
-  CompletedActivityManager,
-  CompletedActivityUpdated,
-} from "../../../lib/completedActivities";
 import {
   setCompletedActivityDate,
   setCompletedActivityDuration,
