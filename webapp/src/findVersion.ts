@@ -1,4 +1,6 @@
-export function findVersionHash(): string {
+type Results = { success: true; hash: string } | { success: false; reason: string };
+
+export function findVersionHash(): Results {
   const headElements = document.getElementsByTagName("head")[0].children;
 
   const jsBundleUrls = [...headElements]
@@ -9,16 +11,22 @@ export function findVersionHash(): string {
 
   switch (jsBundleUrls.length) {
     case 0:
-      return "version not found: no JS bundle found in HTML <head>";
+      return {
+        success: false,
+        reason: "version not found: no JS bundle found in HTML <head>",
+      };
     case 1:
       break;
     default:
-      return `version not determined: ${jsBundleUrls.length} JS bundle found in HTML <head>`;
+      return {
+        success: false,
+        reason: `version not determined: ${jsBundleUrls.length} JS bundle found in HTML <head>`,
+      };
   }
 
   const jsBundleUrl = jsBundleUrls[0];
   // "https://davidtorralba.com/fitness-tracker/assets/index-H0pKw_7l.js"
 
   const hash = jsBundleUrl.replace(/.*index-(.+)\.js/, "$1");
-  return hash;
+  return { success: true, hash };
 }

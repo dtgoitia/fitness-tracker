@@ -1,7 +1,7 @@
 import { useApp } from "../..";
+import { BundleVersion } from "../../components/BundleVersion";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { findVersionHash } from "../../findVersion";
 import { isoDateFormatter, now, toDay } from "../../lib/datetimeUtils";
 import {
   ActivityId,
@@ -104,7 +104,7 @@ export function RecordActivityPage() {
         />
         <DownloadJson />
         <ReloadPage />
-        <p>{findVersionHash()}</p>
+        <BundleVersion />
       </CenteredPage>
     </BlueprintThemeProvider>
   );

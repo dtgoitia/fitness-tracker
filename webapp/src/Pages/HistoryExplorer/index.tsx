@@ -1,7 +1,7 @@
 import { useApp } from "../..";
+import { BundleVersion } from "../../components/BundleVersion";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { findVersionHash } from "../../findVersion";
 import { isoDateFormatter } from "../../lib/datetimeUtils";
 import { ActivityName, CompletedActivity, CompletedActivityId } from "../../lib/model";
 import BlueprintThemeProvider from "../../style/theme";
@@ -71,7 +71,7 @@ function HistoryPage() {
         <AddActivity add={handleAddNewActivity} />
         <DownloadJson />
         <ReloadPage />
-        <p>{findVersionHash()}</p>
+        <BundleVersion />
       </CenteredPage>
     </BlueprintThemeProvider>
   );
