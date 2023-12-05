@@ -18,7 +18,7 @@ import AddCompletedActivity from "../HistoryExplorer/AddCompletedActivity";
 import AddCompletedActivityFromTraining from "../HistoryExplorer/AddCompletedActivityFromTraining";
 import Countdown from "../HistoryExplorer/Countdown";
 import { DownloadJson } from "../HistoryExplorer/DownloadJson";
-import HistoryView from "../HistoryExplorer/History";
+import { HistoryView } from "../HistoryExplorer/History";
 import ReloadPage from "../HistoryExplorer/ReloadPage";
 import { Shortcuts } from "./Shortcuts";
 import { useEffect, useState } from "react";

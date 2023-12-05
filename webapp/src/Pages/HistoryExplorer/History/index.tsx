@@ -1,7 +1,6 @@
 import { ActivityManager } from "../../../domain/activities";
 import { groupByDay } from "../../../domain/completedActivities";
 import { Activity, CompletedActivity, CompletedActivityId } from "../../../domain/model";
-import EditableRow from "./EditableRow";
 import Row from "./Row";
 import { Dialog } from "@blueprintjs/core";
 import { Button, Switch } from "@blueprintjs/core";
@@ -41,11 +40,9 @@ interface HistoryViewProps {
   purge: () => void;
 }
 
-function HistoryView({
+export function HistoryView({
   history,
   activityManager,
-  updateCompletedActivity,
-  deleteCompletedActivity,
   duplicateCompletedActivities,
   deleteUntilDate,
   purge,
@@ -179,21 +176,36 @@ function HistoryView({
                   ` not exist`;
                 return <div key={id}>{errorMessage}</div>;
               }
+
               if (isEditModeOn) {
                 return (
-                  <EditableRow
+                  <SelectableRowContainer>
+                    <CheckboxContainer>
+                      <input
+                        type="checkbox"
+                        checked={selection.has(id)}
+                        onChange={() => handleToggleSelect(id)}
+                      />
+                    </CheckboxContainer>
+                    <RowContainer>
+                      <Row
+                        key={id}
+                        activity={activity}
+                        completedActivity={completedActivity}
+                      />
+                    </RowContainer>
+                  </SelectableRowContainer>
+                );
+              }
+
+              return (
+                <NormalRowContainer>
+                  <Row
                     key={id}
                     activity={activity}
                     completedActivity={completedActivity}
-                    selected={selection.has(id)}
-                    onDelete={() => deleteCompletedActivity(id)}
-                    onChange={updateCompletedActivity}
-                    onToggleSelect={() => handleToggleSelect(id)}
                   />
-                );
-              }
-              return (
-                <Row key={id} activity={activity} completedActivity={completedActivity} />
+                </NormalRowContainer>
               );
             })}
           </div>
@@ -203,4 +215,25 @@ function HistoryView({
   );
 }
 
-export default HistoryView;
+const NormalRowContainer = styled.div`
+  margin: 1rem 0;
+`;
+
+const SelectableRowContainer = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+`;
+
+const CheckboxContainer = styled.div`
+  order: 0;
+  align-self: flex-start;
+`;
+
+const RowContainer = styled.div`
+  order: 1;
+  align-self: center;
+  width: 100%;
+`;

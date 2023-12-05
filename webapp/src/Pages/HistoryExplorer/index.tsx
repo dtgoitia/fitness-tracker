@@ -11,7 +11,7 @@ import AddActivity from "./AddActivity";
 import AddCompletedActivity from "./AddCompletedActivity";
 import AddCompletedActivityFromTraining from "./AddCompletedActivityFromTraining";
 import { DownloadJson } from "./DownloadJson";
-import HistoryView from "./History";
+import { HistoryView } from "./History";
 import ReloadPage from "./ReloadPage";
 import { useEffect, useState } from "react";
 

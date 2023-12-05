@@ -1,5 +1,7 @@
 import { Activity, CompletedActivity } from "../../../domain/model";
+import Paths from "../../../routes";
 import { formatTime } from "./datetime";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Col1 = styled.div`
@@ -41,11 +43,14 @@ interface RowProps {
   completedActivity: CompletedActivity;
 }
 function Row({ activity, completedActivity }: RowProps) {
+  const path = `${Paths.history}/${completedActivity.id}`;
   const time = formatTime(completedActivity.date);
   return (
     <Container>
       <Col1>{time}</Col1>
-      <Col2>{activity.name}</Col2>
+      <Col2>
+        <Link to={path}>{activity.name}</Link>
+      </Col2>
       <Col3>{completedActivity.intensity}</Col3>
       <Col4>{completedActivity.duration}</Col4>
       <Col5>{completedActivity.notes}</Col5>
