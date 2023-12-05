@@ -179,7 +179,7 @@ export function HistoryView({
 
               if (isEditModeOn) {
                 return (
-                  <SelectableRowContainer>
+                  <SelectableRowContainer key={id}>
                     <CheckboxContainer>
                       <input
                         type="checkbox"
@@ -199,12 +199,8 @@ export function HistoryView({
               }
 
               return (
-                <NormalRowContainer>
-                  <Row
-                    key={id}
-                    activity={activity}
-                    completedActivity={completedActivity}
-                  />
+                <NormalRowContainer key={id}>
+                  <Row activity={activity} completedActivity={completedActivity} />
                 </NormalRowContainer>
               );
             })}

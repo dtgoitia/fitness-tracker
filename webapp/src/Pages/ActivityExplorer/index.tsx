@@ -55,7 +55,7 @@ function ActivityExplorer({ activityManager }: Props) {
           onFocus={() => {}}
         />
         {filterInventory(activites, filterQuery).map((activity) => (
-          <OpenActivityEditor activity={activity} />
+          <OpenActivityEditor key={activity.id} activity={activity} />
         ))}
       </CenteredPage>
     </BlueprintThemeProvider>
