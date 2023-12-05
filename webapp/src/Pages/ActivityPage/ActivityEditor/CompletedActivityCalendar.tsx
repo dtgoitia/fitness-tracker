@@ -1,7 +1,7 @@
 import { useApp } from "../../..";
 import { Calendar } from "../../../components/Calendar";
 import { CalendarDay } from "../../../components/Calendar/model";
-import { nextDay, toDay, today } from "../../../lib/datetimeUtils";
+import { nextDay, toUTCDay, today } from "../../../lib/datetimeUtils";
 import { ActivityId, CompletedActivity } from "../../../lib/model";
 import { useEffect, useState } from "react";
 
@@ -47,15 +47,14 @@ function generateCalendarData(completed: CompletedActivity[]): CalendarDay[] {
   const highlightedDates = getDatesWhereActivityWasCompleted(completed);
 
   const first = completed[0];
-  const firstDate = toDay(first.date);
   const data: CalendarDay[] = [
     {
-      date: firstDate,
+      date: first.date,
       isHighlighted: true,
     },
   ];
 
-  let last: Date = firstDate;
+  let last: Date = toUTCDay(first.date);
 
   while (last.getTime() < _today) {
     const next = nextDay(last);
@@ -67,15 +66,16 @@ function generateCalendarData(completed: CompletedActivity[]): CalendarDay[] {
   return data;
 }
 
-type Time = number;
+type DateAsEpoch = number;
 
 function getDatesWhereActivityWasCompleted(
   completedActivities: CompletedActivity[]
-): Set<Time> {
-  const result: Set<Time> = new Set();
+): Set<DateAsEpoch> {
+  const result: Set<DateAsEpoch> = new Set();
 
   for (const completed of completedActivities) {
-    result.add(toDay(completed.date).getTime());
+    const date = toUTCDay(completed.date);
+    result.add(date.getTime());
   }
 
   return result;

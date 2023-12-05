@@ -1,7 +1,7 @@
 import { CalendarDay } from "./model";
 
 export function getEmptySpacesInFirstWeek(firstDate: Date): undefined[] {
-  const weekday = firstDate.getDay();
+  const weekday = firstDate.getUTCDay();
 
   switch (weekday) {
     case 1: // Monday
