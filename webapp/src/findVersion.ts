@@ -1,17 +1,24 @@
 export function findVersionHash(): string {
   const headElements = document.getElementsByTagName("head")[0].children;
-  const scriptElements: Element[] = [];
-  for (const headElement of headElements) {
-    if (headElement.tagName === "SCRIPT") {
-      scriptElements.push(headElement);
-    }
+
+  const jsBundleUrls = [...headElements]
+    .filter((element) => element.tagName === "SCRIPT")
+    .map((element) => element as HTMLScriptElement)
+    .map((element) => element.src)
+    .filter((src) => src.includes("assets/index-"));
+
+  switch (jsBundleUrls.length) {
+    case 0:
+      return "version not found: no JS bundle found in HTML <head>";
+    case 1:
+      break;
+    default:
+      return `version not determined: ${jsBundleUrls.length} JS bundle found in HTML <head>`;
   }
 
-  if (scriptElements.length !== 1) {
-    return "no version found";
-  }
+  const jsBundleUrl = jsBundleUrls[0];
+  // "https://davidtorralba.com/fitness-tracker/assets/index-H0pKw_7l.js"
 
-  const scriptElement = scriptElements[0] as HTMLScriptElement;
-  const hash = scriptElement.src.split(".").slice(-2)[0];
+  const hash = jsBundleUrl.replace(/.*index-(.+)\.js/, "$1");
   return hash;
 }
