@@ -1,14 +1,14 @@
+import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { ActivityManager } from "../../domain/activities";
-import { unreachable } from "../../domain/devex";
+import { unreachable } from "../../lib/devex";
 import {
   Activity,
   ActivityId,
   Training,
   TrainingActivity,
   TrainingName,
-} from "../../domain/model";
+} from "../../lib/model";
 import {
   addActivityToTraining,
   deleteTrainingActivity,
@@ -17,10 +17,9 @@ import {
   moveTrainingActivityUp,
   setTrainingName,
   TrainingAdded,
-  TrainingManager,
   trainingsAreDifferent,
   updateTrainingActivity,
-} from "../../domain/trainings";
+} from "../../lib/trainings";
 import { notify } from "../../notify";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
@@ -32,12 +31,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { filter } from "rxjs";
 import styled from "styled-components";
 
-interface Props {
-  trainingManager: TrainingManager;
-  activityManager: ActivityManager;
-}
+function TrainingEditor() {
+  const app = useApp();
+  const activityManager = app.activityManager;
+  const trainingManager = app.trainingManager;
 
-function TrainingEditor({ trainingManager, activityManager }: Props) {
   const { trainingId } = useParams();
 
   const navigate = useNavigate();
@@ -131,15 +129,15 @@ function TrainingEditor({ trainingManager, activityManager }: Props) {
 
   function handleSave(): void {
     if (inCreationMode) {
-      trainingManager.changes$
-        .pipe(filter((change) => change instanceof TrainingAdded))
-        .subscribe((added) => {
-          navigate(`${Paths.trainings}/${added.id}`);
+      trainingManager.changes$.subscribe((change) => {
+        if (change instanceof TrainingAdded) {
+          navigate(`${Paths.trainings}/${change.id}`);
           notify({
             message: `Training "${training.name}" successfully saved`,
             intent: "success",
           });
-        });
+        }
+      });
       trainingManager.add({ name: training.name, activities: training.activities });
     } else {
       trainingManager.update({ training }).match({

@@ -1,4 +1,4 @@
-import { Seconds } from "../../../domain/datetimeUtils";
+import { Seconds } from "../../../lib/datetimeUtils";
 import styled from "styled-components";
 
 const Time = styled.span`

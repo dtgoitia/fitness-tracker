@@ -1,12 +1,9 @@
+import { useApp } from "..";
 import CenteredPage from "../components/CenteredPage";
 import NavBar from "../components/NavBar";
-import { ActivityManager } from "../domain/activities";
-import {
-  CompletedActivityManager,
-  getLastOccurrences,
-} from "../domain/completedActivities";
-import { Seconds, formatTimedelta, isoDateFormatter, now } from "../domain/datetimeUtils";
-import { ActivityId, ActivityName, CompletedActivity } from "../domain/model";
+import { getLastOccurrences } from "../lib/completedActivities";
+import { Seconds, formatTimedelta, isoDateFormatter, now } from "../lib/datetimeUtils";
+import { ActivityId, ActivityName, CompletedActivity } from "../lib/model";
 import BlueprintThemeProvider from "../style/theme";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -16,12 +13,11 @@ interface HydratedCompletedActivity extends CompletedActivity {
   sinceCompleted: Seconds;
 }
 
-interface Props {
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-}
+function StatsPage() {
+  const app = useApp();
+  const activityManager = app.activityManager;
+  const completedActivityManager = app.completedActivityManager;
 
-function StatsPage({ activityManager, completedActivityManager }: Props) {
   const [history, setHistory] = useState<CompletedActivity[]>([]);
 
   const _now = now();

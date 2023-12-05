@@ -1,14 +1,14 @@
 import {
   getDurationLevelShorthand,
   getIntensityLevelShorthand,
-} from "../../../domain/activities";
+} from "../../../lib/activities";
 import {
   setCompletedActivityDate,
   setCompletedActivityDuration,
   setCompletedActivityIntensity,
   setCompletedActivityNotes,
-} from "../../../domain/completedActivities";
-import { Activity, CompletedActivity, Duration, Intensity } from "../../../domain/model";
+} from "../../../lib/completedActivities";
+import { Activity, CompletedActivity, Duration, Intensity } from "../../../lib/model";
 import { formatTime } from "./datetime";
 import { Button, Dialog, EditableText } from "@blueprintjs/core";
 import { TimePrecision, DatePicker } from "@blueprintjs/datetime";

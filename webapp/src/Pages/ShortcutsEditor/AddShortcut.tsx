@@ -1,7 +1,7 @@
-import { ActivityManager } from "../../domain/activities";
-import { Activity, ActivityId, FilterQuery } from "../../domain/model";
-import { filterInventory } from "../../domain/search";
-import { ShortcutManager } from "../../domain/shortcuts";
+import { ActivityManager } from "../../lib/activities";
+import { Activity, ActivityId, FilterQuery } from "../../lib/model";
+import { filterInventory } from "../../lib/search";
+import { ShortcutManager } from "../../lib/shortcuts";
 import InventoryView from "../HistoryExplorer/Inventory";
 import SearchBox from "../HistoryExplorer/SearchBox";
 import { Button } from "@blueprintjs/core";

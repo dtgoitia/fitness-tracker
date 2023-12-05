@@ -1,5 +1,5 @@
 import { Pitch, beep } from "../../../audio/beep";
-import { Seconds, nSecondsAfter, now } from "../../../domain/datetimeUtils";
+import { Seconds, nSecondsAfter, now } from "../../../lib/datetimeUtils";
 import { Counter } from "./Counter";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";

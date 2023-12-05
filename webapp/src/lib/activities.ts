@@ -42,6 +42,8 @@ export class ActivityManager {
     for (const activity of activities) {
       this.activities.set(activity.id, activity);
     }
+
+    this.changesSubject.next({ kind: "activity-manager-initialized" });
   }
 
   public add({ name, otherNames }: AddActivityArgs): void {
@@ -53,7 +55,7 @@ export class ActivityManager {
       lastModified: now(),
     };
     this.activities.set(id, activity);
-    this.changesSubject.next(new ActivityAdded(id));
+    this.changesSubject.next({ kind: "activity-added", id });
   }
 
   public update({ activity }: UpdateActivityArgs): Result {
@@ -66,7 +68,7 @@ export class ActivityManager {
 
     this.activities.set(id, activity);
 
-    this.changesSubject.next(new ActivityUpdated(id));
+    this.changesSubject.next({ kind: "activity-updated", id });
     return Ok(undefined);
   }
 
@@ -79,7 +81,7 @@ export class ActivityManager {
     }
 
     this.activities.delete(id);
-    this.changesSubject.next(new ActivityDeleted(id));
+    this.changesSubject.next({ kind: "activity-deleted", id });
   }
 
   public get(id: ActivityId): Activity | undefined {
@@ -117,19 +119,11 @@ function sortActivitiesAlphabetically(a: Activity, b: Activity): SortAction {
   }
 }
 
-export class ActivityAdded {
-  constructor(public readonly id: ActivityId) {}
-}
-
-export class ActivityUpdated {
-  constructor(public readonly id: ActivityId) {}
-}
-
-export class ActivityDeleted {
-  constructor(public readonly id: ActivityId) {}
-}
-
-export type ActivityChange = ActivityAdded | ActivityUpdated | ActivityDeleted;
+export type ActivityChange =
+  | { kind: "activity-manager-initialized" }
+  | { kind: "activity-added"; id: ActivityId }
+  | { kind: "activity-updated"; id: ActivityId }
+  | { kind: "activity-deleted"; id: ActivityId };
 
 export function setActivityName(activity: Activity, name: ActivityName): Activity {
   return { ...activity, name, lastModified: now() };

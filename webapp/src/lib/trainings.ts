@@ -1,10 +1,4 @@
-import {
-  ActivityAdded,
-  ActivityChange,
-  ActivityDeleted,
-  ActivityManager,
-  ActivityUpdated,
-} from "./activities";
+import { ActivityChange, ActivityManager } from "./activities";
 import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
 import { generateId } from "./hash";
@@ -79,6 +73,8 @@ export class TrainingManager {
     for (const training of completedActivities) {
       this.trainings.set(training.id, training);
     }
+
+    this.changesSubject.next({ kind: "training-manager-initialized" });
   }
 
   public add({ name, activities }: AddTrainingArgs): void {
@@ -157,12 +153,14 @@ export class TrainingManager {
 
   private handleActivityChange(change: ActivityChange): void {
     // console.debug(`TrainingManager.handleActivityChange:`, change);
-    switch (true) {
-      case change instanceof ActivityAdded:
+    switch (change.kind) {
+      case "activity-manager-initialized":
         return;
-      case change instanceof ActivityUpdated:
+      case "activity-added":
         return;
-      case change instanceof ActivityDeleted:
+      case "activity-updated":
+        return;
+      case "activity-deleted":
         return;
       default:
         throw unreachable(`unsupported change type: ${change}`);
@@ -198,7 +196,11 @@ export class TrainingDeleted {
   constructor(public readonly id: TrainingId) {}
 }
 
-export type TrainingChange = TrainingAdded | TrainingUpdated | TrainingDeleted;
+export type TrainingChange =
+  | { kind: "training-manager-initialized" }
+  | TrainingAdded
+  | TrainingUpdated
+  | TrainingDeleted;
 
 export function setTrainingName(training: Training, name: TrainingName): Training {
   return { ...training, name, lastModified: now() };

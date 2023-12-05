@@ -1,20 +1,18 @@
+import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { ActivityManager } from "../../domain/activities";
-import { Shortcut } from "../../domain/model";
-import { ShortcutManager } from "../../domain/shortcuts";
+import { Shortcut } from "../../lib/model";
 import BlueprintThemeProvider from "../../style/theme";
 import AddShortcut from "./AddShortcut";
 import { DeletableShortcut } from "./DeletableShortcut";
 import { useEffect, useState } from "react";
 import { filter } from "rxjs";
 
-interface Props {
-  shortcutManager: ShortcutManager;
-  activityManager: ActivityManager;
-}
+function ShortcutsPage() {
+  const app = useApp();
+  const activityManager = app.activityManager;
+  const shortcutManager = app.shortcutManager;
 
-function ShortcutsPage({ activityManager, shortcutManager }: Props) {
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
 
   useEffect(() => {

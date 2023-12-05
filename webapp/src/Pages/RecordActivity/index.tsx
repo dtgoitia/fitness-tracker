@@ -1,18 +1,15 @@
+import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { ActivityManager } from "../../domain/activities";
-import { CompletedActivityManager } from "../../domain/completedActivities";
-import { isoDateFormatter, now, toDay } from "../../domain/datetimeUtils";
+import { findVersionHash } from "../../findVersion";
+import { isoDateFormatter, now, toDay } from "../../lib/datetimeUtils";
 import {
   ActivityId,
   CompletedActivity,
   CompletedActivityId,
   Duration,
   Intensity,
-} from "../../domain/model";
-import { ShortcutManager } from "../../domain/shortcuts";
-import { TrainingManager } from "../../domain/trainings";
-import { findVersionHash } from "../../findVersion";
+} from "../../lib/model";
 import BlueprintThemeProvider from "../../style/theme";
 import AddCompletedActivity from "../HistoryExplorer/AddCompletedActivity";
 import AddCompletedActivityFromTraining from "../HistoryExplorer/AddCompletedActivityFromTraining";
@@ -30,53 +27,43 @@ import { useEffect, useState } from "react";
 // ...
 const DAY_AMOUNT_TO_SHOW = 2;
 
-interface Props {
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-  trainingManager: TrainingManager;
-  shortcutManager: ShortcutManager;
-}
+export function RecordActivityPage() {
+  const app = useApp();
 
-export function RecordActivityPage({
-  activityManager,
-  completedActivityManager,
-  trainingManager,
-  shortcutManager,
-}: Props) {
   const [history, setHistory] = useState<CompletedActivity[]>([]);
 
   useEffect(() => {
-    const completedActivitySubscription = completedActivityManager.changes$.subscribe(
+    const completedActivitySubscription = app.completedActivityManager.changes$.subscribe(
       (_) => {
-        const history = completedActivityManager.getAll();
+        const history = app.completedActivityManager.getAll();
         const historySlice = keepLastNDays({ all: history, n: DAY_AMOUNT_TO_SHOW });
         setHistory(historySlice);
       }
     );
 
-    const history = completedActivityManager.getAll();
+    const history = app.completedActivityManager.getAll();
     const historySlice = keepLastNDays({ all: history, n: DAY_AMOUNT_TO_SHOW });
     setHistory(historySlice);
 
     return () => {
       completedActivitySubscription.unsubscribe();
     };
-  }, [activityManager, completedActivityManager]);
+  }, [app]);
 
   function handleCompletedActivityUpdate(updated: CompletedActivity): void {
-    completedActivityManager.update({ completedActivity: updated });
+    app.completedActivityManager.update({ completedActivity: updated });
   }
 
   function handleCompletedActivityDeletion(id: CompletedActivityId): void {
-    completedActivityManager.delete({ id });
+    app.completedActivityManager.delete({ id });
   }
 
   function handleCompletedActivityDuplication(ids: Set<CompletedActivityId>): void {
-    completedActivityManager.duplicate({ ids });
+    app.completedActivityManager.duplicate({ ids });
   }
 
   function handleDeletionUntilDate(date: Date): void {
-    completedActivityManager.deleteUntil({ date });
+    app.completedActivityManager.deleteUntil({ date });
   }
 
   function handleAddCompletedActivityFromShortcut(id: ActivityId): void {
@@ -85,7 +72,7 @@ export function RecordActivityPage({
         `::Adding a new completed activity: id=${id}`
     );
 
-    completedActivityManager.add({
+    app.completedActivityManager.add({
       activityId: id,
       intensity: Intensity.medium,
       duration: Duration.medium,
@@ -95,7 +82,7 @@ export function RecordActivityPage({
   }
 
   function handlePurge(): void {
-    const earliestPresetvedDate = completedActivityManager.purge();
+    const earliestPresetvedDate = app.completedActivityManager.purge();
     alert(`Deleted everything before ${isoDateFormatter(earliestPresetvedDate)}`);
   }
 
@@ -103,35 +90,19 @@ export function RecordActivityPage({
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
-        <Shortcuts
-          activityManager={activityManager}
-          onAddCompletedActivity={handleAddCompletedActivityFromShortcut}
-          shortcutManager={shortcutManager}
-        />
-        <AddCompletedActivityFromTraining
-          trainingManager={trainingManager}
-          activityManager={activityManager}
-          completedActivityManager={completedActivityManager}
-        />
-        <AddCompletedActivity
-          activityManager={activityManager}
-          completedActivityManager={completedActivityManager}
-        />
+        <Shortcuts onAddCompletedActivity={handleAddCompletedActivityFromShortcut} />
+        <AddCompletedActivityFromTraining />
+        <AddCompletedActivity />
         <Countdown />
         <HistoryView
           history={history}
-          activityManager={activityManager}
           updateCompletedActivity={handleCompletedActivityUpdate}
           deleteCompletedActivity={handleCompletedActivityDeletion}
           duplicateCompletedActivities={handleCompletedActivityDuplication}
           deleteUntilDate={handleDeletionUntilDate}
           purge={handlePurge}
         />
-        <DownloadJson
-          activityManager={activityManager}
-          completedActivityManager={completedActivityManager}
-          trainingManager={trainingManager}
-        />
+        <DownloadJson />
         <ReloadPage />
         <p>{findVersionHash()}</p>
       </CenteredPage>

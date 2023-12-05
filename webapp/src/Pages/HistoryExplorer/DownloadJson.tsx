@@ -1,7 +1,8 @@
-import { ActivityManager } from "../../domain/activities";
-import { CompletedActivityManager } from "../../domain/completedActivities";
-import { now } from "../../domain/datetimeUtils";
-import { TrainingManager } from "../../domain/trainings";
+import { useApp } from "../..";
+import { ActivityManager } from "../../lib/activities";
+import { CompletedActivityManager } from "../../lib/completedActivities";
+import { now } from "../../lib/datetimeUtils";
+import { TrainingManager } from "../../lib/trainings";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -14,22 +15,17 @@ const Container = styled.div`
   padding: 1rem 0;
 `;
 
-interface Props {
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-  trainingManager: TrainingManager;
-}
+export function DownloadJson() {
+  const app = useApp();
+  const activityManager = app.activityManager;
+  const completedActivityManager = app.completedActivityManager;
+  const trainingManager = app.trainingManager;
 
-export function DownloadJson({
-  activityManager,
-  completedActivityManager,
-  trainingManager,
-}: Props) {
   const [shareApiIsAvailable, setShareApiIsAvailable] = useState<boolean>(false);
 
   useEffect(() => {
     setShareApiIsAvailable(isShareApiAvailable());
-  }, []);
+  }, [app]);
 
   const date = now();
 

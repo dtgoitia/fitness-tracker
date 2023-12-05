@@ -1,9 +1,8 @@
-import { ActivityManager } from "../../domain/activities";
-import { CompletedActivityManager } from "../../domain/completedActivities";
-import { now } from "../../domain/datetimeUtils";
-import { Activity, ActivityId, FilterQuery } from "../../domain/model";
-import { Duration, Intensity } from "../../domain/model";
-import { filterInventory } from "../../domain/search";
+import { useApp } from "../..";
+import { now } from "../../lib/datetimeUtils";
+import { Activity, ActivityId, FilterQuery } from "../../lib/model";
+import { Duration, Intensity } from "../../lib/model";
+import { filterInventory } from "../../lib/search";
 import InventoryView from "./Inventory";
 import SearchBox from "./SearchBox";
 import { Button, Collapse, Intent } from "@blueprintjs/core";
@@ -20,14 +19,11 @@ const Container = styled.div`
   margin: 1rem 0;
 `;
 
-interface AddCompletedActivityProps {
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-}
-function AddCompletedActivity({
-  activityManager,
-  completedActivityManager,
-}: AddCompletedActivityProps) {
+function AddCompletedActivity() {
+  const app = useApp();
+  const activityManager = app.activityManager;
+  const completedActivityManager = app.completedActivityManager;
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
 

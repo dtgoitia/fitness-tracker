@@ -1,19 +1,18 @@
-import { Calendar } from "../../components/Calendar";
-import { CalendarDay } from "../../components/Calendar/model";
-import { CompletedActivityManager } from "../../domain/completedActivities";
-import { nextDay, toDay, today } from "../../domain/datetimeUtils";
-import { ActivityId, CompletedActivity } from "../../domain/model";
+import { useApp } from "../../..";
+import { Calendar } from "../../../components/Calendar";
+import { CalendarDay } from "../../../components/Calendar/model";
+import { nextDay, toDay, today } from "../../../lib/datetimeUtils";
+import { ActivityId, CompletedActivity } from "../../../lib/model";
 import { useEffect, useState } from "react";
 
 interface Props {
   activityId: ActivityId;
-  completedActivityManager: CompletedActivityManager;
 }
 
-export function CompletedActivityCalendar({
-  activityId,
-  completedActivityManager,
-}: Props) {
+export function CompletedActivityCalendar({ activityId }: Props) {
+  const app = useApp();
+  const completedActivityManager = app.completedActivityManager;
+
   const [completed, setCompleted] = useState<CompletedActivity[]>([]);
 
   useEffect(() => {

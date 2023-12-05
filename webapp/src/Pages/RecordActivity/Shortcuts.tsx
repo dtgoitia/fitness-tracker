@@ -1,6 +1,5 @@
-import { ActivityManager } from "../../domain/activities";
-import { ActivityId, Shortcut } from "../../domain/model";
-import { ShortcutManager } from "../../domain/shortcuts";
+import { useApp } from "../..";
+import { ActivityId, Shortcut } from "../../lib/model";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -11,16 +10,14 @@ const Container = styled.div`
 `;
 
 interface Props {
-  activityManager: ActivityManager;
-  shortcutManager: ShortcutManager;
   onAddCompletedActivity: (id: ActivityId) => void;
 }
 
-export function Shortcuts({
-  activityManager,
-  shortcutManager,
-  onAddCompletedActivity: add,
-}: Props) {
+export function Shortcuts({ onAddCompletedActivity: add }: Props) {
+  const app = useApp();
+  const activityManager = app.activityManager;
+  const shortcutManager = app.shortcutManager;
+
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
 
   useEffect(() => {

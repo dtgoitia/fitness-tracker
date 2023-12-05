@@ -1,30 +1,20 @@
+import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { ActivityManager } from "../../domain/activities";
-import {
-  CompletedActivityDeleted,
-  CompletedActivityManager,
-  CompletedActivityUpdated,
-} from "../../domain/completedActivities";
 import {
   CompletedActivity as CActivity,
   CompletedActivityId as CActivityId,
-} from "../../domain/model";
-import Paths from "../../routes";
+} from "../../lib/model";
 import BlueprintThemeProvider from "../../style/theme";
 import { CompletedActivityEditor } from "./CompletedActivityEditor";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-interface Props {
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-}
+export function CompletedActivityPage() {
+  const app = useApp();
 
-export function CompletedActivityPage({
-  activityManager,
-  completedActivityManager,
-}: Props) {
+  // The app router should prevent you from having an undefined URL
+  // parameter here
   const { completedActivityId } = useParams();
   const cActivityId = completedActivityId as CActivityId;
 
@@ -34,16 +24,11 @@ export function CompletedActivityPage({
 
   useEffect(() => {
     function _rerender(): void {
-      const completed = completedActivityManager.get(cActivityId);
+      const completed = app.completedActivityManager.get(cActivityId);
       setCActivity(completed);
     }
-    const subscription = completedActivityManager.changes$.subscribe((change) => {
-      if (
-        change instanceof CompletedActivityUpdated ||
-        change instanceof CompletedActivityDeleted
-      ) {
-        _rerender();
-      }
+    const subscription = app.completedActivityManager.changes$.subscribe((_) => {
+      _rerender();
     });
 
     _rerender();
@@ -51,19 +36,25 @@ export function CompletedActivityPage({
     return () => {
       subscription.unsubscribe();
     };
-  }, [completedActivityManager, cActivityId, navigate]);
+  }, [app, cActivityId, navigate]);
 
   if (cActivity === undefined) {
-    navigate(Paths.root);
-    return null;
+    return (
+      <BlueprintThemeProvider>
+        <CenteredPage>
+          <NavBar />
+          Loading completed task data...
+        </CenteredPage>
+      </BlueprintThemeProvider>
+    );
   }
 
   function handleCompletedActivityUpdate(completedActivity: CActivity): void {
-    completedActivityManager.update({ completedActivity });
+    app.completedActivityManager.update({ completedActivity });
   }
 
   function handleCompletedActivityDelete(id: CActivityId): void {
-    completedActivityManager.delete({ id });
+    app.completedActivityManager.delete({ id });
   }
 
   return (
@@ -74,8 +65,6 @@ export function CompletedActivityPage({
           completedActivity={cActivity}
           onUpdate={handleCompletedActivityUpdate}
           onDelete={handleCompletedActivityDelete}
-          activityManager={activityManager}
-          completedActivityManager={completedActivityManager}
         />
       </CenteredPage>
     </BlueprintThemeProvider>

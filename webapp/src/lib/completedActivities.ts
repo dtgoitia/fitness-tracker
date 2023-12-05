@@ -1,10 +1,4 @@
-import {
-  ActivityAdded,
-  ActivityChange,
-  ActivityDeleted,
-  ActivityManager,
-  ActivityUpdated,
-} from "./activities";
+import { ActivityChange, ActivityManager } from "./activities";
 import { now } from "./datetimeUtils";
 import { unreachable } from "./devex";
 import { generateId } from "./hash";
@@ -75,6 +69,8 @@ export class CompletedActivityManager {
     for (const completedActivity of completedActivities) {
       this.completedActivities.set(completedActivity.id, completedActivity);
     }
+
+    this.changesSubject.next({ kind: "completed-activity-manager-initialized" });
   }
 
   public add({
@@ -255,12 +251,14 @@ export class CompletedActivityManager {
 
   private handleActivityChange(change: ActivityChange): void {
     // console.debug(`CompletedActivityManager.handleActivityChange:`, change);
-    switch (true) {
-      case change instanceof ActivityAdded:
+    switch (change.kind) {
+      case "activity-manager-initialized":
         return;
-      case change instanceof ActivityUpdated:
+      case "activity-added":
         return;
-      case change instanceof ActivityDeleted:
+      case "activity-updated":
+        return;
+      case "activity-deleted":
         return;
       default:
         throw unreachable(`unsupported change type: ${change}`);
@@ -334,6 +332,7 @@ export class CompletedActivitiesDeleted {
 }
 
 export type CompletedActivityChange =
+  | { kind: "completed-activity-manager-initialized" }
   | CompletedActivityAdded
   | CompletedActivityUpdated
   | CompletedActivityDeleted

@@ -1,4 +1,4 @@
-import { Activity, CompletedActivity } from "../../../domain/model";
+import { Activity, CompletedActivity } from "../../../lib/model";
 import Paths from "../../../routes";
 import { formatTime } from "./datetime";
 import { Link } from "react-router-dom";

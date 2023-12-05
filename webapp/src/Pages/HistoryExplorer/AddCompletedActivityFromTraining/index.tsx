@@ -1,24 +1,18 @@
-import { ActivityManager } from "../../../domain/activities";
-import { CompletedActivityManager } from "../../../domain/completedActivities";
-import { now } from "../../../domain/datetimeUtils";
-import { Training, TrainingActivity } from "../../../domain/model";
-import { TrainingManager } from "../../../domain/trainings";
+import { useApp } from "../../..";
+import { now } from "../../../lib/datetimeUtils";
+import { Training, TrainingActivity } from "../../../lib/model";
 import SelectableTrainingActivity from "./SelectableTrainingActivity";
 import TrainingSelector from "./TrainingSelector";
 import { Button, Card, Collapse } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-interface Props {
-  trainingManager: TrainingManager;
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-}
-function AddCompletedActivityFromTraining({
-  trainingManager,
-  activityManager,
-  completedActivityManager,
-}: Props) {
+function AddCompletedActivityFromTraining() {
+  const app = useApp();
+  const activityManager = app.activityManager;
+  const completedActivityManager = app.completedActivityManager;
+  const trainingManager = app.trainingManager;
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [training, setTraining] = useState<Training | undefined>();
   const [trainings, setTrainings] = useState<Training[]>([]);
@@ -73,7 +67,6 @@ function AddCompletedActivityFromTraining({
                 return (
                   <SelectableTrainingActivity
                     key={`selectable-training-activity-${i}`}
-                    trainingActivity={trainingActivity}
                     name={activity.name}
                     onClick={() => handleTrainingActivitySelected(trainingActivity)}
                   />

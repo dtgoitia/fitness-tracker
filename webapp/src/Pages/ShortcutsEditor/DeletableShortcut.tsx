@@ -1,6 +1,6 @@
-import { ActivityManager } from "../../domain/activities";
-import { ActivityName, Shortcut } from "../../domain/model";
-import { ShortcutManager } from "../../domain/shortcuts";
+import { ActivityManager } from "../../lib/activities";
+import { ActivityName, Shortcut } from "../../lib/model";
+import { ShortcutManager } from "../../lib/shortcuts";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";

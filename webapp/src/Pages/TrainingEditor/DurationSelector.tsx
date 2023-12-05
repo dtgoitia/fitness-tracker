@@ -1,5 +1,5 @@
-import { getDurationLevelShorthand } from "../../domain/activities";
-import { Duration } from "../../domain/model";
+import { getDurationLevelShorthand } from "../../lib/activities";
+import { Duration } from "../../lib/model";
 import { Icon, IconSize } from "@blueprintjs/core";
 import styled from "styled-components";
 

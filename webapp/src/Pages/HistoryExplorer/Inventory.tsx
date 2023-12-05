@@ -1,4 +1,4 @@
-import { Activity, ActivityId } from "../../domain/model";
+import { Activity, ActivityId } from "../../lib/model";
 import { Collapse } from "@blueprintjs/core";
 import { Button } from "@blueprintjs/core";
 import styled from "styled-components";

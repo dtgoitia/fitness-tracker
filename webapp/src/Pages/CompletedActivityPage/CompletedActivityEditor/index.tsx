@@ -1,27 +1,28 @@
+import { useApp } from "../../..";
 import { ButtonRibbon } from "../../../components/ButtonRibbon";
 import {
   ActivityManager,
   getDurationLevelShorthand,
   getIntensityLevelShorthand,
-} from "../../../domain/activities";
+} from "../../../lib/activities";
 import {
   CompletedActivityDeleted,
   CompletedActivityManager,
   CompletedActivityUpdated,
-} from "../../../domain/completedActivities";
+} from "../../../lib/completedActivities";
 import {
   setCompletedActivityDate,
   setCompletedActivityDuration,
   setCompletedActivityIntensity,
   setCompletedActivityNotes,
-} from "../../../domain/completedActivities";
+} from "../../../lib/completedActivities";
 import {
   Activity,
   CompletedActivity as CActivity,
   CompletedActivityId as CActivityId,
   Duration,
   Intensity,
-} from "../../../domain/model";
+} from "../../../lib/model";
 import Paths from "../../../routes";
 import { formatTime } from "../../HistoryExplorer/History/datetime";
 import { Button, Dialog, EditableText } from "@blueprintjs/core";
@@ -34,33 +35,26 @@ interface Props {
   completedActivity: CActivity;
   onUpdate: (completedActivity: CActivity) => void;
   onDelete: (completedActivityId: CActivityId) => void;
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
 }
 
 export function CompletedActivityEditor({
   completedActivity: cActivity,
   onUpdate: handleUpdate,
   onDelete: handleDelete,
-  activityManager,
-  completedActivityManager,
 }: Props) {
+  const app = useApp();
+
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [activity, setActivity] = useState<Activity | undefined>();
 
   useEffect(() => {
     function _rerender(): void {
-      const activity = activityManager.get(cActivity.activityId);
+      const activity = app.activityManager.get(cActivity.activityId);
       setActivity(activity);
     }
 
-    const subscription = completedActivityManager.changes$.subscribe((change) => {
-      if (
-        change instanceof CompletedActivityUpdated ||
-        change instanceof CompletedActivityDeleted
-      ) {
-        _rerender();
-      }
+    const subscription = app.completedActivityManager.changes$.subscribe((_) => {
+      _rerender();
     });
 
     _rerender();
@@ -68,7 +62,7 @@ export function CompletedActivityEditor({
     return () => {
       subscription.unsubscribe();
     };
-  }, [activityManager, completedActivityManager, cActivity]);
+  }, [app, cActivity]);
 
   function handleDateInputChange(date: Date): void {
     handleUpdate(setCompletedActivityDate(cActivity as CActivity, date));

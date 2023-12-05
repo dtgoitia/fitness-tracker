@@ -2,7 +2,7 @@
  * TODO: this probably can be reused by other pages, consider moving it to a more
  * general place when that moment arrives
  */
-import { Training } from "../../../domain/model";
+import { Training } from "../../../lib/model";
 import { MenuItem } from "@blueprintjs/core";
 import { ItemPredicate, ItemRenderer, Suggest2 } from "@blueprintjs/select";
 

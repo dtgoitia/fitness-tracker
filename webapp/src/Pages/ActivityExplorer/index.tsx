@@ -1,8 +1,8 @@
+import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { ActivityManager } from "../../domain/activities";
-import { Activity, ActivityName, FilterQuery } from "../../domain/model";
-import { filterInventory } from "../../domain/search";
+import { Activity, ActivityName, FilterQuery } from "../../lib/model";
+import { filterInventory } from "../../lib/search";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
 import AddActivity from "../HistoryExplorer/AddActivity";
@@ -11,19 +11,25 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-interface Props {
-  activityManager: ActivityManager;
-}
-function ActivityExplorer({ activityManager }: Props) {
+function ActivityExplorer() {
+  const app = useApp();
+  const activityManager = app.activityManager;
+
   const [activites, setActivities] = useState<Activity[]>([]);
 
   const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
 
   useEffect(() => {
-    const subscription = activityManager.changes$.subscribe((_) => {
+    function _render(): void {
       setActivities(activityManager.getAll());
+    }
+
+    const subscription = activityManager.changes$.subscribe((_) => {
+      _render();
     });
-    setActivities(activityManager.getAll());
+
+    _render();
+
     return () => {
       subscription.unsubscribe();
     };

@@ -1,7 +1,8 @@
+import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
-import { Training, TrainingId } from "../../domain/model";
-import { DRAFT_TRAINING, TrainingManager } from "../../domain/trainings";
+import { Training, TrainingId } from "../../lib/model";
+import { DRAFT_TRAINING, TrainingManager } from "../../lib/trainings";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
 import { Button, Switch } from "@blueprintjs/core";
@@ -11,10 +12,10 @@ import styled from "styled-components";
 
 const CREATE_TRAINING_PATH = `${Paths.trainings}/${DRAFT_TRAINING.id}`;
 
-interface Props {
-  trainingManager: TrainingManager;
-}
-function TrainingExplorer({ trainingManager }: Props) {
+function TrainingExplorer() {
+  const app = useApp();
+  const trainingManager = app.trainingManager;
+
   // This path has a known special ID that will only be used to create Trainings
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);

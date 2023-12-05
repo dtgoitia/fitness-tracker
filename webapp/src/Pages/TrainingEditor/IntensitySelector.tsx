@@ -1,5 +1,5 @@
-import { getIntensityLevelShorthand } from "../../domain/activities";
-import { Intensity } from "../../domain/model";
+import { getIntensityLevelShorthand } from "../../lib/activities";
+import { Intensity } from "../../lib/model";
 import { Icon, IconSize } from "@blueprintjs/core";
 import styled from "styled-components";
 

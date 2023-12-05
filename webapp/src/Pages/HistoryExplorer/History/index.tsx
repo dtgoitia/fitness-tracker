@@ -1,6 +1,7 @@
-import { ActivityManager } from "../../../domain/activities";
-import { groupByDay } from "../../../domain/completedActivities";
-import { Activity, CompletedActivity, CompletedActivityId } from "../../../domain/model";
+import { useApp } from "../../..";
+import { ActivityManager } from "../../../lib/activities";
+import { groupByDay } from "../../../lib/completedActivities";
+import { Activity, CompletedActivity, CompletedActivityId } from "../../../lib/model";
 import Row from "./Row";
 import { Dialog } from "@blueprintjs/core";
 import { Button, Switch } from "@blueprintjs/core";
@@ -32,7 +33,6 @@ const HeaderButtons = styled.div`
 
 interface HistoryViewProps {
   history: CompletedActivity[];
-  activityManager: ActivityManager;
   updateCompletedActivity: (updated: CompletedActivity) => void;
   deleteCompletedActivity: (id: CompletedActivityId) => void;
   duplicateCompletedActivities: (ids: Set<CompletedActivityId>) => void;
@@ -42,11 +42,13 @@ interface HistoryViewProps {
 
 export function HistoryView({
   history,
-  activityManager,
   duplicateCompletedActivities,
   deleteUntilDate,
   purge,
 }: HistoryViewProps) {
+  const app = useApp();
+  const activityManager = app.activityManager;
+
   const [isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
   const [selection, setSelected] = useState<Set<CompletedActivityId>>(new Set([]));
   const [showDeletionDatePicker, setShowDeletionDatePicker] = useState<boolean>(false);

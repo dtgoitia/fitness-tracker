@@ -4,12 +4,12 @@ import {
   Duration,
   Intensity,
   TrainingActivity,
-} from "../../domain/model";
+} from "../../lib/model";
 import {
   setTrainingActivityActivity,
   setTrainingActivityDuration,
   setTrainingActivityIntensity,
-} from "../../domain/trainings";
+} from "../../lib/trainings";
 import ActivitySelector from "./ActivitySelector";
 import DurationSelector from "./DurationSelector";
 import IntensitySelector from "./IntensitySelector";
