@@ -1,4 +1,5 @@
 WEBAPP_NAME:=fitness-tracker-webapp
+LOCAL_STATIC_WEB_SERVER_PORT:=8083
 
 set-up-development-environment:
 	@echo ""
@@ -34,6 +35,12 @@ run-webapp:
 	scripts/print_local_ip_via_qr.sh
 	docker-compose up $(WEBAPP_NAME)
 
+serve-webapp-ngrok:
+	docker compose run --rm $(WEBAPP_NAME)-ngrok \
+		http \
+		--domain=sawfish-fitting-tadpole.ngrok-free.app \
+		$(LOCAL_STATIC_WEB_SERVER_PORT)
+
 # Recreate web app docker image
 rebuild-webapp:
 	docker-compose down
@@ -53,3 +60,7 @@ deploy-webapp-from-local:
 
 build-webapp:
 	scripts/build_webapp.sh
+
+build-webapp-for-ngrok:
+	scripts/build_webapp.sh
+	scripts/move_webapp_build_to_ngrok_dist_dir.sh $(LOCAL_STATIC_WEB_SERVER_PORT)

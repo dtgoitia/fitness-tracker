@@ -12,6 +12,7 @@
 /dev-dist
 /dist
 /dist-ssr
+/ngrok-dist
 
 # misc
 .DS_Store
