@@ -1,5 +1,7 @@
 FROM node:20.2.0-slim
 
+USER node
+
 WORKDIR /app
 
 COPY ./package.json /app
