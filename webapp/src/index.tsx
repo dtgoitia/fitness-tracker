@@ -4,7 +4,6 @@ import { BASE_URL } from "./constants";
 import "./index.css";
 import { App } from "./lib/app/app";
 import { setUpApp } from "./lib/app/setUp";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { GlobalStyle } from "./style/globalStyle";
 import { activeTheme } from "./style/globalStyle";
 import React, { useContext, createContext } from "react";
@@ -28,11 +27,6 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById("root")
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
-serviceWorkerRegistration.register();
 
 const isLocalhost = window.location.hostname === "localhost";
 
