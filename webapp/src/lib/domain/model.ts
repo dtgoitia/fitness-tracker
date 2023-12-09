@@ -54,10 +54,11 @@ export interface Training {
   readonly lastModified: Date; // usefull to later reconcile data offline
 }
 
-export type ImprovableId = string;
-export type ImprovableName = string;
+export type TrainableId = string;
+export type TrainableName = string;
 
-export interface Improvable {
-  id: ImprovableId;
-  name: ImprovableName;
+export interface Trainable {
+  readonly id: TrainableId;
+  readonly name: TrainableName;
+  readonly lastModified: Date; // usefull to later reconcile data offline
 }
