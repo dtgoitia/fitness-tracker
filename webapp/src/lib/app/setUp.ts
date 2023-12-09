@@ -1,10 +1,10 @@
 import { Storage } from "../../localStorage";
-import { ActivityManager } from "../activities";
-import { BrowserStorage } from "../browserStorage";
-import { CompletedActivityManager } from "../completedActivities";
-import { ShortcutManager } from "../shortcuts";
-import { TrainingManager } from "../trainings";
+import { ActivityManager } from "../domain/activities";
+import { CompletedActivityManager } from "../domain/completedActivities";
+import { ShortcutManager } from "../domain/shortcuts";
+import { TrainingManager } from "../domain/trainings";
 import { App } from "./app";
+import { BrowserStorage } from "./browserStorage";
 
 /**
  * Instantiate app and set up their dependencies. Initialization logic does not

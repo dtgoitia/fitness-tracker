@@ -1,5 +1,5 @@
 import { buildTrie, findWords, TrieNode, Word } from "../autocomplete";
-import { Activity, FilterQuery } from "./model";
+import { Activity, FilterQuery } from "./domain/model";
 
 interface WordsToItemMap {
   [w: Word]: Activity[];

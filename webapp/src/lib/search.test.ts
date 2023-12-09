@@ -1,7 +1,7 @@
-import { ACTIVITY_PREFIX } from "./activities";
 import { now } from "./datetimeUtils";
+import { ACTIVITY_PREFIX } from "./domain/activities";
+import { Activity, ActivityName } from "./domain/model";
 import { generateId } from "./hash";
-import { Activity, ActivityName } from "./model";
 import { ItemAutocompleter } from "./search";
 import { describe, expect, it } from "vitest";
 

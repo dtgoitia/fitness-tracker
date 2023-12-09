@@ -1,8 +1,8 @@
-import { ActivityManager } from "../activities";
-import { BrowserStorage } from "../browserStorage";
-import { CompletedActivityManager } from "../completedActivities";
-import { ShortcutManager } from "../shortcuts";
-import { TrainingManager } from "../trainings";
+import { ActivityManager } from "../domain/activities";
+import { CompletedActivityManager } from "../domain/completedActivities";
+import { ShortcutManager } from "../domain/shortcuts";
+import { TrainingManager } from "../domain/trainings";
+import { BrowserStorage } from "./browserStorage";
 import { Observable, Subject } from "rxjs";
 
 interface Args {
