@@ -91,9 +91,13 @@ function TrainingExplorer() {
         {trainings.map((training) => {
           if (isEditModeOn) {
             return (
-              <DeletableTrainingItem onClick={() => handleToggleSelect(training.id)}>
+              <DeletableTrainingItem key={training.id}>
                 <Checkbox>
-                  <input type="checkbox" checked={selection.has(training.id)} />
+                  <input
+                    type="checkbox"
+                    checked={selection.has(training.id)}
+                    onChange={() => handleToggleSelect(training.id)}
+                  />
                 </Checkbox>
                 <div>{training.name}</div>
               </DeletableTrainingItem>
@@ -101,7 +105,7 @@ function TrainingExplorer() {
           } else {
             const path = `${Paths.trainings}/${training.id}`;
             return (
-              <TrainingItem>
+              <TrainingItem key={training.id}>
                 <Link to={path}>{training.name}</Link>
               </TrainingItem>
             );
