@@ -8,17 +8,20 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 function AddCompletedActivityFromTraining() {
-  const app = useApp();
-  const activityManager = app.activityManager;
-  const completedActivityManager = app.completedActivityManager;
-  const trainingManager = app.trainingManager;
+  const { activityManager, completedActivityManager, trainingManager } = useApp();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [training, setTraining] = useState<Training | undefined>();
   const [trainings, setTrainings] = useState<Training[]>([]);
 
   useEffect(() => {
+    const subscription = trainingManager.changes$.subscribe(() => {
+      setTrainings(trainingManager.getAll());
+    });
     setTrainings(trainingManager.getAll());
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [trainingManager]);
 
   function handleTrainingActivitySelected(trainingActivity: TrainingActivity): void {
