@@ -9,10 +9,10 @@ export type FilterQuery = string;
 export type Shortcut = ActivityId;
 
 export interface Activity {
-  id: ActivityId;
-  name: ActivityName;
-  otherNames: ActivityName[];
-  lastModified: Date; // usefull to later reconcile data offline
+  readonly id: ActivityId;
+  readonly name: ActivityName;
+  readonly otherNames: ActivityName[];
+  readonly lastModified: Date; // usefull to later reconcile data offline
 }
 
 export enum Intensity {
@@ -28,27 +28,27 @@ export enum Duration {
 }
 
 export interface CompletedActivity {
-  id: CompletedActivityId;
-  activityId: ActivityId;
-  intensity: Intensity;
-  duration: Duration;
-  date: Date;
-  notes: Notes;
-  lastModified: Date; // usefull to later reconcile data offline
+  readonly id: CompletedActivityId;
+  readonly activityId: ActivityId;
+  readonly intensity: Intensity;
+  readonly duration: Duration;
+  readonly date: Date;
+  readonly notes: Notes;
+  readonly lastModified: Date; // usefull to later reconcile data offline
 }
 
 export type TrainingId = string;
 export type TrainingName = string;
 
 export interface TrainingActivity {
-  activityId: ActivityId;
-  intensity: Intensity;
-  duration: Duration;
+  readonly activityId: ActivityId;
+  readonly intensity: Intensity;
+  readonly duration: Duration;
 }
 
 export interface Training {
-  id: TrainingId;
-  name: TrainingName;
-  activities: TrainingActivity[];
-  lastModified: Date; // usefull to later reconcile data offline
+  readonly id: TrainingId;
+  readonly name: TrainingName;
+  readonly activities: TrainingActivity[];
+  readonly lastModified: Date; // usefull to later reconcile data offline
 }
