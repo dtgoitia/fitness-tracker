@@ -2,7 +2,7 @@ import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
 import { SortAction } from "../sort";
-import { ActivityChange, ActivityManager } from "./activities";
+import { ActivityManager } from "./activities";
 import {
   ActivityId,
   CompletedActivity,
@@ -59,10 +59,6 @@ export class CompletedActivityManager {
     this.activityManager = activityManager;
 
     this.completedActivities = new Map<CompletedActivityId, CompletedActivity>();
-
-    this.activityManager.changes$.subscribe((change) => {
-      this.handleActivityChange(change);
-    });
   }
 
   public initialize({ completedActivities }: InitializeArgs): void {
@@ -103,16 +99,8 @@ export class CompletedActivityManager {
   }
 
   public update({ completedActivity }: UpdateCompletedActivityArgs): void {
-    // console.debug(
-    //   `CompletedActivityManager.update::completedActivity:`,
-    //   completedActivity
-    // );
     const { id } = completedActivity;
     if (this.completedActivities.has(id) === false) {
-      // console.debug(
-      //   `CompletedActivityManager.update::No activity found with ID ${id}, nothing` +
-      //     ` will be updated`
-      // );
       return;
     }
 
@@ -123,10 +111,6 @@ export class CompletedActivityManager {
 
   public delete({ id }: DeleteCompletedActivityArgs): void {
     if (this.completedActivities.has(id) === false) {
-      // console.debug(
-      //   `CompletedActivityManager.delete::No activity found with ID ${id},` +
-      //     ` nothing will be deleted`
-      // );
       return;
     }
 
@@ -247,22 +231,6 @@ export class CompletedActivityManager {
     }
 
     return id;
-  }
-
-  private handleActivityChange(change: ActivityChange): void {
-    // console.debug(`CompletedActivityManager.handleActivityChange:`, change);
-    switch (change.kind) {
-      case "activity-manager-initialized":
-        return;
-      case "activity-added":
-        return;
-      case "activity-updated":
-        return;
-      case "activity-deleted":
-        return;
-      default:
-        throw unreachable(`unsupported change type: ${change}`);
-    }
   }
 }
 
