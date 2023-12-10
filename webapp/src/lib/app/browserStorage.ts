@@ -3,11 +3,19 @@ import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { ActivityManager } from "../domain/activities";
 import { CompletedActivityManager } from "../domain/completedActivities";
-import { Activity, CompletedActivity, Shortcut, Training } from "../domain/model";
+import {
+  Activity,
+  CompletedActivity,
+  Shortcut,
+  Trainable,
+  Training,
+} from "../domain/model";
 import { ShortcutManager } from "../domain/shortcuts";
+import { TrainableManager } from "../domain/trainables";
 import { TrainingManager } from "../domain/trainings";
 
 interface BrowserStorageArgs {
+  trainableManager: TrainableManager;
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
   trainingManager: TrainingManager;
@@ -16,6 +24,7 @@ interface BrowserStorageArgs {
 }
 
 export class BrowserStorage {
+  private trainableManager: TrainableManager;
   private activityManager: ActivityManager;
   private completedActivityManager: CompletedActivityManager;
   private trainingManager: TrainingManager;
@@ -23,18 +32,23 @@ export class BrowserStorage {
   private storage: Storage;
 
   constructor({
+    trainableManager,
     activityManager,
     completedActivityManager,
     trainingManager,
     shortcutManager,
     storage,
   }: BrowserStorageArgs) {
+    this.trainableManager = trainableManager;
     this.activityManager = activityManager;
     this.completedActivityManager = completedActivityManager;
     this.trainingManager = trainingManager;
     this.shortcutManager = shortcutManager;
     this.storage = storage;
 
+    this.trainableManager.changes$.subscribe(() => {
+      this.handleTrainableChanges();
+    });
     this.activityManager.changes$.subscribe(() => {
       this.handleActivityChanges();
     });
@@ -47,6 +61,20 @@ export class BrowserStorage {
     this.shortcutManager.change$.subscribe(() => {
       this.handleShortcutsChange();
     });
+  }
+
+  public getTrainables(): Trainable[] {
+    if (this.storage.trainables.exists() === false) {
+      return [];
+    }
+
+    const rawTrainables = this.storage.trainables.read();
+    if (!rawTrainables) {
+      return [];
+    }
+
+    const trainables = rawTrainables.map(deserializeTrainable);
+    return trainables;
   }
 
   public getActivities(): Activity[] {
@@ -105,6 +133,9 @@ export class BrowserStorage {
     return shortcuts;
   }
 
+  private handleTrainableChanges(): void {
+    this.storage.trainables.set(this.trainableManager.getAll());
+  }
   private handleActivityChanges(): void {
     this.storage.activities.set(this.activityManager.getAll());
   }
@@ -120,6 +151,14 @@ export class BrowserStorage {
   private handleShortcutsChange(): void {
     this.storage.shortcuts.set(this.shortcutManager.getAll());
   }
+}
+
+function deserializeTrainable(raw: object): Trainable {
+  if (raw === null || raw === undefined) {
+    throw unreachable();
+  }
+
+  return raw as Trainable;
 }
 
 function deserializeActivity(raw: object): Activity {
