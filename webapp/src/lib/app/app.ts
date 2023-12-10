@@ -1,5 +1,6 @@
 import { ActivityManager } from "../domain/activities";
 import { CompletedActivityManager } from "../domain/completedActivities";
+import { ActivityId } from "../domain/model";
 import { ShortcutManager } from "../domain/shortcuts";
 import { TrainableManager } from "../domain/trainables";
 import { TrainingManager } from "../domain/trainings";
@@ -93,6 +94,22 @@ export class App {
 
     console.log(`${logPrefix}::Initialization completed`);
     this.statusSubject.next({ kind: "app-initialized" });
+  }
+
+  /**
+   * Delete `Activity` after checking if any other entities will stay orphan,
+   * e.g. a `CompletedActivity` that ends up pointing to a missing `Activity`.
+   */
+  public deleteActivity({ id }: { id: ActivityId }): void {
+    const previous = this.activityManager.get(id);
+    if (previous === undefined) {
+      console.debug(
+        `ActivityManager.delete::No activity found with ID ${id}, nothing will be deleted`
+      );
+      return;
+    }
+
+    this.activityManager.deleteUnsafe({ id });
   }
 }
 

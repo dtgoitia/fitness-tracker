@@ -116,7 +116,11 @@ export class ActivityManager {
     return Ok(undefined);
   }
 
-  public delete({ id }: DeleteteActivityArgs): void {
+  /**
+   * Delete `Activity` without checking if any other entities will stay orphan,
+   * e.g. a `CompletedActivity` that ends up pointing to a missing `Activity`.
+   */
+  public deleteUnsafe({ id }: DeleteteActivityArgs): void {
     const previous = this.activities.get(id);
     if (previous === undefined) {
       console.debug(

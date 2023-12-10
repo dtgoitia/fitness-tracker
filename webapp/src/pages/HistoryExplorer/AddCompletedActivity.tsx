@@ -85,7 +85,7 @@ function AddCompletedActivity() {
       return;
     }
 
-    activityManager.delete({ id });
+    app.deleteActivity({ id });
   }
 
   function clearSearch(): void {
