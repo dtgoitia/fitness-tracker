@@ -1,11 +1,13 @@
 import { ActivityManager } from "../domain/activities";
 import { CompletedActivityManager } from "../domain/completedActivities";
 import { ShortcutManager } from "../domain/shortcuts";
+import { TrainableManager } from "../domain/trainables";
 import { TrainingManager } from "../domain/trainings";
 import { BrowserStorage } from "./browserStorage";
 import { Observable, Subject } from "rxjs";
 
 interface Args {
+  trainableManager: TrainableManager;
   activityManager: ActivityManager;
   completedActivityManager: CompletedActivityManager;
   trainingManager: TrainingManager;
@@ -15,6 +17,7 @@ interface Args {
 
 export class App {
   public status$: Observable<AppStatus>;
+  public trainableManager: TrainableManager;
   public activityManager: ActivityManager;
   public completedActivityManager: CompletedActivityManager;
   public trainingManager: TrainingManager;
@@ -24,12 +27,14 @@ export class App {
   private statusSubject: Subject<AppStatus>;
 
   constructor({
+    trainableManager,
     activityManager,
     completedActivityManager,
     trainingManager,
     shortcutManager,
     browserStorage,
   }: Args) {
+    this.trainableManager = trainableManager;
     this.activityManager = activityManager;
     this.completedActivityManager = completedActivityManager;
     this.trainingManager = trainingManager;
@@ -62,11 +67,17 @@ export class App {
     const shortcuts = this.browserStorage.getShortcuts();
     console.log(`${logPrefix}::${shortcuts.length} shortcuts found`);
 
+    const trainables = this.browserStorage.getTrainables();
+    console.log(`${logPrefix}::${trainables.length} trainables found`);
+
     // ===================================================================================
     //
     //   Initialize domain
     //
     // ===================================================================================
+
+    console.log(`${logPrefix}::Initializating ${TrainableManager.name} ...`);
+    this.trainableManager.initialize({ trainables });
 
     console.log(`${logPrefix}::Initializating ${ActivityManager.name} ...`);
     this.activityManager.initialize({ activities });
