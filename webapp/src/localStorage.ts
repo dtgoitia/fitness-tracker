@@ -81,6 +81,7 @@ class StoredItem<T> {
 }
 
 export class Storage {
+  trainables: StoredItem<object[] | undefined>;
   activities: StoredItem<object[] | undefined>;
   history: StoredItem<object[] | undefined>;
   trainings: StoredItem<object[] | undefined>;
@@ -88,6 +89,7 @@ export class Storage {
 
   constructor() {
     const prefix = STORAGE_PREFIX;
+    this.trainables = new StoredItem(`${prefix}__trainables`, ValueType.object);
     this.activities = new StoredItem(`${prefix}__activities`, ValueType.object);
     this.history = new StoredItem(`${prefix}__history`, ValueType.object);
     this.trainings = new StoredItem(`${prefix}__trainings`, ValueType.object);
