@@ -14,6 +14,7 @@ export interface Activity {
   readonly name: ActivityName;
   readonly otherNames: ActivityName[];
   readonly lastModified: Date; // usefull to later reconcile data offline
+  readonly trainableIds: TrainableId[];
 }
 
 export enum Intensity {

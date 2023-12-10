@@ -12,6 +12,7 @@ function buildActivity({ name }: { name: ActivityName }): Activity {
     name,
     otherNames: [],
     lastModified: now(),
+    trainableIds: [],
   };
 }
 

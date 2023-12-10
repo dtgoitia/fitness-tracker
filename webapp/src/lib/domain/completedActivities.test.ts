@@ -36,6 +36,7 @@ function buildActivity({ id }: { id?: ActivityId }): Activity {
     name: "test activity",
     otherNames: [],
     lastModified: now(),
+    trainableIds: [],
   };
 }
 

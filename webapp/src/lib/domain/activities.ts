@@ -1,9 +1,18 @@
 import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
+import { addToSet, assessSetOverlap, deleteFromSet } from "../setOperations";
 import { SortAction } from "../sort";
 import { Err, Ok, Result } from "../success";
-import { Activity, ActivityId, ActivityName, Duration, Hash, Intensity } from "./model";
+import {
+  Activity,
+  ActivityId,
+  ActivityName,
+  Duration,
+  Hash,
+  Intensity,
+  TrainableId,
+} from "./model";
 import { Observable, Subject } from "rxjs";
 
 export const ACTIVITY_PREFIX = "act";
@@ -30,18 +39,39 @@ export class ActivityManager {
 
   private changesSubject: Subject<ActivityChange>;
   private activities: Map<ActivityId, Activity>;
+  private activitiesByTrainable: Map<TrainableId, Set<ActivityId>>;
 
   constructor() {
     this.changesSubject = new Subject<ActivityChange>();
     this.changes$ = this.changesSubject.asObservable();
 
     this.activities = new Map<ActivityId, Activity>();
+    this.activitiesByTrainable = new Map<TrainableId, Set<ActivityId>>();
   }
 
   public initialize({ activities }: InitializeArgs): void {
-    for (const activity of activities) {
+    const map = new Map<TrainableId, Set<ActivityId>>();
+
+    for (let activity of activities) {
+      // temporary migration operation to accommodate missing
+      if (activity.trainableIds === undefined) {
+        activity = { ...activity, trainableIds: [] };
+      }
+
       this.activities.set(activity.id, activity);
+
+      for (const trainableId of activity.trainableIds) {
+        const trainableIds = map.get(trainableId);
+        if (trainableIds === undefined) {
+          map.set(trainableId, new Set<ActivityId>([activity.id]));
+        } else {
+          trainableIds.add(activity.id); // CAVEAT relies on mutation
+          map.set(trainableId, trainableIds);
+        }
+      }
     }
+
+    this.activitiesByTrainable = map;
 
     this.changesSubject.next({ kind: "activity-manager-initialized" });
   }
@@ -53,27 +83,42 @@ export class ActivityManager {
       name,
       otherNames,
       lastModified: now(),
+      trainableIds: [],
     };
     this.activities.set(id, activity);
     this.changesSubject.next({ kind: "activity-added", id });
   }
 
-  public update({ activity }: UpdateActivityArgs): Result {
-    const { id } = activity;
-    if (this.activities.has(id) === false) {
+  public update({ activity: updated }: UpdateActivityArgs): Result {
+    const { id } = updated;
+    const previous = this.activities.get(id);
+    if (previous === undefined) {
       return Err(
         `ActivityManager.update::No activity found with ID ${id}, nothing will be updated`
       );
     }
 
-    this.activities.set(id, activity);
+    this.activities.set(id, updated);
+
+    // Update in-memory Activity<>Interval indexes
+    const { inAButNotInB: removed, inBButNotInA: added } = assessSetOverlap({
+      a: new Set(previous.trainableIds),
+      b: new Set(updated.trainableIds),
+    });
+    for (const trainableId of added) {
+      this.addActivityToTrainableIndex({ trainableId, activityId: id });
+    }
+    for (const trainableId of removed) {
+      this.removeActivityFromTrainableIndex({ trainableId, activityId: id });
+    }
 
     this.changesSubject.next({ kind: "activity-updated", id });
     return Ok(undefined);
   }
 
   public delete({ id }: DeleteteActivityArgs): void {
-    if (this.activities.has(id) === false) {
+    const previous = this.activities.get(id);
+    if (previous === undefined) {
       console.debug(
         `ActivityManager.delete::No activity found with ID ${id}, nothing will be deleted`
       );
@@ -81,6 +126,11 @@ export class ActivityManager {
     }
 
     this.activities.delete(id);
+
+    for (const trainableId of previous.trainableIds) {
+      this.removeActivityFromTrainableIndex({ trainableId, activityId: id });
+    }
+
     this.changesSubject.next({ kind: "activity-deleted", id });
   }
 
@@ -92,6 +142,14 @@ export class ActivityManager {
     return [...this.activities.values()].sort(sortActivitiesAlphabetically);
   }
 
+  public getByTrainable({ trainableId }: { trainableId: TrainableId }): Set<ActivityId> {
+    const activityIds = this.activitiesByTrainable.get(trainableId);
+    if (activityIds === undefined) {
+      return new Set<ActivityId>();
+    }
+    return activityIds;
+  }
+
   private generateActivityId() {
     let id: Hash = generateId({ prefix: ACTIVITY_PREFIX });
 
@@ -101,6 +159,36 @@ export class ActivityManager {
     }
 
     return id;
+  }
+
+  private addActivityToTrainableIndex({
+    trainableId,
+    activityId,
+  }: {
+    trainableId: TrainableId;
+    activityId: ActivityId;
+  }): void {
+    const previous = this.activitiesByTrainable.get(trainableId);
+    if (previous === undefined) {
+      return;
+    }
+    const updated = addToSet(previous, activityId);
+    this.activitiesByTrainable.set(trainableId, updated);
+  }
+
+  private removeActivityFromTrainableIndex({
+    trainableId,
+    activityId,
+  }: {
+    trainableId: TrainableId;
+    activityId: ActivityId;
+  }): void {
+    const previous = this.activitiesByTrainable.get(trainableId);
+    if (previous === undefined) {
+      return;
+    }
+    const updated = deleteFromSet(previous, activityId);
+    this.activitiesByTrainable.set(trainableId, updated);
   }
 }
 
@@ -134,6 +222,13 @@ export function setActivityOtherNames(
   otherNames: ActivityName[]
 ): Activity {
   return { ...activity, otherNames, lastModified: now() };
+}
+
+export function setActivityTrainables(
+  activity: Activity,
+  trainableIds: TrainableId[]
+): Activity {
+  return { ...activity, trainableIds, lastModified: now() };
 }
 
 export function getIntensityLevelShorthand(intensity: Intensity): string {
