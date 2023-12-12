@@ -100,17 +100,32 @@ export class App {
    * Delete `Activity` after checking if any other entities will stay orphan,
    * e.g. a `CompletedActivity` that ends up pointing to a missing `Activity`.
    */
-  public deleteActivity({ id }: { id: ActivityId }): void {
+  public deleteActivity({ id }: { id: ActivityId }): DeleteActivityResult {
     const previous = this.activityManager.get(id);
     if (previous === undefined) {
       console.debug(
-        `ActivityManager.delete::No activity found with ID ${id}, nothing will be deleted`
+        `App.deleteActivity::no activity found with ID ${id}, nothing will be deleted`
       );
-      return;
+      return { kind: "activity-not-found" };
+    }
+
+    console.log(`App.deleteActivity::Removing activity (ID: ${id})`);
+
+    if (this.completedActivityManager.isActivityUsedInHistory({ activityId: id })) {
+      return {
+        kind: "activity-found-but-was-not-deleted",
+        reason: `This activity is used in the history, cannot be removed!`,
+      };
     }
 
     this.activityManager.deleteUnsafe({ id });
+    return { kind: "activity-successfully-deleted" };
   }
 }
 
 type AppStatus = { kind: "app-initialized" };
+
+type DeleteActivityResult =
+  | { kind: "activity-successfully-deleted" }
+  | { kind: "activity-not-found" }
+  | { kind: "activity-found-but-was-not-deleted"; reason: string };

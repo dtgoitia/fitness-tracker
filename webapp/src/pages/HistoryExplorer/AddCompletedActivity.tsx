@@ -80,12 +80,15 @@ function AddCompletedActivity() {
 
   function handleRemoveActivity(id: ActivityId): void {
     console.log(`App.handleRemoveActivity::Removing activity (ID: ${id})`);
-    if (completedActivityManager.isActivityUsedInHistory({ activityId: id })) {
-      alert(`This activity is used in the history, cannot be removed!`);
-      return;
+    const result = app.deleteActivity({ id });
+    switch (result.kind) {
+      case "activity-not-found":
+        return;
+      case "activity-successfully-deleted":
+        return;
+      case "activity-found-but-was-not-deleted":
+        return alert(`This activity is used in the history, cannot be removed!`);
     }
-
-    app.deleteActivity({ id });
   }
 
   function clearSearch(): void {
