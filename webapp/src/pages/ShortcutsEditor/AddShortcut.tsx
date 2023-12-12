@@ -1,11 +1,10 @@
 import { ActivityManager } from "../../lib/domain/activities";
-import { Activity, ActivityId, FilterQuery } from "../../lib/domain/model";
+import { ActivityId, FilterQuery } from "../../lib/domain/model";
 import { ShortcutManager } from "../../lib/domain/shortcuts";
-import { filterInventory } from "../../lib/search";
 import InventoryView from "../HistoryExplorer/Inventory";
 import SearchBox from "../HistoryExplorer/SearchBox";
 import { Button } from "@blueprintjs/core";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -21,25 +20,10 @@ interface Props {
   shortcutManager: ShortcutManager;
 }
 function AddCompletedActivity({ activityManager, shortcutManager }: Props) {
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
 
   const [userIsSearching, setUserIsSearching] = useState(false);
   const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
-
-  useEffect(() => {
-    const activitiesSubscription = activityManager.changes$.subscribe((_) => {
-      const sortedActivities = activityManager.getAll();
-      setActivities(sortedActivities);
-    });
-
-    const sortedActivities = activityManager.getAll();
-    setActivities(sortedActivities);
-
-    return () => {
-      activitiesSubscription.unsubscribe();
-    };
-  }, [activityManager]);
 
   function handleSubmit(event: ChangeEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,7 +61,7 @@ function AddCompletedActivity({ activityManager, shortcutManager }: Props) {
         onFocus={() => setUserIsSearching(true)}
       />
       <InventoryView
-        activities={filterInventory(activities, filterQuery)}
+        activities={activityManager.searchByPrefix(filterQuery)}
         removeActivity={() => {
           alert("removal is disabled from here");
         }}

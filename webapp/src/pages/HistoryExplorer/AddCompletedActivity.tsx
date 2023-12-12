@@ -1,12 +1,11 @@
 import { useApp } from "../..";
 import { now } from "../../lib/datetimeUtils";
-import { Activity, ActivityId, FilterQuery } from "../../lib/domain/model";
+import { ActivityId, FilterQuery } from "../../lib/domain/model";
 import { Duration, Intensity } from "../../lib/domain/model";
-import { filterInventory } from "../../lib/search";
 import InventoryView from "./Inventory";
 import SearchBox from "./SearchBox";
 import { Button, Collapse, Intent } from "@blueprintjs/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 
 const ButtonsLabel = styled.label`
@@ -24,7 +23,6 @@ function AddCompletedActivity() {
   const activityManager = app.activityManager;
   const completedActivityManager = app.completedActivityManager;
 
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [selected, setSelected] = useState<ActivityId | undefined>(undefined);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -34,16 +32,6 @@ function AddCompletedActivity() {
 
   const [userIsSearching, setUserIsSearching] = useState(false);
   const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
-
-  useEffect(() => {
-    activityManager.changes$.subscribe((_) => {
-      const sortedActivities = activityManager.getAll();
-      setActivities(sortedActivities);
-    });
-
-    const sortedActivities = activityManager.getAll();
-    setActivities(sortedActivities);
-  }, [activityManager]);
 
   function handleSubmit(event: any) {
     event.preventDefault();
@@ -157,7 +145,7 @@ function AddCompletedActivity() {
           onFocus={() => setUserIsSearching(true)}
         />
         <InventoryView
-          activities={filterInventory(activities, filterQuery)}
+          activities={activityManager.searchByPrefix(filterQuery)}
           removeActivity={handleRemoveActivity}
           selectActivity={handleSelectActivity}
           collapse={!userIsSearching}

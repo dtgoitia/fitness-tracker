@@ -1,3 +1,4 @@
+import { Autocompleter, Word } from "../autocomplete";
 import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
@@ -29,8 +30,13 @@ export class TrainableManager {
 
   private changesSubject: Subject<TrainableChange>;
   private trainables: Map<TrainableId, Trainable>;
+  private autocompleter: Autocompleter<Trainable>;
 
   constructor() {
+    this.autocompleter = new Autocompleter<Trainable>({
+      itemToWordMapper: trainableToWords,
+    });
+
     this.changesSubject = new Subject<TrainableChange>();
     this.changes$ = this.changesSubject.asObservable();
 
@@ -41,6 +47,8 @@ export class TrainableManager {
     for (const trainable of trainables) {
       this.trainables.set(trainable.id, trainable);
     }
+
+    this.autocompleter.initialize({ items: trainables });
 
     this.changesSubject.next({ kind: "trainable-manager-initialized" });
   }
@@ -53,12 +61,15 @@ export class TrainableManager {
       lastModified: now(),
     };
     this.trainables.set(id, trainable);
+    this.autocompleter.addItem(trainable);
     this.changesSubject.next({ kind: "trainable-added", id });
   }
 
   public update({ trainable }: UpdateTrainableArgs): Result {
     const { id } = trainable;
-    if (this.trainables.has(id) === false) {
+
+    const previous = this.trainables.get(id);
+    if (previous === undefined) {
       return Err(
         `TrainableManager.update::No trainable found with ID ${id}, nothing will be updated`
       );
@@ -66,12 +77,16 @@ export class TrainableManager {
 
     this.trainables.set(id, trainable);
 
+    this.autocompleter.removeItem(previous);
+    this.autocompleter.addItem(trainable);
+
     this.changesSubject.next({ kind: "trainable-updated", id });
     return Ok(undefined);
   }
 
   public delete({ id }: DeleteteTrainableArgs): void {
-    if (this.trainables.has(id) === false) {
+    const previous = this.trainables.get(id);
+    if (previous === undefined) {
       console.debug(
         `TrainableManager.delete::No trainable found with ID ${id}, nothing will be deleted`
       );
@@ -79,6 +94,9 @@ export class TrainableManager {
     }
 
     this.trainables.delete(id);
+
+    this.autocompleter.removeItem(previous);
+
     this.changesSubject.next({ kind: "trainable-deleted", id });
   }
 
@@ -88,6 +106,21 @@ export class TrainableManager {
 
   public getAll(): Trainable[] {
     return [...this.trainables.values()].sort(sortTrainablesAlphabetically);
+  }
+
+  /**
+   * Find trainables that cointain words starting with the provided query
+   */
+  public searchByPrefix(query: string): Trainable[] {
+    const prefixes = query.split(" ").filter((prefix) => !!prefix);
+
+    if (prefixes.length === 0) return this.getAll();
+
+    const unsortedResults = this.autocompleter.search(prefixes);
+
+    return [...this.trainables.values()]
+      .filter((trainable) => unsortedResults.has(trainable))
+      .sort(sortTrainablesAlphabetically);
   }
 
   private generateTrainableId() {
@@ -121,4 +154,15 @@ function sortTrainablesAlphabetically(a: Trainable, b: Trainable): SortAction {
     default:
       throw unreachable();
   }
+}
+
+function trainableToWords(trainable: Trainable): Set<Word> {
+  const trainableWords = [trainable.name]
+    .filter((name) => name)
+    .map((name) => name.toLowerCase())
+    .map((name) => name.split(" "))
+    .flat();
+
+  const words = new Set(trainableWords);
+  return words;
 }

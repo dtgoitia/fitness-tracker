@@ -1,3 +1,4 @@
+import { Autocompleter, Word } from "../autocomplete";
 import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
@@ -40,8 +41,13 @@ export class ActivityManager {
   private changesSubject: Subject<ActivityChange>;
   private activities: Map<ActivityId, Activity>;
   private activitiesByTrainable: Map<TrainableId, Set<ActivityId>>;
+  private autocompleter: Autocompleter<Activity>;
 
   constructor() {
+    this.autocompleter = new Autocompleter<Activity>({
+      itemToWordMapper: activityToWords,
+    });
+
     this.changesSubject = new Subject<ActivityChange>();
     this.changes$ = this.changesSubject.asObservable();
 
@@ -73,6 +79,8 @@ export class ActivityManager {
 
     this.activitiesByTrainable = map;
 
+    this.autocompleter.initialize({ items: activities });
+
     this.changesSubject.next({ kind: "activity-manager-initialized" });
   }
 
@@ -86,6 +94,7 @@ export class ActivityManager {
       trainableIds: [],
     };
     this.activities.set(id, activity);
+    this.autocompleter.addItem(activity);
     this.changesSubject.next({ kind: "activity-added", id });
   }
 
@@ -112,6 +121,9 @@ export class ActivityManager {
       this.removeActivityFromTrainableIndex({ trainableId, activityId: id });
     }
 
+    this.autocompleter.removeItem(previous);
+    this.autocompleter.addItem(updated);
+
     this.changesSubject.next({ kind: "activity-updated", id });
     return Ok(undefined);
   }
@@ -135,6 +147,8 @@ export class ActivityManager {
       this.removeActivityFromTrainableIndex({ trainableId, activityId: id });
     }
 
+    this.autocompleter.removeItem(previous);
+
     this.changesSubject.next({ kind: "activity-deleted", id });
   }
 
@@ -144,6 +158,21 @@ export class ActivityManager {
 
   public getAll(): Activity[] {
     return [...this.activities.values()].sort(sortActivitiesAlphabetically);
+  }
+
+  /**
+   * Find activities that cointain words starting with the provided query
+   */
+  public searchByPrefix(query: string): Activity[] {
+    const prefixes = query.split(" ").filter((prefix) => !!prefix);
+
+    if (prefixes.length === 0) return this.getAll();
+
+    const unsortedResults = this.autocompleter.search(prefixes);
+
+    return [...this.activities.values()]
+      .filter((activity) => unsortedResults.has(activity))
+      .sort(sortActivitiesAlphabetically);
   }
 
   public getByTrainable({ trainableId }: { trainableId: TrainableId }): Set<ActivityId> {
@@ -259,4 +288,15 @@ export function getDurationLevelShorthand(duration: Duration): string {
     default:
       throw unreachable(`unhandled Duration variant: ${duration}`);
   }
+}
+
+export function activityToWords(activity: Activity): Set<Word> {
+  const activityWords = [activity.name, ...(activity.otherNames || [])]
+    .filter((name) => name)
+    .map((name) => name.toLowerCase())
+    .map((name) => name.split(" "))
+    .flat();
+
+  const words = new Set(activityWords);
+  return words;
 }
