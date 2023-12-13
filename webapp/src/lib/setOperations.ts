@@ -14,6 +14,17 @@ export function setsAreEqual<T>(a: Set<T> | undefined, b: Set<T> | undefined): b
 }
 
 /**
+ * Compute the set union between `a` and `b`, or in layman words, add `a` and
+ * `b` together
+ * @param a set A
+ * @param b set B
+ * @returns reference resulting union
+ */
+export function union<T>(a: Set<T>, b: Set<T>): Set<T> {
+  return new Set<T>([...a, ...b]);
+}
+
+/**
  * Add item to a set without mutating the original set
  */
 export function addToSet<T>(set: Set<T>, item: T): Set<T> {
