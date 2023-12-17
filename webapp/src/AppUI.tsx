@@ -7,6 +7,8 @@ import PageNotFound from "./pages/PageNotFound";
 import { RecordActivityPage } from "./pages/RecordActivity";
 import ShortcutsPage from "./pages/ShortcutsEditor";
 import StatsPage from "./pages/Stats";
+import { TrainableExplorer } from "./pages/TrainableExplorer";
+import { TrainablePage } from "./pages/TrainablePage";
 import TrainingEditor from "./pages/TrainingEditor";
 import TrainingExplorer from "./pages/TrainingExplorer";
 import Paths from "./routes";
@@ -27,6 +29,8 @@ export function AppUI() {
       <Route path={Paths.historyRecord} element={<CompletedActivityPage />} />
       <Route path={Paths.activities} element={<ActivityExplorer />} />
       <Route path={Paths.activityEditor} element={<ActivityPage />} />
+      <Route path={Paths.trainables} element={<TrainableExplorer />} />
+      <Route path={Paths.trainableEditor} element={<TrainablePage />} />
       <Route path={Paths.trainings} element={<TrainingExplorer />} />
       <Route path={Paths.trainingEditor} element={<TrainingEditor />} />
       <Route path={Paths.shortcuts} element={<ShortcutsPage />} />

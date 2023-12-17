@@ -8,6 +8,8 @@ enum Paths {
   historyRecord = "/history/:completedActivityId",
   activities = "/activities",
   activityEditor = "/activities/:activityId",
+  trainables = "/trainables",
+  trainableEditor = "/trainables/:trainableId",
   trainings = "/trainings",
   trainingEditor = "/trainings/:trainingId",
   stats = "/stats",

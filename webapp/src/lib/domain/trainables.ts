@@ -4,7 +4,7 @@ import { unreachable } from "../devex";
 import { generateId } from "../hash";
 import { SortAction } from "../sort";
 import { Err, Ok, Result } from "../success";
-import { Hash, Trainable, TrainableId, TrainableName } from "./model";
+import { Hash, Trainable, TrainableId, TrainableName, TrainableNotes } from "./model";
 import { Observable, Subject } from "rxjs";
 
 export const IMPROVABLE_PREFIX = "imp";
@@ -166,4 +166,27 @@ function trainableToWords(trainable: Trainable): Set<Word> {
 
   const words = new Set(trainableWords);
   return words;
+}
+
+export function setTrainableName(trainable: Trainable, name: TrainableName): Trainable {
+  return { ...trainable, name, lastModified: now() };
+}
+
+export function setTrainableNotes(
+  trainable: Trainable,
+  notes: TrainableNotes
+): Trainable {
+  return { ...trainable, notes, lastModified: now() };
+}
+
+export function trainableAreDifferent(a: Trainable, b: Trainable): boolean {
+  return trainablesAreEqual(a, b) === false;
+}
+
+export function trainablesAreEqual(a: Trainable, b: Trainable): boolean {
+  if (a.id !== b.id) return false;
+  if (a.name !== b.name) return false;
+  if (a.notes !== b.notes) return false;
+
+  return true;
 }
