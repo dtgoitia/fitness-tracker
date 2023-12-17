@@ -5,7 +5,7 @@ import { ShortcutManager } from "../domain/shortcuts";
 import { TrainableManager } from "../domain/trainables";
 import { TrainingManager } from "../domain/trainings";
 import { BrowserStorage } from "./browserStorage";
-import { Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 
 interface Args {
   trainableManager: TrainableManager;
@@ -42,7 +42,7 @@ export class App {
     this.shortcutManager = shortcutManager;
     this.browserStorage = browserStorage;
 
-    this.statusSubject = new Subject<AppStatus>();
+    this.statusSubject = new BehaviorSubject<AppStatus>({ kind: "app-not-initialized" });
     this.status$ = this.statusSubject.asObservable();
   }
 
@@ -55,6 +55,7 @@ export class App {
     //
     // ===================================================================================
     console.log(`${logPrefix}::Loading data...`);
+    this.statusSubject.next({ kind: "app-initializing" });
 
     const activities = this.browserStorage.getActivities();
     console.log(`${logPrefix}::${activities.length} activities found`);
@@ -123,7 +124,10 @@ export class App {
   }
 }
 
-type AppStatus = { kind: "app-initialized" };
+type AppStatus =
+  | { kind: "app-not-initialized" }
+  | { kind: "app-initializing" }
+  | { kind: "app-initialized" };
 
 type DeleteActivityResult =
   | { kind: "activity-successfully-deleted" }
