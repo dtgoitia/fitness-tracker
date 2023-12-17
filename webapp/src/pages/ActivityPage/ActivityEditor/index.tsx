@@ -5,7 +5,6 @@ import { notify } from "../../../notify";
 import { CompletedActivityCalendar } from "./CompletedActivityCalendar";
 import { Button, Label } from "@blueprintjs/core";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 
 interface Props {
   activity: Activity;
@@ -13,8 +12,6 @@ interface Props {
 
 export function ActivityEditor({ activity: originalActivity }: Props) {
   const app = useApp();
-
-  const { activityId } = useParams();
 
   const [activity, setActivity] = useState<Activity>(originalActivity);
 
@@ -77,7 +74,7 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
 
       <Button intent="success" text="Save" onClick={handleSave} />
 
-      {activityId && <CompletedActivityCalendar activityId={activityId} />}
+      {activity && <CompletedActivityCalendar activityId={activity.id} />}
 
       <pre>{JSON.stringify(activity, null, 2)}</pre>
     </>
