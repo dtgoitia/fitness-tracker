@@ -57,9 +57,11 @@ export interface Training {
 
 export type TrainableId = string;
 export type TrainableName = string;
+export type TrainableNotes = string;
 
 export interface Trainable {
   readonly id: TrainableId;
   readonly name: TrainableName;
   readonly lastModified: Date; // usefull to later reconcile data offline
+  readonly notes: TrainableNotes;
 }

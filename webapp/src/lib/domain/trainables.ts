@@ -59,6 +59,7 @@ export class TrainableManager {
       id,
       name,
       lastModified: now(),
+      notes: "",
     };
     this.trainables.set(id, trainable);
     this.autocompleter.addItem(trainable);
