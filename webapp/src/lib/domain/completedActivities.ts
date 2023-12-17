@@ -7,11 +7,11 @@ import {
   ActivityId,
   CompletedActivity,
   CompletedActivityId,
+  CompletedActivityNotes,
   Duration,
   Hash,
   ISODateString,
   Intensity,
-  Notes,
 } from "./model";
 import { Observable, Subject } from "rxjs";
 
@@ -30,7 +30,7 @@ interface AddCompletedActivityArgs {
   intensity: Intensity;
   duration: Duration;
   date: Date;
-  notes: Notes;
+  notes: CompletedActivityNotes;
 }
 
 interface UpdateCompletedActivityArgs {
@@ -205,9 +205,13 @@ export class CompletedActivityManager {
     }
   }
 
-  public getLastActivityNotes({ activityId }: { activityId: ActivityId }): Notes {
+  public getLastActivityNotes({
+    activityId,
+  }: {
+    activityId: ActivityId;
+  }): CompletedActivityNotes {
     let latestDate: Date = new Date(2000, 0, 0);
-    let latestNote: Notes = "";
+    let latestNote: CompletedActivityNotes = "";
 
     for (const completedActivity of this.completedActivities.values()) {
       if (
@@ -329,7 +333,7 @@ export function setCompletedActivityDuration(
 
 export function setCompletedActivityNotes(
   completedActivity: CompletedActivity,
-  notes: Notes
+  notes: CompletedActivityNotes
 ): CompletedActivity {
   return { ...completedActivity, notes, lastModified: now() };
 }

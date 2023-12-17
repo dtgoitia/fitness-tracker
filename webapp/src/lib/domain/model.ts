@@ -4,7 +4,7 @@ export type Hash = string;
 export type ActivityId = Hash;
 export type ActivityName = string;
 export type CompletedActivityId = string;
-export type Notes = string;
+export type CompletedActivityNotes = string;
 export type FilterQuery = string;
 export type Shortcut = ActivityId;
 export type ExternalReference = string; // URLs to videos, images, etc.
@@ -35,7 +35,7 @@ export interface CompletedActivity {
   readonly intensity: Intensity;
   readonly duration: Duration;
   readonly date: Date;
-  readonly notes: Notes;
+  readonly notes: CompletedActivityNotes;
   readonly lastModified: Date; // usefull to later reconcile data offline
 }
 
