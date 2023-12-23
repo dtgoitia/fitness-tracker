@@ -1,6 +1,6 @@
-import { ActivityManager } from "../domain/activities";
+import { ActivityManager, sortActivitiesAlphabetically } from "../domain/activities";
 import { CompletedActivityManager } from "../domain/completedActivities";
-import { ActivityId } from "../domain/model";
+import { Activity, ActivityId, TrainableId } from "../domain/model";
 import { ShortcutManager } from "../domain/shortcuts";
 import { TrainableManager } from "../domain/trainables";
 import { TrainingManager } from "../domain/trainings";
@@ -122,6 +122,41 @@ export class App {
     this.activityManager.deleteUnsafe({ id });
     return { kind: "activity-successfully-deleted" };
   }
+
+  public deleteTrainable({ id }: { id: TrainableId }): DeleteTrainableResult {
+    const previous = this.trainableManager.get(id);
+    if (previous === undefined) {
+      console.debug(
+        `App.deleteTrainable::no trainable found with ID ${id}, nothing will be deleted`
+      );
+      return { kind: "trainable-not-found" };
+    }
+
+    console.log(`App.deleteTrainable::Removing trainable (ID: ${id})`);
+
+    const activityIds = this.activityManager.getByTrainable({
+      trainableId: id,
+    });
+
+    if (activityIds.size > 0) {
+      return {
+        kind: "trainable-found-but-was-not-deleted",
+        reason: [
+          `This trainable cannot be removed because these activities are using it: `,
+          [...activityIds]
+            .map((activityId) => this.activityManager.get(activityId))
+            .filter((activity) => activity !== undefined)
+            .map((activity) => activity as Activity)
+            .sort(sortActivitiesAlphabetically)
+            .map(({ id, name }) => `  - (${id}) ${name}`)
+            .join("\n"),
+        ].join(""),
+      };
+    }
+
+    this.trainableManager.deleteUnsafe({ id });
+    return { kind: "trainable-successfully-deleted" };
+  }
 }
 
 type AppStatus =
@@ -133,3 +168,8 @@ type DeleteActivityResult =
   | { kind: "activity-successfully-deleted" }
   | { kind: "activity-not-found" }
   | { kind: "activity-found-but-was-not-deleted"; reason: string };
+
+type DeleteTrainableResult =
+  | { kind: "trainable-successfully-deleted" }
+  | { kind: "trainable-not-found" }
+  | { kind: "trainable-found-but-was-not-deleted"; reason: string };

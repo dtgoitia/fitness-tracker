@@ -1,7 +1,13 @@
 import { useApp } from "../../..";
-import { setActivityName, setActivityOtherNames } from "../../../lib/domain/activities";
-import { Activity, ActivityName } from "../../../lib/domain/model";
+import {
+  setActivityName,
+  setActivityOtherNames,
+  addTrainableToActivity,
+  removeTrainableFromActivity,
+} from "../../../lib/domain/activities";
+import { Activity, ActivityName, TrainableId } from "../../../lib/domain/model";
 import { notify } from "../../../notify";
+import { ActivityTrainableEditor } from "./ActivityTrainableEditor";
 import { CompletedActivityCalendar } from "./CompletedActivityCalendar";
 import { Button, Label } from "@blueprintjs/core";
 import { useState } from "react";
@@ -23,6 +29,14 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
   function handleOtherNamesChange(event: any): void {
     const otherNames: ActivityName[] = event.target.value.split(",");
     setActivity(setActivityOtherNames(activity, otherNames));
+  }
+
+  function handleAddTrainable({ id }: { id: TrainableId }): void {
+    setActivity(addTrainableToActivity(activity, id));
+  }
+
+  function handleRemoveTrainable({ id: toRemove }: { id: TrainableId }): void {
+    setActivity(removeTrainableFromActivity(activity, toRemove));
   }
 
   function handleSave(): void {
@@ -73,6 +87,12 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
       </Label>
 
       <Button intent="success" text="Save" onClick={handleSave} />
+
+      <ActivityTrainableEditor
+        activity={activity}
+        onAdd={handleAddTrainable}
+        onRemove={handleRemoveTrainable}
+      />
 
       {activity && <CompletedActivityCalendar activityId={activity.id} />}
 

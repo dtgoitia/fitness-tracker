@@ -225,7 +225,7 @@ export class ActivityManager {
   }
 }
 
-function sortActivitiesAlphabetically(a: Activity, b: Activity): SortAction {
+export function sortActivitiesAlphabetically(a: Activity, b: Activity): SortAction {
   const name_a = a.name.toLowerCase();
   const name_b = b.name.toLowerCase();
   switch (true) {
@@ -257,10 +257,32 @@ export function setActivityOtherNames(
   return { ...activity, otherNames, lastModified: now() };
 }
 
-export function setActivityTrainables(
+export function addTrainableToActivity(
   activity: Activity,
-  trainableIds: TrainableId[]
+  trainableId: TrainableId
 ): Activity {
+  const trainableIds = [];
+  const visited = new Set<TrainableId>();
+  for (const id of activity.trainableIds) {
+    visited.add(id);
+    trainableIds.push(id);
+  }
+
+  if (visited.has(trainableId)) {
+    // Activity does not need to update, as it already has the trainable you are
+    // trying to add
+    return activity;
+  }
+
+  trainableIds.push(trainableId);
+  return { ...activity, trainableIds, lastModified: now() };
+}
+
+export function removeTrainableFromActivity(
+  activity: Activity,
+  toRemove: TrainableId
+): Activity {
+  const trainableIds = activity.trainableIds.filter((id) => id !== toRemove);
   return { ...activity, trainableIds, lastModified: now() };
 }
 

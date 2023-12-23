@@ -1,0 +1,9 @@
+- [ ] update ActivityEditor to add Trainables to an activity
+- [ ] on Trainable delete, check if there are activities linked
+- [x] on Activity delete, **do not** check if there are trainables linked
+- [x] on Activity create, update activityId->trainableId[] indexes
+- [x] on Activity update, update activityId->trainableId[] indexes
+
+new tickets for later on
+- [ ] convert className={`foo`} to className="foo"
+- [ ] ActivityEditor page, disable the `Save` button if there are no changes, and add the `Discard` button
