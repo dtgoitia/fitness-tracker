@@ -85,13 +85,10 @@ export class TrainableManager {
     return Ok(undefined);
   }
 
-  public delete({ id }: DeleteteTrainableArgs): void {
+  public deleteUnsafe({ id }: DeleteteTrainableArgs): DeleteTrainableResult {
     const previous = this.trainables.get(id);
     if (previous === undefined) {
-      console.debug(
-        `TrainableManager.delete::No trainable found with ID ${id}, nothing will be deleted`
-      );
-      return;
+      return { kind: "trainable-not-found" };
     }
 
     this.trainables.delete(id);
@@ -99,6 +96,8 @@ export class TrainableManager {
     this.autocompleter.removeItem(previous);
 
     this.changesSubject.next({ kind: "trainable-deleted", id });
+
+    return { kind: "trainable-successfully-deleted" };
   }
 
   public get(id: TrainableId): Trainable | undefined {
@@ -190,3 +189,7 @@ export function trainablesAreEqual(a: Trainable, b: Trainable): boolean {
 
   return true;
 }
+
+export type DeleteTrainableResult =
+  | { kind: "trainable-successfully-deleted" }
+  | { kind: "trainable-not-found" };

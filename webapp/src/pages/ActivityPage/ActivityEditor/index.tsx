@@ -1,10 +1,19 @@
 import { useApp } from "../../..";
-import { setActivityName, setActivityOtherNames } from "../../../lib/domain/activities";
-import { Activity, ActivityName } from "../../../lib/domain/model";
+import { ScreenBottomNavBar } from "../../../components/ScreenBottomNavBar";
+import {
+  setActivityName,
+  setActivityOtherNames,
+  addTrainableToActivity,
+  removeTrainableFromActivity,
+  diffActivity,
+} from "../../../lib/domain/activities";
+import { Activity, ActivityName, TrainableId } from "../../../lib/domain/model";
 import { notify } from "../../../notify";
+import { ActivityTrainableEditor } from "./ActivityTrainableEditor";
 import { CompletedActivityCalendar } from "./CompletedActivityCalendar";
 import { Button, Label } from "@blueprintjs/core";
 import { useState } from "react";
+import styled from "styled-components";
 
 interface Props {
   activity: Activity;
@@ -14,6 +23,12 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
   const app = useApp();
 
   const [activity, setActivity] = useState<Activity>(originalActivity);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
+  const unsavedChanges = diffActivity({
+    before: originalActivity,
+    after: activity,
+  }).hasChanges;
 
   function handleNameChange(event: any): void {
     const name: ActivityName = event.target.value;
@@ -21,8 +36,17 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
   }
 
   function handleOtherNamesChange(event: any): void {
-    const otherNames: ActivityName[] = event.target.value.split(",");
+    const raw: string = event.target.value;
+    const otherNames: ActivityName[] = raw.split(",").filter((x) => !!x);
     setActivity(setActivityOtherNames(activity, otherNames));
+  }
+
+  function handleAddTrainable({ id }: { id: TrainableId }): void {
+    setActivity(addTrainableToActivity(activity, id));
+  }
+
+  function handleRemoveTrainable({ id: toRemove }: { id: TrainableId }): void {
+    setActivity(removeTrainableFromActivity(activity, toRemove));
   }
 
   function handleSave(): void {
@@ -44,6 +68,17 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
     });
   }
 
+  function handleToggleEditMode(): void {
+    if (isEditing) {
+      if (unsavedChanges) {
+        handleSave();
+      }
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
+    }
+  }
+
   return (
     <>
       <p>
@@ -58,6 +93,7 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
           value={activity.name}
           placeholder="Name"
           onChange={handleNameChange}
+          disabled={isEditing === false}
         />
       </Label>
 
@@ -67,16 +103,35 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
           type="text"
           className={"bp4-input"}
           value={activity.otherNames.join(",")}
-          placeholder="Other names"
+          placeholder={isEditing ? "Other names" : "(empty)"}
           onChange={handleOtherNamesChange}
+          disabled={isEditing === false}
         />
       </Label>
 
-      <Button intent="success" text="Save" onClick={handleSave} />
+      <ActivityTrainableEditor
+        isEditing={isEditing}
+        activity={activity}
+        onAdd={handleAddTrainable}
+        onRemove={handleRemoveTrainable}
+      />
 
-      {activity && <CompletedActivityCalendar activityId={activity.id} />}
+      <CompletedActivityCalendar activityId={activity.id} />
 
-      <pre>{JSON.stringify(activity, null, 2)}</pre>
+      <ScreenBottomNavBar>
+        <EditButtonContainer>
+          <Button
+            intent={unsavedChanges ? "success" : "none"}
+            onClick={handleToggleEditMode}
+            large
+            icon={isEditing ? (unsavedChanges ? "floppy-disk" : "cross") : "edit"}
+          />
+        </EditButtonContainer>
+      </ScreenBottomNavBar>
     </>
   );
 }
+
+const EditButtonContainer = styled.div`
+  padding: 1rem;
+`;

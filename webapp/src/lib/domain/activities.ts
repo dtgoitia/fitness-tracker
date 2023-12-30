@@ -226,7 +226,7 @@ export class ActivityManager {
   }
 }
 
-function sortActivitiesAlphabetically(a: Activity, b: Activity): SortAction {
+export function sortActivitiesAlphabetically(a: Activity, b: Activity): SortAction {
   const name_a = a.name.toLowerCase();
   const name_b = b.name.toLowerCase();
   switch (true) {

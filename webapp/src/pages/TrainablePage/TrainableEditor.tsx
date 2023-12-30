@@ -6,8 +6,10 @@ import {
   trainableAreDifferent,
 } from "../../lib/domain/trainables";
 import { notify } from "../../notify";
+import Paths from "../../routes";
 import { Button, EditableText, Label } from "@blueprintjs/core";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
 
 export function TrainableEditor({ trainable: originalTrainable }: Props) {
   const app = useApp();
+  const navigate = useNavigate();
 
   const [trainable, setTrainable] = useState<Trainable>(originalTrainable);
 
@@ -53,6 +56,40 @@ export function TrainableEditor({ trainable: originalTrainable }: Props) {
         console.error(reason);
       },
     });
+  }
+
+  function handleDelete(): void {
+    const result = app.deleteTrainable({ id: trainable.id });
+    switch (result.kind) {
+      case "trainable-successfully-deleted": {
+        notify({
+          message: `Trainable "${trainable.name}" successfully deleted`,
+          intent: "success",
+        });
+        navigate(Paths.trainables);
+        return;
+      }
+
+      case "trainable-not-found": {
+        const reason = `TrainableManager.delete::No trainable found with ID ${trainable.id}, nothing will be deleted`;
+        notify({
+          message: `ERROR: ${reason}`,
+          intent: "danger",
+        });
+        console.error(reason);
+        return;
+      }
+
+      default: {
+        const reason = `TrainableManager.delete::Trainable with ID ${trainable.id} was not deleted, reason: ${result.reason}`;
+        notify({
+          message: `ERROR: ${reason}`,
+          intent: "danger",
+        });
+        console.error(reason);
+        return;
+      }
+    }
   }
 
   function recomputeDirtyStatus(updated: Trainable): void {
@@ -110,6 +147,8 @@ export function TrainableEditor({ trainable: originalTrainable }: Props) {
       )}
 
       <pre>{JSON.stringify(trainable, null, 2)}</pre>
+
+      <Button intent="danger" text="Delete" onClick={handleDelete} icon="trash" />
     </>
   );
 }
