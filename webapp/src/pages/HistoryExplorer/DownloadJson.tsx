@@ -1,8 +1,6 @@
 import { useApp } from "../..";
+import { App } from "../../lib/app/app";
 import { now } from "../../lib/datetimeUtils";
-import { ActivityManager } from "../../lib/domain/activities";
-import { CompletedActivityManager } from "../../lib/domain/completedActivities";
-import { TrainingManager } from "../../lib/domain/trainings";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -17,9 +15,6 @@ const Container = styled.div`
 
 export function DownloadJson() {
   const app = useApp();
-  const activityManager = app.activityManager;
-  const completedActivityManager = app.completedActivityManager;
-  const trainingManager = app.trainingManager;
 
   const [shareApiIsAvailable, setShareApiIsAvailable] = useState<boolean>(false);
 
@@ -31,12 +26,7 @@ export function DownloadJson() {
 
   function download(): void {
     const fileName = generateFilename({ date });
-    const blob = generateBlob({
-      activityManager,
-      completedActivityManager,
-      trainingManager,
-      date,
-    });
+    const blob = generateBlob({ date, app });
     downloadFile(blob, fileName);
   }
 
@@ -47,13 +37,7 @@ export function DownloadJson() {
     }
 
     const fileName = generateFilename({ date });
-    const file = generateFile({
-      activityManager,
-      completedActivityManager,
-      trainingManager,
-      date,
-      fileName,
-    });
+    const file = generateFile({ app, date, fileName });
     shareFile(file);
   }
 
@@ -71,25 +55,11 @@ export function DownloadJson() {
 }
 
 interface GenerateBlobArgs {
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-  trainingManager: TrainingManager;
+  app: App;
   date: Date;
 }
-function generateBlob({
-  activityManager,
-  completedActivityManager,
-  trainingManager,
-  date,
-}: GenerateBlobArgs): Blob {
-  const data = {
-    date: date.toISOString(),
-    activities: activityManager.getAll(),
-    completedActivities: completedActivityManager.getAll(),
-    trainings: trainingManager.getAll(),
-  };
-
-  const formattedJson = JSON.stringify(data, null, 2);
+function generateBlob({ app, date }: GenerateBlobArgs): Blob {
+  const formattedJson = dataToString({ app, date });
   const blob = new Blob([formattedJson], { type: JSON_MIME_TYPE });
 
   return blob;
@@ -141,27 +111,12 @@ function downloadFile(blob: Blob, filename: string): void {
 }
 
 interface GenerateFileArgs {
-  activityManager: ActivityManager;
-  completedActivityManager: CompletedActivityManager;
-  trainingManager: TrainingManager;
+  app: App;
   date: Date;
   fileName: string;
 }
-function generateFile({
-  activityManager,
-  completedActivityManager,
-  trainingManager,
-  date,
-  fileName,
-}: GenerateFileArgs): File {
-  const data = {
-    date: date.toISOString(),
-    activities: activityManager.getAll(),
-    completedActivities: completedActivityManager.getAll(),
-    trainings: trainingManager.getAll(),
-  };
-
-  const formattedJson = JSON.stringify(data, null, 2);
+function generateFile({ app, date, fileName }: GenerateFileArgs): File {
+  const formattedJson = dataToString({ app, date });
   const file = new File([formattedJson], fileName, { type: JSON_MIME_TYPE });
 
   return file;
@@ -184,4 +139,15 @@ function shareFile(file: File): void {
     .catch((error) => {
       alert(error);
     });
+}
+
+function dataToString({ date, app }: { date: Date; app: App }): string {
+  const data = {
+    date: date.toISOString(),
+    activities: app.activityManager.getAll(),
+    completedActivities: app.completedActivityManager.getAll(),
+    trainings: app.trainingManager.getAll(),
+  };
+
+  return JSON.stringify(data, null, 2);
 }
