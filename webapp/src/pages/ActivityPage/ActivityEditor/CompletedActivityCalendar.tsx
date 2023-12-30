@@ -4,6 +4,7 @@ import { CalendarDay } from "../../../components/Calendar/model";
 import { nextDay, toUTCDay, today } from "../../../lib/datetimeUtils";
 import { ActivityId, CompletedActivity } from "../../../lib/domain/model";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 interface Props {
   activityId: ActivityId;
@@ -39,8 +40,17 @@ export function CompletedActivityCalendar({ activityId }: Props) {
 
   const data = generateCalendarData(completed);
 
-  return <Calendar data={data} />;
+  return (
+    <Container>
+      <div>Completed activities:</div>
+      <Calendar data={data} />
+    </Container>
+  );
 }
+
+const Container = styled.div`
+  padding-top: 1rem;
+`;
 
 function generateCalendarData(completed: CompletedActivity[]): CalendarDay[] {
   const _today = today().getTime();
