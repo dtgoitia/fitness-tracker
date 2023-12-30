@@ -147,6 +147,7 @@ function dataToString({ date, app }: { date: Date; app: App }): string {
     activities: app.activityManager.getAll(),
     completedActivities: app.completedActivityManager.getAll(),
     trainings: app.trainingManager.getAll(),
+    trainables: app.trainableManager.getAll(),
   };
 
   return JSON.stringify(data, null, 2);
