@@ -301,3 +301,63 @@ export function activityToWords(activity: Activity): Set<Word> {
   const words = new Set(activityWords);
   return words;
 }
+
+interface ActivityDiffArgs {
+  readonly updatedName?: ActivityName;
+  readonly updatedOtherNames?: ActivityName[];
+  readonly updatedTrainableIds?: TrainableId[];
+}
+
+class ActivityDiff {
+  public readonly hasChanges: boolean;
+
+  public readonly updatedName?: ActivityName;
+  public readonly updatedOtherNames?: ActivityName[];
+  public readonly updatedTrainableIds?: TrainableId[];
+
+  constructor({ updatedName, updatedOtherNames, updatedTrainableIds }: ActivityDiffArgs) {
+    this.updatedName = updatedName;
+    this.updatedOtherNames = updatedOtherNames;
+    this.updatedTrainableIds = updatedTrainableIds;
+
+    this.hasChanges =
+      this.updatedName !== undefined ||
+      this.updatedOtherNames !== undefined ||
+      this.updatedTrainableIds !== undefined;
+  }
+}
+
+/**
+ * Returns the Activity properties that got updated
+ */
+export function diffActivity({
+  before,
+  after,
+}: {
+  before: Activity;
+  after: Activity;
+}): ActivityDiff {
+  if (before.id !== after.id) {
+    throw unreachable(
+      `activities must have the same ID to be compared, but provided activities have: ${before.id} & ${after.id}`
+    );
+  }
+
+  let updatedName: ActivityName | undefined = undefined;
+  let updatedOtherNames: ActivityName[] | undefined = undefined;
+  let updatedTrainableIds: TrainableId[] | undefined = undefined;
+
+  if (before.name !== after.name) {
+    updatedName = after.name;
+  }
+
+  if (listsAreEqual(before.otherNames, after.otherNames) === false) {
+    updatedOtherNames = after.otherNames;
+  }
+
+  if (listsAreEqual(before.trainableIds, after.trainableIds) === false) {
+    updatedTrainableIds = after.trainableIds;
+  }
+
+  return new ActivityDiff({ updatedName, updatedOtherNames, updatedTrainableIds });
+}
