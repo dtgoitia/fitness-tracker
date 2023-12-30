@@ -2,6 +2,7 @@ import { Autocompleter, Word } from "../autocomplete";
 import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
+import { listsAreEqual } from "../listOperations";
 import { addToSet, assessSetOverlap, deleteFromSet } from "../setOperations";
 import { SortAction } from "../sort";
 import { Err, Ok, Result } from "../success";
