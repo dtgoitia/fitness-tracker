@@ -1,6 +1,6 @@
-export function todo(errorMessage?: string) {
-  throw errorMessage
-    ? new Error(`TODO: ${errorMessage}`)
+export function todo(args: { message?: string } | undefined = undefined): never {
+  throw args && args.message
+    ? new Error(`TODO: ${args.message}`)
     : new Error("TODO: not implemented yet :)");
 }
 
