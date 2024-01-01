@@ -1,4 +1,4 @@
-import { union } from "./setOperations";
+import { intersect, union } from "./setOperations";
 
 export type Word = string;
 type Char = string; // single character string
@@ -334,6 +334,132 @@ export class Autocompleter<Item> {
   }
 
   private searchSinglePrefix(prefix: string): Set<Item> {
+    const words = findWords(this.trie, prefix.toLowerCase());
+    const items = this.getItemsFromWords(words);
+    return items;
+  }
+
+  private getItemsFromWords(words: Set<string>): Set<Item> {
+    const items: Set<Item> = new Set();
+
+    for (const word of words) {
+      const wordItems = this.wordToItems.get(word) || [];
+      for (const wordItem of wordItems) {
+        items.add(wordItem);
+      }
+    }
+
+    return items;
+  }
+}
+
+/**
+ * Search for `Item`s that contain all the provided prefixes
+ */
+export class AutocompleterV2<Item> {
+  private trie: TrieNode;
+  private wordToItems: WordsToSearchableItemMap<Item>;
+  private getWordsFromItem: ItemToWordsMapper<Item>;
+
+  constructor({ itemToWordMapper }: Args<Item>) {
+    this.getWordsFromItem = itemToWordMapper;
+    this.trie = createNode();
+    this.wordToItems = new Map();
+  }
+
+  public initialize({ items }: { items: Item[] }): void {
+    const [words, map] = this.analyzeWordsInItems({ items });
+    this.trie = addWordsToTrie(this.trie, words);
+    this.wordToItems = map;
+  }
+
+  /**
+   * Add a new item to the autocompleter. This will make the item searchable via
+   * the autocompleter.
+   */
+  public addItem(item: Item): void {
+    const [words, map] = this.analyzeWordsInItems({ items: [item] });
+
+    // include word->item mappings in autocompleter
+    for (const [word, _items] of map.entries()) {
+      const previousItems = this.wordToItems.get(word);
+      if (previousItems === undefined) {
+        this.wordToItems.set(word, _items);
+      } else {
+        this.wordToItems.set(word, union(previousItems, _items));
+      }
+    }
+
+    this.trie = addWordsToTrie(this.trie, words);
+  }
+
+  /**
+   * Add a new item to the autocompleter. This will make the item searchable via
+   * the autocompleter.
+   */
+  public removeItem(item: Item): void {
+    const wordsToDeleteFromTrie: Word[] = [];
+
+    // drop word->item mappings from autocompleter
+    for (const [word, wordItems] of this.wordToItems.entries()) {
+      const deleted = wordItems.delete(item);
+      /**
+       * If the `Item` happened to be the only item for this `Word`, keep track
+       * of this `Word` to later delete it from the `TrieNode`.
+       */
+      if (deleted && wordItems.size === 0) {
+        wordsToDeleteFromTrie.push(word);
+
+        // there are no more `Item`s for thiw `Word`, clean it up
+        this.wordToItems.delete(word);
+      }
+    }
+
+    this.trie = removeWordsFromTrie(this.trie, wordsToDeleteFromTrie);
+  }
+
+  public search(query: string): Set<Item> {
+    const uniquePrefixes = new Set(query.split(" "));
+
+    /**
+     * find items that contain all prefixes
+     */
+    const items = [...uniquePrefixes]
+      .map((prefix) => this.searchSinglePrexix(prefix))
+      .reduce((previous, current) => intersect(previous, current));
+
+    return items;
+  }
+
+  private analyzeWordsInItems({
+    items,
+  }: {
+    items: Item[];
+  }): [Word[], WordsToSearchableItemMap<Item>] {
+    const words: Set<Word> = new Set();
+    const map: WordsToSearchableItemMap<Item> = new Map();
+
+    for (const item of items) {
+      const itemWords = this.getWordsFromItem(item);
+
+      for (const word of itemWords) {
+        words.add(word);
+
+        const previousItems = map.get(word);
+        if (previousItems === undefined) {
+          map.set(word, new Set([item]));
+        } else {
+          previousItems.add(item); // CAREFUL: you are mutating it
+        }
+      }
+    }
+
+    const wordList: Word[] = [...words];
+
+    return [wordList, map];
+  }
+
+  private searchSinglePrexix(prefix: string): Set<Item> {
     const words = findWords(this.trie, prefix.toLowerCase());
     const items = this.getItemsFromWords(words);
     return items;

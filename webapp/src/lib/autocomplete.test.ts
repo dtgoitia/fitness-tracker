@@ -1,5 +1,6 @@
 import {
   Autocompleter,
+  AutocompleterV2,
   Word,
   _add,
   _remove,
@@ -253,5 +254,24 @@ describe(Autocompleter.name, () => {
 
     expect(completer.search(["c"])).toEqual(new Set([cocoa, coder]));
     expect(completer.search(["b"])).toEqual(new Set([banana]));
+  });
+});
+
+describe(AutocompleterV2.name, () => {
+  const leftBulgarianSquat = buildActivity({ name: "left bulgarian squat" });
+  const rightBulgarianSquat = buildActivity({ name: "right bulgarian squat" });
+
+  test(`spaces behave as AND operators`, () => {
+    const completer = new AutocompleterV2<Activity>({
+      itemToWordMapper: activityToWords,
+    });
+
+    completer.initialize({ items: [leftBulgarianSquat, rightBulgarianSquat] });
+
+    expect(completer.search("lef bul")).toEqual(new Set([leftBulgarianSquat]));
+    expect(completer.search("lef")).toEqual(new Set([leftBulgarianSquat]));
+    expect(completer.search("bul")).toEqual(
+      new Set([leftBulgarianSquat, rightBulgarianSquat])
+    );
   });
 });
