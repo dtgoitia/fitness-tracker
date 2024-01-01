@@ -1,8 +1,8 @@
+import { SearchBox } from "../../components/SearchBox";
 import { ActivityManager } from "../../lib/domain/activities";
 import { ActivityId, FilterQuery } from "../../lib/domain/model";
 import { ShortcutManager } from "../../lib/domain/shortcuts";
 import InventoryView from "../HistoryExplorer/Inventory";
-import SearchBox from "../HistoryExplorer/SearchBox";
 import { Button } from "@blueprintjs/core";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";

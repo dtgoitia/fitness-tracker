@@ -1,9 +1,9 @@
 import { useApp } from "../..";
+import { SearchBox } from "../../components/SearchBox";
 import { now } from "../../lib/datetimeUtils";
 import { ActivityId, FilterQuery } from "../../lib/domain/model";
 import { Duration, Intensity } from "../../lib/domain/model";
 import InventoryView from "./Inventory";
-import SearchBox from "./SearchBox";
 import { Button, Collapse, Intent } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";

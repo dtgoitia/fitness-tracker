@@ -1,11 +1,11 @@
 import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
+import { SearchBox } from "../../components/SearchBox";
 import { Activity, ActivityName, FilterQuery } from "../../lib/domain/model";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
 import AddActivity from "../HistoryExplorer/AddActivity";
-import SearchBox from "../HistoryExplorer/SearchBox";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";

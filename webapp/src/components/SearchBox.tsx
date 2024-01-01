@@ -1,4 +1,4 @@
-import { FilterQuery } from "../../lib/domain/model";
+import { FilterQuery } from "../lib/domain/model";
 
 interface Props {
   query: FilterQuery;
@@ -7,7 +7,7 @@ interface Props {
   onFocus: () => void;
 }
 
-function SearchBox({
+export function SearchBox({
   query,
   onChange: onFilterQueryChange,
   clearSearch,
@@ -31,5 +31,3 @@ function SearchBox({
     </div>
   );
 }
-
-export default SearchBox;

@@ -1,10 +1,10 @@
 import { useApp } from "../..";
 import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
+import { SearchBox } from "../../components/SearchBox";
 import { Trainable, TrainableName, FilterQuery } from "../../lib/domain/model";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
-import SearchBox from "../HistoryExplorer/SearchBox";
 import { AddTrainable } from "./AddTrainable";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";

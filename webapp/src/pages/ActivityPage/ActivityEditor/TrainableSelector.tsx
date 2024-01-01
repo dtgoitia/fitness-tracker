@@ -1,11 +1,11 @@
 import { useApp } from "../../..";
+import { SearchBox } from "../../../components/SearchBox";
 import {
   ActivityId,
   FilterQuery,
   Trainable,
   TrainableId,
 } from "../../../lib/domain/model";
-import SearchBox from "../../HistoryExplorer/SearchBox";
 import { Button, Dialog } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
