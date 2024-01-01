@@ -25,6 +25,26 @@ export function union<T>(a: Set<T>, b: Set<T>): Set<T> {
 }
 
 /**
+ * Compute the set intersection between `a` and `b`, or in layman words, find
+ * elements that `a` and `b` have in common and return them in a new set.
+ * @param a one set
+ * @param b another set
+ * @returns the intersection between `a` and `b`
+ */
+export function intersect<T>(a: Set<T> | undefined, b: Set<T> | undefined): Set<T> {
+  const common = new Set<T>();
+  if (a === undefined || b === undefined) return common;
+
+  for (const element_a of a) {
+    if (b.has(element_a)) {
+      common.add(element_a);
+    }
+  }
+
+  return common;
+}
+
+/**
  * Add item to a set without mutating the original set
  */
 export function addToSet<T>(set: Set<T>, item: T): Set<T> {
