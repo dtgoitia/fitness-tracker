@@ -1,4 +1,4 @@
-import { Autocompleter, Word } from "../autocomplete";
+import { AutocompleterV2, Word } from "../autocomplete";
 import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
@@ -42,10 +42,10 @@ export class ActivityManager {
   private changesSubject: Subject<ActivityChange>;
   private activities: Map<ActivityId, Activity>;
   private activitiesByTrainable: Map<TrainableId, Set<ActivityId>>;
-  private autocompleter: Autocompleter<Activity>;
+  private autocompleter: AutocompleterV2<Activity>;
 
   constructor() {
-    this.autocompleter = new Autocompleter<Activity>({
+    this.autocompleter = new AutocompleterV2<Activity>({
       itemToWordMapper: activityToWords,
     });
 
@@ -169,7 +169,7 @@ export class ActivityManager {
 
     if (prefixes.length === 0) return this.getAll();
 
-    const unsortedResults = this.autocompleter.search(prefixes);
+    const unsortedResults = this.autocompleter.search(prefixes.join(" "));
 
     return [...this.activities.values()]
       .filter((activity) => unsortedResults.has(activity))
