@@ -1,30 +1,42 @@
 import { useApp } from "../../..";
-import { FilterQuery, TrainableId } from "../../../lib/domain/model";
+import {
+  ActivityId,
+  FilterQuery,
+  Trainable,
+  TrainableId,
+} from "../../../lib/domain/model";
 import SearchBox from "../../HistoryExplorer/SearchBox";
 import { Button, Dialog } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
 
 interface Props {
-  exclude: TrainableId[];
+  activityName: ActivityId;
+  selected: TrainableId[];
   onSelect: (id: TrainableId) => void;
 }
 
-export function TrainableSelector({ exclude, onSelect: select }: Props) {
+export function TrainableSelector({
+  activityName,
+  selected: selectedIds,
+  onSelect: select,
+}: Props) {
   const app = useApp();
   const { trainableManager } = app;
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
-  const [excludeSet, _] = useState<Set<TrainableId>>(new Set(exclude));
+
+  const unselectable = new Set<TrainableId>(selectedIds);
 
   function clearSearch(): void {
     setFilterQuery("");
   }
 
-  const filteredTrainables = trainableManager
+  const selected = selectedIds.map((id) => trainableManager.get(id) as Trainable);
+  const selectable = trainableManager
     .searchByPrefix(filterQuery)
-    .filter((trainable) => excludeSet.has(trainable.id) === false);
+    .filter((trainable) => unselectable.has(trainable.id) === false);
 
   return (
     <>
@@ -33,7 +45,7 @@ export function TrainableSelector({ exclude, onSelect: select }: Props) {
       </Container>
 
       <Dialog
-        title="Select a trainable"
+        title={`Select trainables related to "${activityName}"`}
         isOpen={isOpen}
         autoFocus={true}
         canOutsideClickClose={true}
@@ -43,23 +55,40 @@ export function TrainableSelector({ exclude, onSelect: select }: Props) {
         onClose={() => setIsOpen(false)}
       >
         <div className="bp4-dialog-body">
-          <SearchBox
-            query={filterQuery}
-            onChange={setFilterQuery}
-            clearSearch={clearSearch}
-            onFocus={() => {}}
-          />
-          {filteredTrainables.length === 0 ? (
-            <div>no trainables available to select...</div>
+          {selectable.length === 0 ? (
+            selected.length === 0 ? (
+              <div>no trainables available to select...</div>
+            ) : (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                all trainables already selected
+              </div>
+            )
           ) : (
-            filteredTrainables.map((trainable) => (
-              <SelectableTrainable
-                key={trainable.id}
-                onClick={() => select(trainable.id)}
-              >
-                {trainable.name}
-              </SelectableTrainable>
-            ))
+            <>
+              {selected.length > 0 && (
+                <>
+                  <div style={{ paddingBottom: "1rem" }}>Already selected:</div>
+                  <ul id="selected-trainables">
+                    {selected.map(({ id, name }) => (
+                      <SelectedTrainable key={id}>{name}</SelectedTrainable>
+                    ))}
+                  </ul>
+                </>
+              )}
+              <SearchBox
+                query={filterQuery}
+                onChange={setFilterQuery}
+                clearSearch={clearSearch}
+                onFocus={() => {}}
+              />
+              <ul id="selectable-trainables">
+                {selectable.map(({ id, name }) => (
+                  <SelectableTrainable key={id} onClick={() => select(id)}>
+                    {name}
+                  </SelectableTrainable>
+                ))}
+              </ul>
+            </>
           )}
         </div>
 
@@ -74,6 +103,10 @@ const Container = styled.div`
   justify-content: flex-end;
 `;
 
-const SelectableTrainable = styled.div`
+const SelectedTrainable = styled.li`
+  padding: 0rem 0.7rem 1rem 0.7rem;
+`;
+
+const SelectableTrainable = styled.li`
   padding: 1rem 0.7rem 0rem 0.7rem;
 `;

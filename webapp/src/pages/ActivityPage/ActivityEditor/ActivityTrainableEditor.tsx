@@ -25,8 +25,9 @@ export function ActivityTrainableEditor({
 
       {isEditing && (
         <TrainableSelector
+          activityName={activity.name}
           onSelect={(id) => handleAddTrainable({ id })}
-          exclude={activity.trainableIds}
+          selected={activity.trainableIds}
         />
       )}
     </>
