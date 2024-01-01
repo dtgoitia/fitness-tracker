@@ -1,5 +1,5 @@
 import { useApp } from "../../..";
-import { FilterQuery, Trainable, TrainableId } from "../../../lib/domain/model";
+import { FilterQuery, TrainableId } from "../../../lib/domain/model";
 import SearchBox from "../../HistoryExplorer/SearchBox";
 import { Button, Dialog } from "@blueprintjs/core";
 import { useState } from "react";
@@ -55,9 +55,10 @@ export function TrainableSelector({ exclude, onSelect: select }: Props) {
             filteredTrainables.map((trainable) => (
               <SelectableTrainable
                 key={trainable.id}
-                trainable={trainable}
-                onSelect={() => select(trainable.id)}
-              />
+                onClick={() => select(trainable.id)}
+              >
+                {trainable.name}
+              </SelectableTrainable>
             ))
           )}
         </div>
@@ -68,17 +69,11 @@ export function TrainableSelector({ exclude, onSelect: select }: Props) {
   );
 }
 
-function SelectableTrainable({
-  trainable,
-  onSelect: select,
-}: {
-  trainable: Trainable;
-  onSelect: () => void;
-}) {
-  return <div onClick={() => select()}>{trainable.name}</div>;
-}
-
 const Container = styled.div`
   display: flex;
   justify-content: flex-end;
+`;
+
+const SelectableTrainable = styled.div`
+  padding: 1rem 0.7rem 0rem 0.7rem;
 `;
