@@ -35,6 +35,20 @@ run-webapp:
 	scripts/print_local_ip_via_qr.sh
 	docker-compose up $(WEBAPP_NAME)
 
+remove-development-environment:
+	@echo ""
+	@echo Uninstalling git hooks...
+	make uninstall-dev-tools
+
+	@echo ""
+	@echo Uninstalling NPM dependencies outside of the container
+	#rm -rf webapp/node_modules
+
+	@echo ""
+	@echo Removing docker containers and images
+	docker compose down
+	docker image rm $(WEBAPP_NAME) || (echo "No $(WEBAPP_NAME) found, all good."; exit 0)
+
 serve-webapp-ngrok:
 	docker compose run --rm $(WEBAPP_NAME)-ngrok \
 		http \
