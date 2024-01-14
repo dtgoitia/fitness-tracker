@@ -19,15 +19,6 @@ services:
       # doesn't pass to the container's user
       - /app/node_modules
 
-  qr:
-    build:
-      context: ./qr
-      dockerfile: Dockerfile
-    image: qr
-    container_name: qr
-    volumes:
-      - ./qr:/app
-
   fitness-tracker-webapp-ngrok:
     image: ngrok/ngrok:latest
     container_name: fitness-tracker-webapp-ngrok
