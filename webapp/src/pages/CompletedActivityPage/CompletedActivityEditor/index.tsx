@@ -7,6 +7,7 @@ import {
 import {
   setCompletedActivityDate,
   setCompletedActivityDuration,
+  setCompletedActivityEllapsedInNotes,
   setCompletedActivityIntensity,
   setCompletedActivityNotes,
 } from "../../../lib/domain/completedActivities";
@@ -72,6 +73,10 @@ export function CompletedActivityEditor({
 
   function handleNotesChange(notes: string): void {
     handleUpdate(setCompletedActivityNotes(cActivity as CActivity, notes));
+  }
+
+  function handleClickCalculateDurationButton(): void {
+    handleUpdate(setCompletedActivityEllapsedInNotes(cActivity));
   }
 
   const intensityButtons = Object.keys(Intensity).map((key) => {
@@ -160,6 +165,16 @@ export function CompletedActivityEditor({
         />
       </NotesContainer>
 
+      <CalculateDuration>
+        <Button
+          icon="time"
+          text="calculate duration"
+          onClick={handleClickCalculateDurationButton}
+          intent="success"
+          large
+        />
+      </CalculateDuration>
+
       <pre>{JSON.stringify(cActivity, null, 2)}</pre>
 
       <Delete>
@@ -196,4 +211,9 @@ const Delete = styled.div`
   flex-shrink: 0;
   flex-grow: 0;
   align-self: center;
+`;
+
+const CalculateDuration = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;

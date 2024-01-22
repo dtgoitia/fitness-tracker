@@ -1,4 +1,4 @@
-import { now, weekStart } from "../datetimeUtils";
+import { formatTimedelta, now, weekStart } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
 import { SortAction } from "../sort";
@@ -359,6 +359,20 @@ export function setCompletedActivityNotes(
   notes: CompletedActivityNotes
 ): CompletedActivity {
   return { ...completedActivity, notes, lastModified: now() };
+}
+
+export function setCompletedActivityEllapsedInNotes(
+  completedActivity: CompletedActivity
+): CompletedActivity {
+  const deltaInMs = now().getTime() - completedActivity.date.getTime();
+  const formattedTimedelta = formatTimedelta(deltaInMs / 1000)
+    .replace(`m`, `'`)
+    .replace(`s`, `"`);
+  return {
+    ...completedActivity,
+    notes: `${formattedTimedelta}\n${completedActivity.notes}`,
+    lastModified: now(),
+  };
 }
 
 /**
