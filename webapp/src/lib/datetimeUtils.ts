@@ -1,11 +1,15 @@
 import { divmod } from "./math";
 
-const SECONDS_PER_DAY = 60 * 60 * 24;
-const SECONDS_PER_HOUR = 60 * 60;
-const SECONDS_PER_MINUTE = 60;
+export type Seconds = number; // duration in seconds - generic, nothing to do with epoch
+type Milliseconds = number; // duration in milliseconds - generic, nothing to do with epoch
+
+const SECONDS_PER_DAY: Seconds = 60 * 60 * 24;
+const SECONDS_PER_HOUR: Seconds = 60 * 60;
+const SECONDS_PER_MINUTE: Seconds = 60;
+
+const MILLISECONDS_PER_DAY: Milliseconds = 24 * 60 * 60 * 1000;
 
 type UTCSeconds = number; // Seconds ellapsed since 1970-01-01 00:00:00 (+00:00)
-export type Seconds = number; // duration in seconds - generic, nothing to do with epoch
 
 export function now(): Date {
   return new Date(new Date().setMilliseconds(0));
@@ -26,8 +30,7 @@ export function today(): Date {
 
 export function yesterday(): Date {
   const _today = toDay(now()).getTime();
-  const oneDay = 24 * 60 * 60 * 1000;
-  return new Date(_today - oneDay);
+  return new Date(_today - MILLISECONDS_PER_DAY);
 }
 
 // https://devhints.io/wip/intl-datetime
