@@ -33,6 +33,14 @@ export function yesterday(): Date {
   return new Date(_today - MILLISECONDS_PER_DAY);
 }
 
+export function weekStart(datetime: Date): Date {
+  const usWeekDay = datetime.getUTCDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const weekDay = usWeekDay === 0 ? 6 : usWeekDay - 1; // 0=Mon, 1=Tue, ..., 6=Sun
+  const date = toDay(datetime);
+  const weekStart = new Date(date.getTime() - weekDay * MILLISECONDS_PER_DAY);
+  return weekStart;
+}
+
 // https://devhints.io/wip/intl-datetime
 const LANGUAGE_SIMILAR_TO_ISO8601 = "sv-SE";
 
