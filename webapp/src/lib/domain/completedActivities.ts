@@ -368,11 +368,13 @@ export function setCompletedActivityEllapsedInNotes(
   const formattedTimedelta = formatTimedelta(deltaInMs / 1000)
     .replace(`m`, `'`)
     .replace(`s`, `"`);
-  return {
-    ...completedActivity,
-    notes: `${formattedTimedelta}\n${completedActivity.notes}`,
-    lastModified: now(),
-  };
+
+  const notes =
+    completedActivity.notes === ""
+      ? formattedTimedelta
+      : `${formattedTimedelta}\n${completedActivity.notes}`;
+
+  return { ...completedActivity, notes, lastModified: now() };
 }
 
 /**
