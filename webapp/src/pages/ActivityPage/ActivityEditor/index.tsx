@@ -10,6 +10,7 @@ import {
 import { Activity, ActivityName, TrainableId } from "../../../lib/domain/model";
 import { notify } from "../../../notify";
 import { ActivityTrainableEditor } from "./ActivityTrainableEditor";
+import { CompletedActivities } from "./CompletedActivities";
 import { CompletedActivityCalendar } from "./CompletedActivityCalendar";
 import { Button, Label } from "@blueprintjs/core";
 import { useState } from "react";
@@ -117,6 +118,8 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
       />
 
       <CompletedActivityCalendar activityId={activity.id} />
+
+      <CompletedActivities activity={activity} />
 
       <ScreenBottomNavBar>
         <EditButtonContainer>

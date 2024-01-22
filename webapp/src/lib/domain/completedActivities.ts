@@ -1,4 +1,4 @@
-import { now } from "../datetimeUtils";
+import { now, weekStart } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
 import { SortAction } from "../sort";
@@ -282,6 +282,29 @@ export function groupByDay(history: CompletedActivity[]): DatedActivities[] {
 
   if (groupedActivities.length > 0) {
     result.push([dayCursor, [...groupedActivities]]);
+  }
+
+  return result;
+}
+
+type WeekStartDate = ISODateString;
+type ActivitiesByWeek = [WeekStartDate, CompletedActivity[]];
+
+export function groupByWeek(history: CompletedActivity[]): ActivitiesByWeek[] {
+  type WeekStart = ISODateString;
+  let cursor: WeekStart = getDay(weekStart(history[0].date));
+
+  let weekBuffer: CompletedActivity[] = [];
+  const result: ActivitiesByWeek[] = [];
+
+  for (const completed of history) {
+    const week = getDay(weekStart(completed.date));
+    if (week === cursor) {
+      weekBuffer.push(completed);
+    } else {
+      result.push([cursor, [...weekBuffer]]);
+      cursor = week;
+    }
   }
 
   return result;
