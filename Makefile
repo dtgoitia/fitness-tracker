@@ -22,7 +22,6 @@ set-up-development-environment:
 	@echo ""
 	@echo To start app:  make run-webapp
 
-
 install-dev-tools:
 	pre-commit install  # pre-commit is (default)
 	pre-commit install --hook-type pre-push
