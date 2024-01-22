@@ -1,6 +1,6 @@
-import { useApp } from "../..";
-import { App } from "../../lib/app/app";
-import { now } from "../../lib/datetimeUtils";
+import { useApp } from "..";
+import { App } from "../lib/app/app";
+import { now } from "../lib/datetimeUtils";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -13,7 +13,7 @@ const Container = styled.div`
   padding: 1rem 0;
 `;
 
-export function DownloadJson() {
+export function ExportData() {
   const app = useApp();
 
   const [shareApiIsAvailable, setShareApiIsAvailable] = useState<boolean>(false);

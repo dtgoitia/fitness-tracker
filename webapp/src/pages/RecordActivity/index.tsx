@@ -1,6 +1,7 @@
 import { useApp } from "../..";
 import { BundleVersion } from "../../components/BundleVersion";
 import CenteredPage from "../../components/CenteredPage";
+import { ExportData } from "../../components/ExportData";
 import NavBar from "../../components/NavBar";
 import { isoDateFormatter, now, toDay } from "../../lib/datetimeUtils";
 import {
@@ -14,7 +15,6 @@ import BlueprintThemeProvider from "../../style/theme";
 import AddCompletedActivity from "../HistoryExplorer/AddCompletedActivity";
 import AddCompletedActivityFromTraining from "../HistoryExplorer/AddCompletedActivityFromTraining";
 import Countdown from "../HistoryExplorer/Countdown";
-import { DownloadJson } from "../HistoryExplorer/DownloadJson";
 import { HistoryView } from "../HistoryExplorer/History";
 import ReloadPage from "../HistoryExplorer/ReloadPage";
 import { Shortcuts } from "./Shortcuts";
@@ -102,7 +102,7 @@ export function RecordActivityPage() {
           deleteUntilDate={handleDeletionUntilDate}
           purge={handlePurge}
         />
-        <DownloadJson />
+        <ExportData />
         <ReloadPage />
         <BundleVersion />
       </CenteredPage>

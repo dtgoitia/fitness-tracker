@@ -1,6 +1,7 @@
 import { useApp } from "../..";
 import { BundleVersion } from "../../components/BundleVersion";
 import CenteredPage from "../../components/CenteredPage";
+import { ExportData } from "../../components/ExportData";
 import NavBar from "../../components/NavBar";
 import { isoDateFormatter } from "../../lib/datetimeUtils";
 import {
@@ -12,7 +13,6 @@ import BlueprintThemeProvider from "../../style/theme";
 import AddActivity from "./AddActivity";
 import AddCompletedActivity from "./AddCompletedActivity";
 import AddCompletedActivityFromTraining from "./AddCompletedActivityFromTraining";
-import { DownloadJson } from "./DownloadJson";
 import { HistoryView } from "./History";
 import ReloadPage from "./ReloadPage";
 import { useEffect, useState } from "react";
@@ -73,7 +73,7 @@ function HistoryPage() {
           purge={handlePurge}
         />
         <AddActivity add={handleAddNewActivity} />
-        <DownloadJson />
+        <ExportData />
         <ReloadPage />
         <BundleVersion />
       </CenteredPage>
