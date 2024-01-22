@@ -12,7 +12,7 @@ log () {
 local_ip=$(scripts/get_local_ip.py)
 log "Local IP: ${local_ip}"
 
-url="http://${local_ip}:3000/shopping-list"
+url="http://${local_ip}:3000/fitness-tracker"
 
 log "Scan the QR code bellow to access the app:"
 log ""
