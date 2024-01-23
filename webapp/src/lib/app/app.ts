@@ -1,4 +1,5 @@
 import { ActivityManager, sortActivitiesAlphabetically } from "../domain/activities";
+import { Backup } from "../domain/backup";
 import { CompletedActivityManager } from "../domain/completedActivities";
 import { Activity, ActivityId, TrainableId } from "../domain/model";
 import { ShortcutManager } from "../domain/shortcuts";
@@ -58,19 +59,21 @@ export class App {
     this.statusSubject.next({ kind: "app-initializing" });
 
     const activities = this.browserStorage.getActivities();
-    console.log(`${logPrefix}::${activities.length} activities found`);
+    console.log(`${logPrefix}::${activities?.length || "0"} activities found`);
 
     const completedActivities = this.browserStorage.getCompletedActivities();
-    console.log(`${logPrefix}::${completedActivities.length} completed activities found`);
+    console.log(
+      `${logPrefix}::${completedActivities?.length || "0"} completed activities found`
+    );
 
     const trainings = this.browserStorage.getTrainings();
-    console.log(`${logPrefix}::${trainings.length} trainings found`);
+    console.log(`${logPrefix}::${trainings?.length || "0"} trainings found`);
 
     const shortcuts = this.browserStorage.getShortcuts();
-    console.log(`${logPrefix}::${shortcuts.length} shortcuts found`);
+    console.log(`${logPrefix}::${shortcuts?.length || "0"} shortcuts found`);
 
     const trainables = this.browserStorage.getTrainables();
-    console.log(`${logPrefix}::${trainables.length} trainables found`);
+    console.log(`${logPrefix}::${trainables?.length || "0"} trainables found`);
 
     // ===================================================================================
     //
@@ -156,6 +159,40 @@ export class App {
 
     this.trainableManager.deleteUnsafe({ id });
     return { kind: "trainable-successfully-deleted" };
+  }
+
+  public restoreData({ backup }: { backup: Backup }): void {
+    const logPrefix = `App.name::restoreData`;
+    const { activities, completedActivities, trainings, trainables, shortcuts } = backup;
+
+    console.log(`${logPrefix}: backup contains ${activities?.length || "0"} activities`);
+    if (activities) {
+      this.browserStorage.storeActivities(activities);
+    }
+
+    console.log(
+      `${logPrefix}: backup contains ${
+        completedActivities?.length || "0"
+      } completed activities`
+    );
+    if (completedActivities) {
+      this.browserStorage.storeCompletedActivities(completedActivities);
+    }
+
+    console.log(`${logPrefix}: backup contains ${trainings?.length || "0"} trainings`);
+    if (trainings) {
+      this.browserStorage.storeTrainings(trainings);
+    }
+
+    console.log(`${logPrefix}: backup contains ${trainables?.length || "0"} trainables`);
+    if (trainables) {
+      this.browserStorage.storeTrainables(trainables);
+    }
+
+    console.log(`${logPrefix}: backup contains ${shortcuts?.length || "0"} shortcuts`);
+    if (shortcuts) {
+      this.browserStorage.storeShortcuts(shortcuts);
+    }
   }
 }
 

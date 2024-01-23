@@ -2,6 +2,13 @@ import { Storage } from "../../localStorage";
 import { now } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { ActivityManager } from "../domain/activities";
+import {
+  ActivityBackup,
+  CompletedActivityBackup,
+  ShortcutBackup,
+  TrainableBackup,
+  TrainingBackup,
+} from "../domain/backup";
 import { CompletedActivityManager } from "../domain/completedActivities";
 import {
   Activity,
@@ -133,23 +140,46 @@ export class BrowserStorage {
     return shortcuts;
   }
 
-  private handleTrainableChanges(): void {
-    this.storage.trainables.set(this.trainableManager.getAll());
+  public storeActivities(activities: (Activity | ActivityBackup)[]): void {
+    this.storage.activities.set(activities);
   }
+
+  public storeCompletedActivities(
+    cActivities: (CompletedActivity | CompletedActivityBackup)[]
+  ): void {
+    this.storage.history.set(cActivities);
+  }
+
+  public storeTrainings(trainings: (Training | TrainingBackup)[]): void {
+    this.storage.trainings.set(trainings);
+  }
+
+  public storeTrainables(trainables: (Trainable | TrainableBackup)[]): void {
+    this.storage.trainables.set(trainables);
+  }
+
+  public storeShortcuts(shortcuts: (Shortcut | ShortcutBackup)[]): void {
+    this.storage.shortcuts.set(shortcuts);
+  }
+
   private handleActivityChanges(): void {
-    this.storage.activities.set(this.activityManager.getAll());
+    this.storeActivities(this.activityManager.getAll());
   }
 
   private handleCompletedActivityChanges(): void {
-    this.storage.history.set(this.completedActivityManager.getAll());
+    this.storeCompletedActivities(this.completedActivityManager.getAll());
   }
 
   private handleTrainingChanges(): void {
-    this.storage.trainings.set(this.trainingManager.getAll());
+    this.storeTrainings(this.trainingManager.getAll());
+  }
+
+  private handleTrainableChanges(): void {
+    this.storeTrainables(this.trainableManager.getAll());
   }
 
   private handleShortcutsChange(): void {
-    this.storage.shortcuts.set(this.shortcutManager.getAll());
+    this.storeShortcuts(this.shortcutManager.getAll());
   }
 }
 
