@@ -1,7 +1,7 @@
 import { useApp } from "../..";
 import { SearchBox } from "../../components/SearchBox";
 import { now } from "../../lib/datetimeUtils";
-import { ActivityId, FilterQuery } from "../../lib/domain/model";
+import { ActivityId, CompletedActivityNotes, FilterQuery } from "../../lib/domain/model";
 import { Duration, Intensity } from "../../lib/domain/model";
 import InventoryView from "./Inventory";
 import { Button, Collapse, Intent } from "@blueprintjs/core";
@@ -173,6 +173,24 @@ function AddCompletedActivity() {
             onChange={handleNotesChange}
           />
 
+          {selected && (
+            <SelectableNotes>
+              {completedActivityManager
+                .getLastActivitiesNotes({
+                  activityId: selected,
+                  n: 4,
+                })
+                .map((note, i) => (
+                  <SelectableNote
+                    key={i}
+                    note={note}
+                    isSelected={note === notes}
+                    onSelect={() => setNotes(note)}
+                  ></SelectableNote>
+                ))}
+            </SelectableNotes>
+          )}
+
           <Button disabled={!canSubmit} intent="success" text="Add" type="submit" />
         </form>
       </Collapse>
@@ -180,3 +198,45 @@ function AddCompletedActivity() {
   );
 }
 export default AddCompletedActivity;
+
+const SelectableNotes = styled.ol`
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const NoteContainer = styled.li`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.8rem;
+`;
+
+const Note = styled.div``;
+
+function SelectableNote({
+  note,
+  onSelect: select,
+  isSelected,
+}: {
+  note: CompletedActivityNotes;
+  isSelected: boolean;
+  onSelect: (note: CompletedActivityNotes) => void;
+}) {
+  return (
+    <NoteContainer>
+      <Button
+        icon={isSelected ? "tick" : "plus"}
+        large
+        intent={isSelected ? "success" : "none"}
+        onClick={() => select(note)}
+      />
+      <Note>{note}</Note>
+    </NoteContainer>
+  );
+}

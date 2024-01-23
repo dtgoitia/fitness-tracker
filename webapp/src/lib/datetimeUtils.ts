@@ -10,6 +10,7 @@ const SECONDS_PER_MINUTE: Seconds = 60;
 const MILLISECONDS_PER_DAY: Milliseconds = 24 * 60 * 60 * 1000;
 
 type UTCSeconds = number; // Seconds ellapsed since 1970-01-01 00:00:00 (+00:00)
+export type UTCMilliseconds = number; // Milliseconds ellapsed since 1970-01-01 00:00:00 (+00:00)
 
 export function now(): Date {
   return new Date(new Date().setMilliseconds(0));

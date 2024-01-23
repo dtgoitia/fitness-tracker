@@ -205,6 +205,9 @@ export class CompletedActivityManager {
     }
   }
 
+  /**
+   * Returns the most recent `CompletedActivityNotes` for a given `Activity`.
+   */
   public getLastActivityNotes({
     activityId,
   }: {
@@ -225,6 +228,42 @@ export class CompletedActivityManager {
     }
 
     return latestNote;
+  }
+
+  /**
+   * Returns the most recent `n` different `CompletedActivityNotes` for a given
+   * `Activity`.
+   */
+  public getLastActivitiesNotes({
+    activityId,
+    n,
+  }: {
+    activityId: ActivityId;
+    n: number;
+  }): CompletedActivityNotes[] {
+    const tracker = new Set<CompletedActivityNotes>();
+    const result: CompletedActivityNotes[] = [];
+
+    const completedActivitiesSortedByDate = this.getAll();
+    for (const completedActivity of completedActivitiesSortedByDate) {
+      if (completedActivity.activityId !== activityId) {
+        continue;
+      }
+
+      const { notes } = completedActivity;
+      if (tracker.has(notes)) {
+        continue;
+      }
+
+      tracker.add(notes);
+      result.push(notes);
+
+      if (result.length === n) {
+        break;
+      }
+    }
+
+    return result;
   }
 
   private generateCompletedActivityId(): Hash {
