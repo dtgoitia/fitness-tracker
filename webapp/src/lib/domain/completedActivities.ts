@@ -343,6 +343,7 @@ export function groupByWeek(history: CompletedActivity[]): ActivitiesByWeek[] {
     } else {
       result.push([cursor, [...weekBuffer]]);
       cursor = week;
+      weekBuffer = [completed];
     }
   }
 
