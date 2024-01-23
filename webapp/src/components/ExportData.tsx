@@ -1,6 +1,7 @@
 import { useApp } from "..";
 import { App } from "../lib/app/app";
 import { now } from "../lib/datetimeUtils";
+import { generateBackupFileContent, generateFilename } from "../lib/domain/backup";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -54,25 +55,11 @@ export function ExportData() {
   );
 }
 
-interface GenerateBlobArgs {
-  app: App;
-  date: Date;
-}
-function generateBlob({ app, date }: GenerateBlobArgs): Blob {
-  const formattedJson = dataToString({ app, date });
+export function generateBlob({ app, date }: { app: App; date: Date }): Blob {
+  const formattedJson = generateBackupFileContent({ app, date });
   const blob = new Blob([formattedJson], { type: JSON_MIME_TYPE });
 
   return blob;
-}
-
-function generateFilename({ date }: { date: Date }): string {
-  const formattedDate = date
-    .toISOString()
-    .replace(/-/, "")
-    .replace(/:/, "")
-    .replace("T", "-")
-    .slice(0, 15);
-  return `fitness-tracker__backup_${formattedDate}.txt`;
 }
 
 function isShareApiAvailable(): boolean {
@@ -115,12 +102,14 @@ interface GenerateFileArgs {
   date: Date;
   fileName: string;
 }
+
 function generateFile({ app, date, fileName }: GenerateFileArgs): File {
-  const formattedJson = dataToString({ app, date });
+  const formattedJson = generateBackupFileContent({ app, date });
   const file = new File([formattedJson], fileName, { type: JSON_MIME_TYPE });
 
   return file;
 }
+
 function shareFile(file: File): void {
   const dataToShare: ShareData = {
     title: "fitness-tracker JSON",
@@ -139,16 +128,4 @@ function shareFile(file: File): void {
     .catch((error) => {
       alert(error);
     });
-}
-
-function dataToString({ date, app }: { date: Date; app: App }): string {
-  const data = {
-    date: date.toISOString(),
-    activities: app.activityManager.getAll(),
-    completedActivities: app.completedActivityManager.getAll(),
-    trainings: app.trainingManager.getAll(),
-    trainables: app.trainableManager.getAll(),
-  };
-
-  return JSON.stringify(data, null, 2);
 }

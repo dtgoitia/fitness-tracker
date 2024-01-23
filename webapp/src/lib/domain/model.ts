@@ -1,5 +1,6 @@
 export type ISODatetimeString = string; // "2022-07-19 01:02:03"
 export type ISODateString = string; // "2022-07-19"
+export type JsonString = string;
 export type Hash = string;
 export type ActivityId = Hash;
 export type ActivityName = string;
