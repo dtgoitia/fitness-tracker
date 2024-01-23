@@ -3,6 +3,7 @@ import { BundleVersion } from "../../components/BundleVersion";
 import CenteredPage from "../../components/CenteredPage";
 import { ExportData } from "../../components/ExportData";
 import NavBar from "../../components/NavBar";
+import { RestoreData } from "../../components/RestoreData";
 import { isoDateFormatter, now, toDay } from "../../lib/datetimeUtils";
 import {
   ActivityId,
@@ -103,6 +104,7 @@ export function RecordActivityPage() {
           purge={handlePurge}
         />
         <ExportData />
+        <RestoreData />
         <ReloadPage />
         <BundleVersion />
       </CenteredPage>
