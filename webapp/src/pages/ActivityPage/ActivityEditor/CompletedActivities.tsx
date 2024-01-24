@@ -50,7 +50,7 @@ export function CompletedActivities({ activity }: Props) {
   }
 
   return (
-    <Container>
+    <PaddedContainer>
       <ol>
         {groupedByWeek.map(([weekStartDate, completedInDay]) => (
           <li key={weekStartDate}>
@@ -63,11 +63,11 @@ export function CompletedActivities({ activity }: Props) {
           </li>
         ))}
       </ol>
-    </Container>
+    </PaddedContainer>
   );
 }
 
-const Container = styled.div`
+const PaddedContainer = styled.div`
   padding-top: 1rem;
 `;
 
