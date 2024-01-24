@@ -8,10 +8,9 @@ export function ScreenBottomNavBar({ children }: Props) {
   return <Container>{children}</Container>;
 }
 
-const Container = styled.div`
+const Container = styled.span`
   position: fixed;
   bottom: 0;
-  left: 0;
   right: 0;
 
   display: flex;
