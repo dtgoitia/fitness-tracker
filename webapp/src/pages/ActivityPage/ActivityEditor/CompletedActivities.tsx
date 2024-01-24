@@ -1,6 +1,6 @@
 import { useApp } from "../../..";
 import { isoDateFormatter as toISODate } from "../../../lib/datetimeUtils";
-import { groupByWeek } from "../../../lib/domain/completedActivities";
+import { ActivitiesByWeek, groupByWeek } from "../../../lib/domain/completedActivities";
 import { Activity, CompletedActivity } from "../../../lib/domain/model";
 import { formatTime } from "../../HistoryExplorer/History/datetime";
 import { useEffect, useState } from "react";
@@ -15,6 +15,17 @@ export function CompletedActivities({ activity }: Props) {
   const completedActivityManager = app.completedActivityManager;
 
   const [completed, setCompleted] = useState<CompletedActivity[]>([]);
+  const [groupedByWeek, setGroupedByWeek] = useState<ActivitiesByWeek[]>([]);
+
+  function refreshState(allCompleted: CompletedActivity[]): void {
+    setCompleted(allCompleted);
+    if (allCompleted.length === 0) {
+      setGroupedByWeek([]);
+      return;
+    }
+
+    setGroupedByWeek(groupByWeek(allCompleted));
+  }
 
   useEffect(() => {
     const subscription = completedActivityManager.changes$.subscribe(() => {
@@ -22,14 +33,14 @@ export function CompletedActivities({ activity }: Props) {
         .getAll()
         .filter((completed) => completed.activityId === activity.id);
       // all.reverse();
-      setCompleted(all);
+      refreshState(all);
     });
 
     const all = completedActivityManager
       .getAll()
       .filter((completed) => completed.activityId === activity.id);
     // all.reverse();
-    setCompleted(all);
+    refreshState(all);
 
     return () => subscription.unsubscribe();
   }, [activity.id, completedActivityManager]);
@@ -38,12 +49,10 @@ export function CompletedActivities({ activity }: Props) {
     return <div>No data for this activity</div>;
   }
 
-  const byWeek = groupByWeek(completed);
-
   return (
     <Container>
       <ol>
-        {byWeek.map(([weekStartDate, completedInDay]) => (
+        {groupedByWeek.map(([weekStartDate, completedInDay]) => (
           <li key={weekStartDate}>
             <WeekHeader>{weekStartDate}</WeekHeader>
             <ol>

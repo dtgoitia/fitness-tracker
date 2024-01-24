@@ -327,7 +327,7 @@ export function groupByDay(history: CompletedActivity[]): DatedActivities[] {
 }
 
 type WeekStartDate = ISODateString;
-type ActivitiesByWeek = [WeekStartDate, CompletedActivity[]];
+export type ActivitiesByWeek = [WeekStartDate, CompletedActivity[]];
 
 export function groupByWeek(history: CompletedActivity[]): ActivitiesByWeek[] {
   type WeekStart = ISODateString;
