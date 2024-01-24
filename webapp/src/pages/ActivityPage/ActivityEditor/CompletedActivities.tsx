@@ -3,6 +3,7 @@ import { isoDateFormatter as toISODate } from "../../../lib/datetimeUtils";
 import { ActivitiesByWeek, groupByWeek } from "../../../lib/domain/completedActivities";
 import { Activity, CompletedActivity } from "../../../lib/domain/model";
 import { formatTime } from "../../HistoryExplorer/History/datetime";
+import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -16,6 +17,7 @@ export function CompletedActivities({ activity }: Props) {
 
   const [completed, setCompleted] = useState<CompletedActivity[]>([]);
   const [groupedByWeek, setGroupedByWeek] = useState<ActivitiesByWeek[]>([]);
+  const [displayedAmount, setDisplayedAmount] = useState<number>(10);
 
   function refreshState(allCompleted: CompletedActivity[]): void {
     setCompleted(allCompleted);
@@ -49,10 +51,14 @@ export function CompletedActivities({ activity }: Props) {
     return <div>No data for this activity</div>;
   }
 
+  const paginated = getFirstNWeeks({ groupedByWeek, n: displayedAmount });
+
+  const canShowMore = displayedAmount < groupedByWeek.length;
+
   return (
     <PaddedContainer>
       <ol>
-        {groupedByWeek.map(([weekStartDate, completedInDay]) => (
+        {paginated.map(([weekStartDate, completedInDay]) => (
           <li key={weekStartDate}>
             <WeekHeader>{weekStartDate}</WeekHeader>
             <ol>
@@ -63,12 +69,32 @@ export function CompletedActivities({ activity }: Props) {
           </li>
         ))}
       </ol>
+      {canShowMore && (
+        <ShowMoreButtonContainer>
+          <Button
+            intent="none"
+            text="show 10 weeks more"
+            onClick={() => setDisplayedAmount(displayedAmount + 10)}
+            large
+          />
+        </ShowMoreButtonContainer>
+      )}
     </PaddedContainer>
   );
 }
 
 const PaddedContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
   padding-top: 1rem;
+  padding-bottom: 4rem;
+`;
+
+const ShowMoreButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
 const WeekHeader = styled.div`
@@ -128,4 +154,19 @@ function Row({ completedActivity }: RowProps) {
       <Col5>{completedActivity.notes}</Col5>
     </RowContainer>
   );
+}
+
+function getFirstNWeeks({
+  groupedByWeek,
+  n,
+}: {
+  groupedByWeek: ActivitiesByWeek[];
+  n: number;
+}): ActivitiesByWeek[] {
+  const result: ActivitiesByWeek[] = [];
+  for (let index = 0; index < Math.min(n, groupedByWeek.length); index++) {
+    const week = groupedByWeek[index];
+    result.push(week);
+  }
+  return result;
 }
