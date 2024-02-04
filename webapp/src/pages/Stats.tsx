@@ -4,8 +4,10 @@ import NavBar from "../components/NavBar";
 import { Seconds, formatTimedelta, isoDateFormatter, now } from "../lib/datetimeUtils";
 import { getLastOccurrences } from "../lib/domain/completedActivities";
 import { ActivityId, ActivityName, CompletedActivity } from "../lib/domain/model";
+import Paths from "../routes";
 import BlueprintThemeProvider from "../style/theme";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 interface HydratedCompletedActivity extends CompletedActivity {
@@ -88,7 +90,11 @@ function LastOcurrence({ completed }: { completed: HydratedCompletedActivity }) 
   return (
     <OrderedListContainer>
       <SinceCompleted>{days}</SinceCompleted>
-      <Name>{completed.activityName}</Name>
+      <Name>
+        <Link to={`${Paths.activities}/${completed.activityId}`}>
+          {completed.activityName}
+        </Link>
+      </Name>
       <CompletionDate>{isoDateFormatter(completed.date)}</CompletionDate>
     </OrderedListContainer>
   );
