@@ -174,6 +174,6 @@ describe(`${getLastOccurrences.name}`, () => {
 
     const last = getLastOccurrences(history);
 
-    expect(last).toEqual([completedB2, completedA3]);
+    expect(last).toEqual([completedA3, completedB2]);
   });
 });

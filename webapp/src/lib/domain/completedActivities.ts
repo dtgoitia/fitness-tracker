@@ -419,7 +419,7 @@ export function setCompletedActivityEllapsedInNotes(
 
 /**
  * Drop all completed activities but the latest occurrence of each completed activity,
- * and return them sorted from oldest to newest
+ * and return them sorted newest to oldest
  */
 export function getLastOccurrences(history: CompletedActivity[]): CompletedActivity[] {
   const seen = new Set<ActivityId>();
@@ -434,9 +434,6 @@ export function getLastOccurrences(history: CompletedActivity[]): CompletedActiv
     lastOcurrences.push(completed);
     seen.add(activityId);
   }
-
-  // Sort from oldest to newest
-  lastOcurrences.reverse();
 
   return lastOcurrences;
 }
