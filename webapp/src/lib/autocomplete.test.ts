@@ -10,10 +10,9 @@ import {
   findWords,
   removeWordsFromTrie,
 } from "./autocomplete";
-import { now } from "./datetimeUtils";
-import { ACTIVITY_PREFIX, activityToWords } from "./domain/activities";
-import { Activity, ActivityName } from "./domain/model";
-import { generateId } from "./hash";
+import { activityToWords } from "./domain/activities";
+import { Activity } from "./domain/model";
+import { buildActivity } from "./test/helpers";
 import { describe, expect, test } from "vitest";
 
 describe("TrieNode", () => {
@@ -170,16 +169,6 @@ describe("TrieNode", () => {
     });
   });
 });
-
-function buildActivity({ name }: { name: ActivityName }): Activity {
-  return {
-    id: generateId({ prefix: ACTIVITY_PREFIX }),
-    name,
-    otherNames: [],
-    lastModified: now(),
-    trainableIds: [],
-  };
-}
 
 describe(Autocompleter.name, () => {
   const coder = buildActivity({ name: "Coder" });

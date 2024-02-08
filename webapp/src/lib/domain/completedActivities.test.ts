@@ -1,44 +1,13 @@
-import { now } from "../datetimeUtils";
-import { generateId } from "../hash";
 import { setsAreEqual } from "../setOperations";
-import { ACTIVITY_PREFIX, ActivityManager } from "./activities";
+import { buildActivity, buildCompletedActivity } from "../test/helpers";
+import { ActivityManager } from "./activities";
 import {
-  COMPLETED_ACTIVITY_PREFIX,
   CompletedActivityManager,
   getLastOccurrences,
   groupByDay,
 } from "./completedActivities";
-import { Activity, ActivityId, CompletedActivity, Duration, Intensity } from "./model";
+import { CompletedActivity } from "./model";
 import { describe, expect, it } from "vitest";
-
-// TODO: this probably needs to go to a more accessible module
-function buildCompletedActivity({
-  activityId,
-  date,
-}: {
-  activityId?: ActivityId;
-  date?: Date;
-}): CompletedActivity {
-  return {
-    id: generateId({ prefix: COMPLETED_ACTIVITY_PREFIX }),
-    activityId: activityId ? activityId : generateId({ prefix: ACTIVITY_PREFIX }),
-    date: date !== undefined ? date : now(),
-    duration: Duration.short,
-    intensity: Intensity.low,
-    notes: "test notes",
-    lastModified: now(),
-  };
-}
-
-function buildActivity({ id }: { id?: ActivityId }): Activity {
-  return {
-    id: id ? id : generateId({ prefix: COMPLETED_ACTIVITY_PREFIX }),
-    name: "test activity",
-    otherNames: [],
-    lastModified: now(),
-    trainableIds: [],
-  };
-}
 
 describe(`CompletedActivity`, () => {
   it("group by day", () => {
