@@ -4,6 +4,7 @@ export type JsonString = string;
 export type Hash = string;
 export type ActivityId = Hash;
 export type ActivityName = string;
+export type ActivityNotes = string;
 export type CompletedActivityId = string;
 export type CompletedActivityNotes = string;
 export type FilterQuery = string;
@@ -13,6 +14,7 @@ export type ExternalReference = string; // URLs to videos, images, etc.
 export interface Activity {
   readonly id: ActivityId;
   readonly name: ActivityName;
+  readonly notes: ActivityNotes;
   readonly otherNames: ActivityName[];
   readonly lastModified: Date; // usefull to later reconcile data offline
   readonly trainableIds: TrainableId[];

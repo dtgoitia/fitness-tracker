@@ -6,13 +6,19 @@ import {
   addTrainableToActivity,
   removeTrainableFromActivity,
   diffActivity,
+  setActivityNotes,
 } from "../../../lib/domain/activities";
-import { Activity, ActivityName, TrainableId } from "../../../lib/domain/model";
+import {
+  Activity,
+  ActivityName,
+  ActivityNotes,
+  TrainableId,
+} from "../../../lib/domain/model";
 import { notify } from "../../../notify";
 import { ActivityTrainableEditor } from "./ActivityTrainableEditor";
 import { CompletedActivities } from "./CompletedActivities";
 import { CompletedActivityCalendar } from "./CompletedActivityCalendar";
-import { Button, Label } from "@blueprintjs/core";
+import { Button, EditableText, Label } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -40,6 +46,10 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
     const raw: string = event.target.value;
     const otherNames: ActivityName[] = raw.split(",").filter((x) => !!x);
     setActivity(setActivityOtherNames(activity, otherNames));
+  }
+
+  function handleNotesChange(notes: ActivityNotes): void {
+    setActivity(setActivityNotes(activity, notes));
   }
 
   function handleAddTrainable({ id }: { id: TrainableId }): void {
@@ -110,6 +120,18 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
         />
       </Label>
 
+      <NotesContainer>
+        <label>Observations:</label>
+        <Notes
+          placeholder="add observations here..."
+          value={activity.notes}
+          multiline={true}
+          minLines={3}
+          onChange={handleNotesChange}
+          disabled={isEditing === false}
+        />
+      </NotesContainer>
+
       <ActivityTrainableEditor
         isEditing={isEditing}
         activity={activity}
@@ -134,6 +156,16 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
     </>
   );
 }
+
+const NotesContainer = styled.div`
+  margin: 1rem 0;
+`;
+
+const Notes = styled(EditableText)`
+  font-size: 0.9rem;
+  max-width: 100%;
+  border: 1px dashed gray;
+`;
 
 const EditButtonContainer = styled.div`
   padding: 1rem;

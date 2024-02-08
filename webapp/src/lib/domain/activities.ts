@@ -10,6 +10,7 @@ import {
   Activity,
   ActivityId,
   ActivityName,
+  ActivityNotes,
   Duration,
   Hash,
   Intensity,
@@ -91,6 +92,7 @@ export class ActivityManager {
       id,
       name,
       otherNames,
+      notes: "",
       lastModified: now(),
       trainableIds: [],
     };
@@ -258,6 +260,10 @@ export function setActivityOtherNames(
   return { ...activity, otherNames, lastModified: now() };
 }
 
+export function setActivityNotes(activity: Activity, notes: ActivityNotes): Activity {
+  return { ...activity, notes, lastModified: now() };
+}
+
 export function addTrainableToActivity(
   activity: Activity,
   trainableId: TrainableId
@@ -327,6 +333,7 @@ export function activityToWords(activity: Activity): Set<Word> {
 interface ActivityDiffArgs {
   readonly updatedName?: ActivityName;
   readonly updatedOtherNames?: ActivityName[];
+  readonly updatedNotes?: ActivityNotes;
   readonly updatedTrainableIds?: TrainableId[];
 }
 
@@ -335,16 +342,24 @@ class ActivityDiff {
 
   public readonly updatedName?: ActivityName;
   public readonly updatedOtherNames?: ActivityName[];
+  public readonly updatedNotes?: ActivityNotes;
   public readonly updatedTrainableIds?: TrainableId[];
 
-  constructor({ updatedName, updatedOtherNames, updatedTrainableIds }: ActivityDiffArgs) {
+  constructor({
+    updatedName,
+    updatedOtherNames,
+    updatedNotes,
+    updatedTrainableIds,
+  }: ActivityDiffArgs) {
     this.updatedName = updatedName;
     this.updatedOtherNames = updatedOtherNames;
+    this.updatedNotes = updatedNotes;
     this.updatedTrainableIds = updatedTrainableIds;
 
     this.hasChanges =
       this.updatedName !== undefined ||
       this.updatedOtherNames !== undefined ||
+      this.updatedNotes !== undefined ||
       this.updatedTrainableIds !== undefined;
   }
 }
@@ -367,10 +382,15 @@ export function diffActivity({
 
   let updatedName: ActivityName | undefined = undefined;
   let updatedOtherNames: ActivityName[] | undefined = undefined;
+  let updatedNotes: ActivityNotes | undefined = undefined;
   let updatedTrainableIds: TrainableId[] | undefined = undefined;
 
   if (before.name !== after.name) {
     updatedName = after.name;
+  }
+
+  if (before.notes !== after.notes) {
+    updatedNotes = after.notes;
   }
 
   if (listsAreEqual(before.otherNames, after.otherNames) === false) {
@@ -381,5 +401,10 @@ export function diffActivity({
     updatedTrainableIds = after.trainableIds;
   }
 
-  return new ActivityDiff({ updatedName, updatedOtherNames, updatedTrainableIds });
+  return new ActivityDiff({
+    updatedName,
+    updatedOtherNames,
+    updatedNotes,
+    updatedTrainableIds,
+  });
 }

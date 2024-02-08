@@ -22,6 +22,7 @@ export function buildActivity({
     id: id ? id : generateId({ prefix: ACTIVITY_PREFIX }),
     name: name ? name : "test activity",
     otherNames: [],
+    notes: "",
     lastModified: now(),
     trainableIds: [],
   };
