@@ -68,13 +68,14 @@ export class ActivityManager {
 
       this.activities.set(activity.id, activity);
 
+      // build activities per trainable
       for (const trainableId of activity.trainableIds) {
-        const trainableIds = map.get(trainableId);
-        if (trainableIds === undefined) {
+        const activityIds = map.get(trainableId);
+        if (activityIds === undefined) {
           map.set(trainableId, new Set<ActivityId>([activity.id]));
         } else {
-          trainableIds.add(activity.id); // CAVEAT relies on mutation
-          map.set(trainableId, trainableIds);
+          activityIds.add(activity.id); // CAVEAT relies on mutation
+          map.set(trainableId, activityIds);
         }
       }
     }
