@@ -118,9 +118,7 @@ export class TrainableManager {
 
     const unsortedResults = this.autocompleter.search(prefixes.join(" "));
 
-    return [...this.trainables.values()]
-      .filter((trainable) => unsortedResults.has(trainable))
-      .sort(sortTrainablesAlphabetically);
+    return [...unsortedResults].sort(sortTrainablesAlphabetically);
   }
 
   private generateTrainableId() {
