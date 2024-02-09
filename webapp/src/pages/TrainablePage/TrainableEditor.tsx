@@ -13,6 +13,7 @@ import {
 } from "../../lib/domain/trainables";
 import { notify } from "../../notify";
 import Paths from "../../routes";
+import { RelatedActivities } from "./RelatedActivities";
 import { Button, EditableText, Label } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -155,6 +156,8 @@ export function TrainableEditor({ trainable: originalTrainable }: Props) {
       </NotesContainer>
 
       <Button intent="success" text="Save" onClick={handleSave} disabled={!formIsDirty} />
+
+      <RelatedActivities activityIds={activityIds} />
 
       {formIsDirty && (
         <Button
