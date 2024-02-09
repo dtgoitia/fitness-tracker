@@ -183,9 +183,7 @@ export class ActivityManager {
 
     const unsortedResults = this.autocompleter.search(prefixes.join(" "));
 
-    return [...this.activities.values()]
-      .filter((activity) => unsortedResults.has(activity))
-      .sort(sortActivitiesAlphabetically);
+    return [...unsortedResults].sort(sortActivitiesAlphabetically);
   }
 
   public getByTrainable({ trainableId }: { trainableId: TrainableId }): Set<ActivityId> {
