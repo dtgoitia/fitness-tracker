@@ -1,5 +1,11 @@
 import { useApp } from "../..";
-import { Trainable, TrainableName, TrainableNotes } from "../../lib/domain/model";
+import { CompletedActivitiesCalendar } from "../../components/CompletedActivitiesCalendar";
+import {
+  ActivityId,
+  Trainable,
+  TrainableName,
+  TrainableNotes,
+} from "../../lib/domain/model";
 import {
   setTrainableName,
   setTrainableNotes,
@@ -8,7 +14,7 @@ import {
 import { notify } from "../../notify";
 import Paths from "../../routes";
 import { Button, EditableText, Label } from "@blueprintjs/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -21,9 +27,22 @@ export function TrainableEditor({ trainable: originalTrainable }: Props) {
   const navigate = useNavigate();
 
   const [trainable, setTrainable] = useState<Trainable>(originalTrainable);
+  const [activityIds, setActivityIds] = useState<Set<ActivityId>>(new Set());
 
   // dirty = form has unsaved changes
   const [formIsDirty, setFormIsDirty] = useState<boolean>(false);
+
+  useEffect(() => {
+    const subscription = app.activityManager.changes$.subscribe((_) => {
+      setActivityIds(app.activityManager.getByTrainable({ trainableId: trainable.id }));
+    });
+
+    setActivityIds(app.activityManager.getByTrainable({ trainableId: trainable.id }));
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [app, trainable]);
 
   function handleNameChange(event: any): void {
     const name: TrainableName = event.target.value;
@@ -147,6 +166,8 @@ export function TrainableEditor({ trainable: originalTrainable }: Props) {
       )}
 
       <pre>{JSON.stringify(trainable, null, 2)}</pre>
+
+      <CompletedActivitiesCalendar activityIds={activityIds} />
 
       <Button intent="danger" text="Delete" onClick={handleDelete} icon="trash" />
     </>
