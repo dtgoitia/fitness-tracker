@@ -139,7 +139,7 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
         onRemove={handleRemoveTrainable}
       />
 
-      <CompletedActivitiesCalendar activityId={activity.id} />
+      <CompletedActivitiesCalendar activityIds={new Set([activity.id])} />
 
       <CompletedActivities activity={activity} />
 

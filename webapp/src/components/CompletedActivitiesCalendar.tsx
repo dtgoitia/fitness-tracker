@@ -7,32 +7,32 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 interface Props {
-  activityId: ActivityId;
+  activityIds: Set<ActivityId>;
 }
 
-export function CompletedActivitiesCalendar({ activityId }: Props) {
+export function CompletedActivitiesCalendar({ activityIds }: Props) {
   const app = useApp();
   const completedActivityManager = app.completedActivityManager;
 
   const [completed, setCompleted] = useState<CompletedActivity[]>([]);
 
-  useEffect(() => {
-    const subscription = completedActivityManager.changes$.subscribe(() => {
-      const all = completedActivityManager
-        .getAll()
-        .filter((completed) => completed.activityId === activityId);
-      all.reverse();
-      setCompleted(all);
-    });
-
+  function _render(): void {
     const all = completedActivityManager
       .getAll()
-      .filter((completed) => completed.activityId === activityId);
+      .filter((completed) => activityIds.has(completed.activityId));
     all.reverse();
     setCompleted(all);
+  }
+
+  useEffect(() => {
+    const subscription = completedActivityManager.changes$.subscribe(() => {
+      _render();
+    });
+
+    _render();
 
     return () => subscription.unsubscribe();
-  }, [activityId, completedActivityManager]);
+  }, [activityIds, completedActivityManager]);
 
   if (completed.length === 0) {
     return <div>No data for this activity</div>;
