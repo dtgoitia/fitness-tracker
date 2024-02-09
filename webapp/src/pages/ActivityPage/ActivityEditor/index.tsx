@@ -1,4 +1,5 @@
 import { useApp } from "../../..";
+import { CompletedActivitiesCalendar } from "../../../components/CompletedActivitiesCalendar";
 import { ScreenBottomNavBar } from "../../../components/ScreenBottomNavBar";
 import {
   setActivityName,
@@ -17,7 +18,6 @@ import {
 import { notify } from "../../../notify";
 import { ActivityTrainableEditor } from "./ActivityTrainableEditor";
 import { CompletedActivities } from "./CompletedActivities";
-import { CompletedActivityCalendar } from "./CompletedActivityCalendar";
 import { Button, EditableText, Label } from "@blueprintjs/core";
 import { useState } from "react";
 import styled from "styled-components";
@@ -139,7 +139,7 @@ export function ActivityEditor({ activity: originalActivity }: Props) {
         onRemove={handleRemoveTrainable}
       />
 
-      <CompletedActivityCalendar activityId={activity.id} />
+      <CompletedActivitiesCalendar activityId={activity.id} />
 
       <CompletedActivities activity={activity} />
 

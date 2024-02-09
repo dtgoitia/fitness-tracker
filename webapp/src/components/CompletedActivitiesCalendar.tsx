@@ -1,8 +1,8 @@
-import { useApp } from "../../..";
-import { Calendar } from "../../../components/Calendar";
-import { CalendarDay } from "../../../components/Calendar/model";
-import { nextDay, toUTCDay, today } from "../../../lib/datetimeUtils";
-import { ActivityId, CompletedActivity } from "../../../lib/domain/model";
+import { useApp } from "..";
+import { nextDay, toUTCDay, today } from "../lib/datetimeUtils";
+import { ActivityId, CompletedActivity } from "../lib/domain/model";
+import { Calendar } from "./Calendar";
+import { CalendarDay } from "./Calendar/model";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -10,7 +10,7 @@ interface Props {
   activityId: ActivityId;
 }
 
-export function CompletedActivityCalendar({ activityId }: Props) {
+export function CompletedActivitiesCalendar({ activityId }: Props) {
   const app = useApp();
   const completedActivityManager = app.completedActivityManager;
 
