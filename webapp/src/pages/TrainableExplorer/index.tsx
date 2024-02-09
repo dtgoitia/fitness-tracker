@@ -51,7 +51,7 @@ export function TrainableExplorer() {
       trainableManagerSubscription.unsubscribe();
       appSubscription.unsubscribe();
     };
-  }, [app]);
+  }, [app, filterQuery]);
 
   function clearSearch(): void {
     setFilterQuery("");
