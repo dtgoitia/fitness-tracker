@@ -22,6 +22,7 @@ export const ACTIVITY_PREFIX = "act";
 
 interface InitializeArgs {
   activities: Activity[];
+  allTrainableIds: Set<TrainableId>;
 }
 
 interface AddActivityArgs {
@@ -57,7 +58,7 @@ export class ActivityManager {
     this.activitiesByTrainable = new Map<TrainableId, Set<ActivityId>>();
   }
 
-  public initialize({ activities }: InitializeArgs): void {
+  public initialize({ activities, allTrainableIds }: InitializeArgs): void {
     const map = new Map<TrainableId, Set<ActivityId>>();
 
     for (let activity of activities) {
@@ -65,6 +66,14 @@ export class ActivityManager {
       if (activity.trainableIds === undefined) {
         activity = { ...activity, trainableIds: [] };
       }
+
+      // Purge out trainables if they don't exist
+      activity = {
+        ...activity,
+        trainableIds: activity.trainableIds.filter((trainableId) =>
+          allTrainableIds.has(trainableId)
+        ),
+      };
 
       this.activities.set(activity.id, activity);
 

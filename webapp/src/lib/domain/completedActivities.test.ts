@@ -36,7 +36,7 @@ describe(`CompletedActivityManager`, () => {
     const completedActivityManager = new CompletedActivityManager({ activityManager });
 
     const activity = buildActivity({ id: "act_aaaaaa" });
-    activityManager.initialize({ activities: [activity] });
+    activityManager.initialize({ activities: [activity], allTrainableIds: new Set() });
 
     const ca_a = buildCompletedActivity({
       activityId: activity.id,
@@ -65,7 +65,10 @@ describe(`CompletedActivityManager`, () => {
 
     const activityA = buildActivity({ id: "act_aaaaaa" });
     const activityB = buildActivity({ id: "act_bbbbbb" });
-    activityManager.initialize({ activities: [activityA, activityB] });
+    activityManager.initialize({
+      activities: [activityA, activityB],
+      allTrainableIds: new Set(),
+    });
 
     const completedA1 = buildCompletedActivity({
       activityId: activityA.id,

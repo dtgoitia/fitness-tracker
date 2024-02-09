@@ -85,7 +85,10 @@ export class App {
     this.trainableManager.initialize({ trainables });
 
     console.log(`${logPrefix}::Initializating ${ActivityManager.name} ...`);
-    this.activityManager.initialize({ activities });
+    this.activityManager.initialize({
+      activities,
+      allTrainableIds: new Set(trainables.map((trainable) => trainable.id)),
+    });
 
     console.log(`${logPrefix}::Initializating ${CompletedActivityManager.name} ...`);
     this.completedActivityManager.initialize({ completedActivities });
