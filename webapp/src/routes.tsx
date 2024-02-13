@@ -12,7 +12,8 @@ enum Paths {
   trainableEditor = "/trainables/:trainableId",
   trainings = "/trainings",
   trainingEditor = "/trainings/:trainingId",
-  stats = "/stats",
+  activityStats = "/stats/activities",
+  trainableStats = "/stats/trainables",
   shortcuts = "/shortcuts",
   notFound = "/*",
 }

@@ -15,7 +15,7 @@ interface HydratedCompletedActivity extends CompletedActivity {
   sinceCompleted: Seconds;
 }
 
-function StatsPage() {
+export function ActivitiesStatsPage() {
   const app = useApp();
   const activityManager = app.activityManager;
   const completedActivityManager = app.completedActivityManager;
@@ -69,8 +69,6 @@ function StatsPage() {
     </BlueprintThemeProvider>
   );
 }
-
-export default StatsPage;
 
 const OrderedListContainer = styled.ol`
   display: flex;

@@ -68,3 +68,11 @@ export interface Trainable {
   readonly lastModified: Date; // usefull to later reconcile data offline
   readonly notes: TrainableNotes;
 }
+
+export interface CompletedTrainable {
+  readonly completedActivityId: CompletedActivityId;
+  readonly activityId: ActivityId;
+  readonly trainableId: TrainableId;
+  readonly trainableName: TrainableName;
+  readonly date: Date;
+}

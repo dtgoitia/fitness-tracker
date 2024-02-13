@@ -28,7 +28,8 @@ function NavBar() {
       <NavBarButton text="Trainable" path={Paths.trainables} />
       <NavBarButton text="Trainings" path={Paths.trainings} />
       <NavBarButton text="Shortcuts" path={Paths.shortcuts} />
-      <NavBarButton text="Stats" path={Paths.stats} />
+      <NavBarButton text="Activity stats" path={Paths.activityStats} />
+      <NavBarButton text="Trainable stats" path={Paths.trainableStats} />
     </Container>
   );
 }

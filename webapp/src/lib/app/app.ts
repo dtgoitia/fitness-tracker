@@ -1,7 +1,10 @@
 import { ActivityManager, sortActivitiesAlphabetically } from "../domain/activities";
 import { Backup } from "../domain/backup";
-import { CompletedActivityManager } from "../domain/completedActivities";
-import { Activity, ActivityId, TrainableId } from "../domain/model";
+import {
+  CompletedActivityManager,
+  getLastOccurrences,
+} from "../domain/completedActivities";
+import { Activity, ActivityId, CompletedTrainable, TrainableId } from "../domain/model";
 import { ShortcutManager } from "../domain/shortcuts";
 import { TrainableManager } from "../domain/trainables";
 import { TrainingManager } from "../domain/trainings";
@@ -196,6 +199,48 @@ export class App {
     if (shortcuts) {
       this.browserStorage.storeShortcuts(shortcuts);
     }
+  }
+
+  /**
+   * POC: this probably will need to be move elsewhere
+   */
+  public getTrainableStats(): CompletedTrainable[] {
+    const history = this.completedActivityManager.getAll();
+
+    // sorted from newest to oldest
+    const lastCActivities = getLastOccurrences(history);
+
+    const lastTrainables: CompletedTrainable[] = [];
+    const visitedTrainables = new Set<TrainableId>();
+
+    for (const cActivity of lastCActivities) {
+      const activity = this.activityManager.get(cActivity.activityId);
+      if (activity === undefined) {
+        continue;
+      }
+      for (const trainableId of activity.trainableIds) {
+        if (visitedTrainables.has(trainableId)) {
+          continue;
+        }
+
+        const trainable = this.trainableManager.get(trainableId);
+        if (trainable === undefined) {
+          continue;
+        }
+
+        visitedTrainables.add(trainableId);
+
+        lastTrainables.push({
+          completedActivityId: cActivity.id,
+          activityId: cActivity.activityId,
+          trainableId: trainableId,
+          trainableName: trainable.name,
+          date: cActivity.date,
+        });
+      }
+    }
+
+    return lastTrainables;
   }
 }
 
