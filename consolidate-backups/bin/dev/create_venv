@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -eu
+
+target_service="consolidate-backups"
+target_python_version="3.11.2"
+
+venv_dir="${target_service}/.venv"
+
+current_dir="$(basename $(pwd))"
+
+exit_with_error () {
+    message="${1}"
+    echo >&2 "ERROR: ${message}"
+    exit 1
+}
+
+if [[ "$current_dir" != "fitness-tracker" ]]; then
+    exit_with_error "you must execute this from the root of the repo"
+fi
+
+
+if ! command -v pyenv &> /dev/null
+then
+    exit_with_error "pyenv must be installed"
+fi
+
+
+target_python_version_installed="$( pyenv versions --bare | grep "${target_python_version}" || echo "not found" )"
+if [[ "${target_python_version_installed}" == "not found" ]]; then
+    exit_with_error "pyenv does not have the version ${target_python_version} installed - manually install it and retry"
+fi
+
+
+if [[ -d "${venv_dir}" ]]; then
+    exit_with_error "directory $( realpath "${venv_dir}" ) must not exist"
+fi
+
+
+~/.pyenv/versions/$target_python_version/bin/python -m venv "${venv_dir}"
+
+source $target_service/bin/dev/_activate_venv
+pip install --upgrade pip

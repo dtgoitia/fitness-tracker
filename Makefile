@@ -1,7 +1,13 @@
 WEBAPP_NAME:=fitness-tracker-webapp
 LOCAL_STATIC_WEB_SERVER_PORT:=8083
 
+.PHONY: consolidate-backups
+
 set-up-development-environment:
+	@echo ""
+	@echo Adding .git background maintenance cronjobs...
+	git maintenance start
+
 	@echo ""
 	@echo Installing git hooks...
 	make install-dev-tools
@@ -36,12 +42,24 @@ run-webapp:
 
 remove-development-environment:
 	@echo ""
+	@echo Removing .git background maintenance cronjobs...
+	git maintenance unregister
+
+	@echo ""
 	@echo Uninstalling git hooks...
 	make uninstall-dev-tools
 
 	@echo ""
 	@echo Uninstalling NPM dependencies outside of the container
 	#rm -rf webapp/node_modules
+
+	@echo ""
+	@echo ""
+	@echo Installing Python dependencies outside of the container, so that the IDE can detect them
+	@# this step is necessary because otherwise docker compose creates a node_modules
+	@# folder with root permissions and outside-container build fails
+	consolidate-backups/bin/dev/create_venv
+	consolidate-backups/bin/dev/install_dev_deps
 
 	@echo ""
 	@echo Removing docker containers and images
@@ -77,3 +95,15 @@ build-webapp:
 build-webapp-for-ngrok:
 	scripts/build_webapp.sh
 	scripts/move_webapp_build_to_ngrok_dist_dir.sh $(LOCAL_STATIC_WEB_SERVER_PORT)
+
+#===============================================================================
+#
+#  CLI to consolidate back-ups
+#
+#===============================================================================
+
+consolidate-backups:
+	consolidate-backups/bin/consolidate
+
+test-consolidate-backups:
+	consolidate-backups/bin/test

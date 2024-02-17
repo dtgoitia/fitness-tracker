@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+current_file_name="${0}"
+current_dir="$(basename $(pwd))"
+
+target_service="consolidate-backups"
+source $target_service/bin/dev/_logging "${current_file_name}"
+
+if [[ "$current_dir" != "fitness-tracker" ]]; then
+    error "you must execute this from the root of the repo"
+    exit 1
+fi
+
+source $target_service/bin/dev/_activate_venv
+
+# TODO: replace this with a container
+cd $target_service; python -m src.cli.backup_to_csv $@
