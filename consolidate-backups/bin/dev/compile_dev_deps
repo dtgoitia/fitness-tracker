@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -eu
+
+target_service="consolidate-backups"
+current_dir="$(basename $(pwd))"
+
+if [[ "$current_dir" != "fitness-tracker" ]]; then
+    echo "ERROR: you must execute this from the root of the repo" >&2
+    exit 1
+fi
+
+source $target_service/bin/dev/_activate_venv
+
+requirements_dir=$target_service/requirements
+find $requirements_dir -type f -name "dev.txt" -delete
+pip-compile $requirements_dir/prod.in $requirements_dir/dev.in \
+    --output-file $requirements_dir/dev.txt \
+    --no-header \
+    --no-emit-index-url \
+    --verbose

@@ -1,0 +1,134 @@
+apischema==0.18.1
+    # via -r consolidate-backups/requirements/prod.in
+asttokens==2.4.1
+    # via stack-data
+black==24.2.0
+    # via -r consolidate-backups/requirements/dev.in
+build==1.0.3
+    # via pip-tools
+certifi==2024.2.2
+    # via requests
+charset-normalizer==3.3.2
+    # via requests
+click==8.1.7
+    # via
+    #   black
+    #   pip-tools
+decorator==5.1.1
+    # via
+    #   ipdb
+    #   ipython
+executing==2.0.1
+    # via stack-data
+flake8==7.0.0
+    # via -r consolidate-backups/requirements/dev.in
+idna==3.6
+    # via requests
+iniconfig==2.0.0
+    # via pytest
+ipdb==0.13.13
+    # via -r consolidate-backups/requirements/dev.in
+ipython==8.21.0
+    # via ipdb
+isort==5.13.2
+    # via -r consolidate-backups/requirements/dev.in
+jedi==0.19.1
+    # via
+    #   ipython
+    #   pudb
+matplotlib-inline==0.1.6
+    # via ipython
+mccabe==0.7.0
+    # via flake8
+mypy==1.8.0
+    # via -r consolidate-backups/requirements/dev.in
+mypy-extensions==1.0.0
+    # via
+    #   black
+    #   mypy
+numpy==1.26.4
+    # via pandas
+packaging==23.2
+    # via
+    #   black
+    #   build
+    #   pudb
+    #   pytest
+pandas==2.2.0
+    # via -r consolidate-backups/requirements/prod.in
+parso==0.8.3
+    # via jedi
+pathspec==0.12.1
+    # via black
+pexpect==4.9.0
+    # via ipython
+pip-tools==7.4.0
+    # via -r consolidate-backups/requirements/dev.in
+platformdirs==4.2.0
+    # via black
+pluggy==1.4.0
+    # via pytest
+prompt-toolkit==3.0.43
+    # via ipython
+ptyprocess==0.7.0
+    # via pexpect
+pudb==2024.1
+    # via -r consolidate-backups/requirements/dev.in
+pure-eval==0.2.2
+    # via stack-data
+pycodestyle==2.11.1
+    # via flake8
+pyflakes==3.2.0
+    # via flake8
+pygments==2.17.2
+    # via
+    #   ipython
+    #   pudb
+pyproject-hooks==1.0.0
+    # via
+    #   build
+    #   pip-tools
+pytest==8.0.1
+    # via -r consolidate-backups/requirements/dev.in
+python-dateutil==2.8.2
+    # via pandas
+pytz==2024.1
+    # via pandas
+requests==2.31.0
+    # via -r consolidate-backups/requirements/dev.in
+ruff==0.2.2
+    # via -r consolidate-backups/requirements/dev.in
+six==1.16.0
+    # via
+    #   asttokens
+    #   python-dateutil
+stack-data==0.6.3
+    # via ipython
+traitlets==5.14.1
+    # via
+    #   ipython
+    #   matplotlib-inline
+typing-extensions==4.9.0
+    # via
+    #   mypy
+    #   urwid
+tzdata==2024.1
+    # via pandas
+urllib3==2.2.0
+    # via requests
+urwid==2.6.1
+    # via
+    #   pudb
+    #   urwid-readline
+urwid-readline==0.13
+    # via pudb
+wcwidth==0.2.13
+    # via
+    #   prompt-toolkit
+    #   urwid
+wheel==0.42.0
+    # via pip-tools
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -eu
+
+target_service="consolidate-backups"
+current_dir="$(basename $(pwd))"
+
+if [[ "$current_dir" != "fitness-tracker" ]]; then
+    echo "ERROR: you must execute this from the root of the repo" >&2
+    exit 1
+fi
+
+assert_file_exists () {
+    path="${1}"
+    if [[ ! -f "${path}" ]]; then
+        echo >&2 "ERROR: file not found: ${path}"
+        exit 1
+    fi
+}
+
+show_header () {
+    header="${1}"
+    echo ""
+    echo "#==============================================================================="
+    echo "#"
+    echo "#  ${header}: ${target_service}"
+    echo "#"
+}
+
+source "${target_service}/bin/dev/_activate_venv"
+
+cd "${target_service}"
+
+pyproject_path="$(realpath "pyproject.toml" )"
+setupcfg_path="$(realpath "setup.cfg" )"
+assert_file_exists "${pyproject_path}"
+assert_file_exists "${setupcfg_path}"
+
+show_header "ruff"
+ruff check . --config "${pyproject_path}"
+
+show_header "flake8"
+flake8 --config "${setupcfg_path}" .
+
+show_header "black"
+black --config "${pyproject_path}" --check --diff .
+
+show_header "isort"
+# isort --settings-path "${pyproject_path}" --show-config
+isort --settings-path "${pyproject_path}" --check --diff .
+
+show_header "mypy"
+python -m mypy --config-file "${pyproject_path}" --pretty .

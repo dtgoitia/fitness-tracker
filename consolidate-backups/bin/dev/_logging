@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+#   Add logging functionality
+#
+#   Usage: load this file using `source` in other bash scripts to have a unified
+#   logging experience
+#
+################################################################################
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+_red='\033[31;1m'      # '31'=red, `1`=bold
+_green='\033[32;1m'    # '90'=red, `1`=bold
+_reset_colour='\033[0m'
+
+
+current_file_name="${1}"
+
+now () {
+    date --rfc-3339='seconds'
+}
+
+info () {
+    message="${1}"
+    echo -e >&2 "$(now) ${_green}INFO:${current_file_name}:${_reset_colour} ${message}"
+}
+
+error () {
+    message="${1}"
+    echo -e >&2 "$(now) ${_red}ERROR:${current_file_name}:${_reset_colour} ${message}"
+}
