@@ -189,17 +189,9 @@ def merge_trainables(
 
     for old_trainable in earliest:
         if old_trainable.id in merged:
-            continue  # a newer version has already been included in the result
-
-        # :S the old backup has an activity which does not exist in the new
-        # backup, either:
-        #    a) you've found one of the old backups created when the old records
-        #       were removed from the app after backing them up (which is no
-        #       longer the case)
-        #    b) this records has been deleted on purpose
-        #    c) this records has been deleted by mistake
-        # if (b) or (c) are the case, then the user should be prompted
-        breakpoint()
+            continue  # we want to keep the latest version
+        else:
+            merged[old_trainable.id] = old_trainable
 
     return list(merged.values())
 

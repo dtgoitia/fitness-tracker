@@ -12,3 +12,4 @@ SELECT
 FROM completed_activities ca
 JOIN activities a
 ON a.id == ca.activity_id
+ORDER by ca.date ASC

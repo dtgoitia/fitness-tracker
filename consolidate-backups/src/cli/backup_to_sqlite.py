@@ -43,8 +43,8 @@ def main(backup_path: Path) -> None:
     backup = read_backup_file(path=backup_path)
     is_backup_correpted(backup=backup)
 
-    output_path = Path.cwd() / f"{backup_path.name}.sqlite"
-    output_path.unlink()
+    output_path = Path.cwd() / f"{backup_path.stem}.sqlite"
+    output_path.unlink(missing_ok=True)
 
     with sqlite3.connect(output_path) as db:
         for path in (

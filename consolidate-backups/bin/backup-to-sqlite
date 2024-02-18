@@ -18,4 +18,4 @@ fi
 source $target_service/bin/dev/_activate_venv
 
 # TODO: replace this with a container
-cd $target_service; python -m src.cli.backup_to_sqlite --path '/home/dtg/Downloads/Telegram Desktop/fitness-tracker__backup_202402-17-1315.txt'
+cd $target_service; python -m src.cli.backup_to_sqlite $@
