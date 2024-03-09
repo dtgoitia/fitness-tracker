@@ -3,6 +3,7 @@ import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { SearchBox } from "../../components/SearchBox";
 import { Activity, ActivityName, FilterQuery } from "../../lib/domain/model";
+import { NO_URL_PARAM_VALUE, useUrlParam } from "../../navigation";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
 import AddActivity from "../HistoryExplorer/AddActivity";
@@ -10,12 +11,17 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
+const NO_FILTER_QUERY = "";
+
 function ActivityExplorer() {
   const app = useApp();
   const activityManager = app.activityManager;
 
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
+  const [filterInUrl, setUrlParam] = useUrlParam({ key: "search" });
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>(
+    filterInUrl || NO_FILTER_QUERY
+  );
 
   function _render(): void {
     setActivities(activityManager.searchByPrefix(filterQuery));
@@ -30,8 +36,16 @@ function ActivityExplorer() {
     };
   }, [activityManager, filterQuery]);
 
+  function handleFilterChange(updated: FilterQuery): void {
+    if (updated === filterQuery) {
+      return;
+    }
+    setFilterQuery(updated);
+    setUrlParam(updated === NO_FILTER_QUERY ? NO_URL_PARAM_VALUE : updated);
+  }
+
   function clearSearch(): void {
-    setFilterQuery("");
+    handleFilterChange("");
   }
 
   function handleAddNewActivity(name: ActivityName, otherNames: ActivityName[]): void {
@@ -51,7 +65,7 @@ function ActivityExplorer() {
 
         <SearchBox
           query={filterQuery}
-          onChange={setFilterQuery}
+          onChange={handleFilterChange}
           clearSearch={clearSearch}
           onFocus={() => {}}
         />
