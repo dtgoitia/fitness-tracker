@@ -21,6 +21,7 @@ export const DRAFT_TRAINING: Training = {
   id: `${TRAINING_PREFIX}_DRAFT`,
   name: "",
   activities: [],
+  isOneOff: true,
   lastModified: now(),
 };
 
@@ -77,7 +78,7 @@ export class TrainingManager {
     this.changesSubject.next({ kind: "training-manager-initialized" });
   }
 
-  public add({ name, activities }: AddTrainingArgs): void {
+  public add({ name, activities, isOneOff }: AddTrainingArgs): void {
     // TODO: do this for every activity in training
     for (const activity of activities) {
       const { activityId } = activity;
@@ -95,6 +96,7 @@ export class TrainingManager {
       id,
       name,
       activities,
+      isOneOff,
       lastModified: now(),
     };
     this.trainings.set(id, training);
@@ -204,6 +206,10 @@ export type TrainingChange =
 
 export function setTrainingName(training: Training, name: TrainingName): Training {
   return { ...training, name, lastModified: now() };
+}
+
+export function setTrainingIsOneOff(training: Training, isOneOff: boolean): Training {
+  return { ...training, isOneOff, lastModified: now() };
 }
 
 export function setTrainingActivityActivity(
@@ -342,6 +348,7 @@ export function trainingsAreEqual(a: Training, b: Training): boolean {
   if (a.id !== b.id) return false;
   if (a.name !== b.name) return false;
   if (a.activities.length !== b.activities.length) return false;
+  if (a.isOneOff !== b.isOneOff) return false;
 
   for (let index = 0; index < a.activities.length; index++) {
     const trainingActivityA = a.activities[index];

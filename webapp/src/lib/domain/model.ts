@@ -56,6 +56,7 @@ export interface Training {
   readonly name: TrainingName;
   readonly activities: TrainingActivity[];
   readonly lastModified: Date; // usefull to later reconcile data offline
+  readonly isOneOff: boolean;
 }
 
 export type TrainableId = string;

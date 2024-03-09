@@ -15,6 +15,7 @@ import {
   DRAFT_TRAINING,
   moveTrainingActivityDown,
   moveTrainingActivityUp,
+  setTrainingIsOneOff,
   setTrainingName,
   TrainingAdded,
   trainingsAreDifferent,
@@ -25,7 +26,7 @@ import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
 import TrainingActivityAdder from "./TrainingActivityAdder";
 import TrainingActivityEditor from "./TrainingActivityEditor";
-import { Button, Card, Label } from "@blueprintjs/core";
+import { Button, Card, Label, Switch } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -87,6 +88,12 @@ function TrainingEditor() {
     return activity;
   }
 
+  function handleIsOneOffChange(): void {
+    const updatedTraining = setTrainingIsOneOff(training, !training.isOneOff);
+    setTraining(updatedTraining);
+    recomputeDirtyStatus(updatedTraining);
+  }
+
   function handleTrainingActivityAdded(trainingActivity: TrainingActivity): void {
     const updatedTraining = addActivityToTraining(training, trainingActivity);
     setTraining(updatedTraining);
@@ -137,7 +144,11 @@ function TrainingEditor() {
           });
         }
       });
-      trainingManager.add({ name: training.name, activities: training.activities });
+      trainingManager.add({
+        name: training.name,
+        activities: training.activities,
+        isOneOff: training.isOneOff,
+      });
     } else {
       trainingManager.update({ training }).match({
         ok: (x) => {
@@ -180,20 +191,23 @@ function TrainingEditor() {
     <BlueprintThemeProvider>
       <CenteredPage>
         <NavBar />
-        <h2>
-          Training ID:&nbsp;&nbsp;&nbsp;<code>{training.id}</code>
-        </h2>
-
         <Label>
           name:
           <input
             type="text"
-            className={"bp4-input"}
+            className="bp4-input bp4-large"
             value={training.name}
             placeholder="Name"
             onChange={handleNameChange}
           />
         </Label>
+        <IsOneOff>
+          <Switch
+            label={training.isOneOff ? "training is one-off" : "training is long-term"}
+            checked={training.isOneOff}
+            onClick={handleIsOneOffChange}
+          />
+        </IsOneOff>
 
         <ActivitiesSection>
           <Card>
@@ -248,3 +262,5 @@ export default TrainingEditor;
 const ActivitiesSection = styled.div`
   margin-bottom: 1rem;
 `;
+
+const IsOneOff = styled.div``;

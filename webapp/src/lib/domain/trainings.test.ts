@@ -7,6 +7,7 @@ function buildTraining({ activities }: { activities: TrainingActivity[] }): Trai
     id: "test-training-id",
     name: "test-training-name",
     lastModified: new Date(2000, 1, 1),
+    isOneOff: true,
     activities,
   };
 }

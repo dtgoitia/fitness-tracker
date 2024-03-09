@@ -228,6 +228,7 @@ function deserializeTraining(raw: any): Training {
   const training: Training = {
     ...raw,
     lastModified: deserializeDate(raw.lastModified),
+    isOneOff: raw?.isOneOff === true,
   };
 
   return training;
