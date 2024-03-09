@@ -1,4 +1,5 @@
 import { useApp } from "../../..";
+import { useTrainingInUrlParams } from "../../../hooks/useTrainingInUrlParams";
 import { now } from "../../../lib/datetimeUtils";
 import { Training, TrainingActivity } from "../../../lib/domain/model";
 import SelectableTrainingActivity from "./SelectableTrainingActivity";
@@ -11,7 +12,8 @@ function AddCompletedActivityFromTraining() {
   const { activityManager, completedActivityManager, trainingManager } = useApp();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [training, setTraining] = useState<Training | undefined>();
+  const [trainingInUrl, setTrainingInUrl] = useTrainingInUrlParams();
+  const [training, setTraining] = useState<Training | undefined>(trainingInUrl);
   const [trainings, setTrainings] = useState<Training[]>([]);
 
   useEffect(() => {
@@ -24,6 +26,18 @@ function AddCompletedActivityFromTraining() {
     };
   }, [trainingManager]);
 
+  useEffect(() => {
+    if (trainingInUrl !== undefined) {
+      setIsOpen(true);
+    }
+    setTraining(trainingInUrl);
+  }, [trainingInUrl]);
+
+  function handleTrainingSelection(training: Training | undefined): void {
+    setTraining(training);
+    setTrainingInUrl(training);
+  }
+
   function handleTrainingActivitySelected(trainingActivity: TrainingActivity): void {
     const { activityId, intensity, duration } = trainingActivity;
     const latestNotes = completedActivityManager.getLastActivityNotes({ activityId });
@@ -35,6 +49,11 @@ function AddCompletedActivityFromTraining() {
       notes: latestNotes,
       date: now(),
     });
+  }
+
+  function handleClose(): void {
+    setIsOpen(false);
+    handleTrainingSelection(undefined);
   }
 
   return (
@@ -55,7 +74,7 @@ function AddCompletedActivityFromTraining() {
           <TrainingSelector
             selectedTraining={training}
             trainings={trainings}
-            onSelect={setTraining}
+            onSelect={handleTrainingSelection}
           />
 
           {training && (
@@ -78,7 +97,7 @@ function AddCompletedActivityFromTraining() {
             </SelectableTrainingActivityList>
           )}
 
-          <Button intent="none" text="Close" onClick={() => setIsOpen(false)} />
+          <Button intent="none" text="Close" onClick={handleClose} />
         </Card>
       </Collapse>
     </Container>
