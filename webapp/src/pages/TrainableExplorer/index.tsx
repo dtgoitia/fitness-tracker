@@ -3,6 +3,7 @@ import CenteredPage from "../../components/CenteredPage";
 import NavBar from "../../components/NavBar";
 import { SearchBox } from "../../components/SearchBox";
 import { Trainable, TrainableName, FilterQuery } from "../../lib/domain/model";
+import { NO_URL_PARAM_VALUE, useUrlParam } from "../../navigation";
 import Paths from "../../routes";
 import BlueprintThemeProvider from "../../style/theme";
 import { AddTrainable } from "./AddTrainable";
@@ -11,12 +12,16 @@ import { Link } from "react-router-dom";
 import { filter, first } from "rxjs";
 import styled from "styled-components";
 
+const NO_FILTER_QUERY = "";
+
 export function TrainableExplorer() {
   const app = useApp();
   const trainableManager = app.trainableManager;
 
-  // TODO: store the query filter in the URL
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>("");
+  const [filterInUrl, setUrlParam] = useUrlParam({ key: "search" });
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>(
+    filterInUrl || NO_FILTER_QUERY
+  );
 
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
   const [trainables, setTrainables] = useState<Trainable[]>([]);
@@ -53,8 +58,16 @@ export function TrainableExplorer() {
     };
   }, [app, filterQuery]);
 
+  function handleFilterChange(updated: FilterQuery): void {
+    if (updated === filterQuery) {
+      return;
+    }
+    setFilterQuery(updated);
+    setUrlParam(updated === NO_FILTER_QUERY ? NO_URL_PARAM_VALUE : updated);
+  }
+
   function clearSearch(): void {
-    setFilterQuery("");
+    handleFilterChange("");
   }
 
   function handleAddNewTrainable(name: TrainableName): void {
@@ -87,7 +100,7 @@ export function TrainableExplorer() {
 
         <SearchBox
           query={filterQuery}
-          onChange={setFilterQuery}
+          onChange={handleFilterChange}
           clearSearch={clearSearch}
           onFocus={() => {}}
         />
