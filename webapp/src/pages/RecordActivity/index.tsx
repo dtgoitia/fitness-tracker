@@ -26,7 +26,7 @@ import { useEffect, useState } from "react";
 // 1 - today + yesterday
 // 2 - today + yesterday + day before
 // ...
-const DAY_AMOUNT_TO_SHOW = 2;
+const DAY_AMOUNT_TO_SHOW = 7;
 
 export function RecordActivityPage() {
   const app = useApp();
