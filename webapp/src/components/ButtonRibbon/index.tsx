@@ -10,9 +10,10 @@ interface ButtonProps {
 interface Props {
   label: string;
   buttons: ButtonProps[];
+  disabled?: boolean;
 }
 
-export function ButtonRibbon({ label, buttons }: Props) {
+export function ButtonRibbon({ label, buttons, disabled }: Props) {
   return (
     <Container className="bp4-button-group .modifier">
       <Label>{label}</Label>
@@ -22,6 +23,7 @@ export function ButtonRibbon({ label, buttons }: Props) {
           type="button"
           className={`bp4 bp4-button ${button.selected ? "bp4-intent-success" : ""}`}
           onClick={button.onClick}
+          disabled={disabled || false}
         >
           {button.label}
         </button>
