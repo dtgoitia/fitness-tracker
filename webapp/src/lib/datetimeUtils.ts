@@ -104,3 +104,7 @@ export function nSecondsAfter(date: Date, n: Seconds): Date {
 export function nextDay(date: Date): Date {
   return new Date(date.getTime() + 24 * 3600 * 1000);
 }
+
+export function datesAreEqual(a: Date, b: Date): boolean {
+  return a.getTime() === b.getTime();
+}
