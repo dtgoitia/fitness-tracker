@@ -1,4 +1,4 @@
-import { formatTimedelta, now, weekStart } from "../datetimeUtils";
+import { datesAreEqual, formatTimedelta, now, weekStart } from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
 import { SortAction } from "../sort";
@@ -436,4 +436,94 @@ export function getLastOccurrences(history: CompletedActivity[]): CompletedActiv
   }
 
   return lastOcurrences;
+}
+
+interface CompletedActivityDiffArgs {
+  readonly updatedActivityId?: ActivityId;
+  readonly updatedIntensity?: Intensity;
+  readonly updatedDuration?: Duration;
+  readonly updatedDate?: Date;
+  readonly updatedNotes?: CompletedActivityNotes;
+}
+
+class CompletedActivityDiff {
+  public readonly hasChanges: boolean;
+
+  public readonly updatedActivityId?: ActivityId;
+  public readonly updatedIntensity?: Intensity;
+  public readonly updatedDuration?: Duration;
+  public readonly updatedDate?: Date;
+  public readonly updatedNotes?: CompletedActivityNotes;
+
+  constructor({
+    updatedActivityId,
+    updatedIntensity,
+    updatedDuration,
+    updatedDate,
+    updatedNotes,
+  }: CompletedActivityDiffArgs) {
+    this.updatedActivityId = updatedActivityId;
+    this.updatedIntensity = updatedIntensity;
+    this.updatedDuration = updatedDuration;
+    this.updatedDate = updatedDate;
+    this.updatedNotes = updatedNotes;
+
+    this.hasChanges =
+      this.updatedActivityId !== undefined ||
+      this.updatedIntensity !== undefined ||
+      this.updatedDuration !== undefined ||
+      this.updatedDate !== undefined ||
+      this.updatedNotes !== undefined;
+  }
+}
+
+/**
+ * Returns the CompletedActivity properties that got updated
+ */
+export function diffCompletedActivity({
+  before,
+  after,
+}: {
+  before: CompletedActivity;
+  after: CompletedActivity;
+}): CompletedActivityDiff {
+  if (before.id !== after.id) {
+    throw unreachable(
+      `activities must have the same ID to be compared, but provided activities have: ${before.id} & ${after.id}`
+    );
+  }
+
+  let updatedActivityId: ActivityId | undefined;
+  let updatedIntensity: Intensity | undefined;
+  let updatedDuration: Duration | undefined;
+  let updatedDate: Date | undefined;
+  let updatedNotes: CompletedActivityNotes | undefined;
+
+  if (before.activityId !== after.activityId) {
+    updatedActivityId = after.activityId;
+  }
+
+  if (before.intensity !== after.intensity) {
+    updatedIntensity = after.intensity;
+  }
+
+  if (before.duration !== after.duration) {
+    updatedDuration = after.duration;
+  }
+
+  if (!datesAreEqual(before.date, after.date)) {
+    updatedDate = after.date;
+  }
+
+  if (before.notes !== after.notes) {
+    updatedNotes = after.notes;
+  }
+
+  return new CompletedActivityDiff({
+    updatedActivityId,
+    updatedIntensity,
+    updatedDuration,
+    updatedDate,
+    updatedNotes,
+  });
 }
