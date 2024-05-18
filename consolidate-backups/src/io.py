@@ -1,4 +1,5 @@
 import json
+import csv
 import logging
 from pathlib import Path
 
@@ -8,6 +9,18 @@ from src.model import Backup, JsonDict
 
 
 logger = logging.getLogger(__name__)
+
+
+def read_csv(path: Path) -> list[JsonDict]:
+    logger.debug(f"reading CSV file from {path}")
+    resolved_path = path.expanduser().resolve()
+    if not resolved_path.exists():
+        raise FileNotFoundError(str(resolved_path))
+
+    with resolved_path.open("r") as file_handler:
+        data = list(csv.DictReader(f=file_handler))
+        logger.debug(f"reading CSV file from {path} completed")
+        return data
 
 
 def read_json(path: Path) -> JsonDict:

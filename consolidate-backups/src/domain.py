@@ -1,8 +1,9 @@
 from __future__ import annotations
+import json
 from pathlib import Path
 from apischema import deserialize
 import pandas as pd
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 import datetime
 import logging
 from typing import Literal, TypeAlias
@@ -12,11 +13,12 @@ from src.model import (
     Backup,
     CompletedActivity,
     CompletedActivityId,
-    Shortcut,
+    JsonDict,
     TrainableId,
     Trainable,
     Training,
 )
+from src.io import read_csv
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +80,66 @@ def is_backup_corrupted(*, backup: Backup) -> bool:
             is_corrupted = True
 
     return is_corrupted
+
+
+@dataclass(frozen=True)
+class ActivitiesPatch:
+    backup_file: str  # only the file name, not the full path
+    activity_id: ActivityId
+    action: Literal["override_trainables"]
+    payload: JsonDict
+    rationale: str
+
+    @staticmethod
+    def from_csv(csv: JsonDict) -> ActivitiesPatch:
+        return ActivitiesPatch(
+            backup_file=csv["backup_file"],
+            activity_id=csv["activity_id"],
+            action=csv["action"],
+            payload=json.loads(csv["payload"]),
+            rationale=csv["rationale"],
+        )
+
+    def apply_to(self, backup: Backup) -> Backup:
+        updated_activities: list[Activity] = []
+        for activity in backup.activities:
+            if self.activity_id == activity.id:
+                if self.action == "override_trainables":
+                    updated_activity = replace(activity, trainable_ids=self.payload)
+                else:
+                    raise NotImplementedError(f"unrecognized action: {self.action!r}")
+                updated_activities.append(updated_activity)
+                continue
+            updated_activities.append(activity)
+
+        return replace(backup, activities=updated_activities)
+
+
+BackupFilename: TypeAlias = str
+
+
+@dataclass(frozen=True)
+class Patches:
+    activities: dict[BackupFilename, list[ActivitiesPatch]]
+
+    @staticmethod
+    def from_files(
+        path_for_activities_patches: Path | None = None,
+        # path_for_other_patches: Path | None = None,
+    ) -> Patches:
+        activities_patches: dict[BackupFilename, list[ActivitiesPatch]] = {}
+        for row in read_csv(path_for_activities_patches):
+            patch = ActivitiesPatch.from_csv(csv=row)
+            previous = activities_patches.get(patch.backup_file, [])
+            activities_patches[patch.backup_file] = [*previous, patch]
+
+        return Patches(activities=activities_patches)
+
+    def get(self, backup_filename: str) -> list[Patcher]:
+        return [
+            *self.activities.get(backup_filename, []),
+            # self.other_stuff.get(backup_filename, []),
+        ]
 
 
 def merge_activites(earliest: Backup, latest: Backup) -> list[Activity]:

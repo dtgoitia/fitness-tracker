@@ -15,7 +15,13 @@ from typing import Iterator
 
 from src.io import read_backup_file, write_backup_to_file
 from src.model import Backup
-from src.domain import Decisions, merge_backups, is_backup_corrupted
+from src.domain import (
+    CorruptedBackup,
+    Decisions,
+    Patches,
+    merge_backups,
+    is_backup_corrupted,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +41,19 @@ def parse_cli_argument() -> argparse.Namespace:
     return args
 
 
-def _load_all_files(files: Iterator[Path]) -> Iterator[Backup]:
+def _load_all_files(files: Iterator[Path], patches: Patches) -> Iterator[Backup]:
     def _load_file(path: Path) -> Backup:
         backup = read_backup_file(path=path)
         logger.info("validating backup")
-        is_backup_corrupted(backup=backup)
+
+        if backup_patches := patches.get(path.name):
+            for patch in backup_patches:
+                backup = patch.apply_to(backup)
+
+        if is_backup_corrupted(backup=backup):
+            raise CorruptedBackup(
+                f"'{path.resolve()}' backup is corrupted, see logs for details"
+            )
         logger.info("validating backup completed without errors")
         return backup
 
@@ -80,7 +94,12 @@ def main(search_dir: Path) -> None:
     else:
         decisions = Decisions(decisions=[], path=decisions_path)
 
-    backups = _load_all_files(files=paths)
+    # Load patches you've decided to apply while correcting corrupted backups
+    patches = Patches.from_files(
+        path_for_activities_patches=Path("patches__activities.csv"),
+    )
+
+    backups = _load_all_files(files=sorted(paths), patches=patches)
     consolidated = _consolidate(backups=backups, decisions=decisions)
     write_backup_to_file(backup=consolidated, output_dir=Path.cwd())
 
