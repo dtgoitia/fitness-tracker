@@ -103,7 +103,7 @@ build-webapp-for-ngrok:
 #===============================================================================
 
 consolidate-backups:
-	consolidate-backups/bin/consolidate
+	consolidate-backups/bin/consolidate --path $(FITNESS_TRACKER_JSON_BACKUP_DIR)
 
 test-consolidate-backups:
 	consolidate-backups/bin/test
