@@ -23,16 +23,22 @@ def read_csv(path: Path) -> list[JsonDict]:
         return data
 
 
+class FileIsEmpty(Exception): ...
+
+
 def read_json(path: Path) -> JsonDict:
     logger.debug(f"reading JSON file from {path}")
     resolved_path = path.expanduser().resolve()
     if not resolved_path.exists():
         raise FileNotFoundError(str(resolved_path))
 
-    with resolved_path.open("r") as file_handler:
-        data = json.load(file_handler)
-        logger.debug(f"reading JSON file from {path} completed")
-        return data
+    content = resolved_path.read_text()
+    if not content:
+        raise FileIsEmpty("failed to read JSON file, reason: file is empty")
+
+    data = json.loads(content)
+    logger.debug(f"reading JSON file from {path} completed")
+    return data
 
 
 def write_json(path: Path, data: JsonDict) -> None:
