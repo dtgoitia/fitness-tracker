@@ -18,4 +18,10 @@ fi
 source $target_service/bin/dev/_activate_venv
 
 # TODO: replace this with a container
-cd $target_service; python -m src.cli.consolidate $@
+pushd $target_service > /dev/null
+python -m src.cli.consolidate $@
+generated_backup="$( find . -type f -maxdepth 1 | grep -E '.*fitness-tracker__consolidated-backup__.*\.json' )"
+popd > /dev/null
+
+$target_service/bin/backup-to-csv --path "${generated_backup}"
+$target_service/bin/backup-to-sqlite --path "${generated_backup}"
