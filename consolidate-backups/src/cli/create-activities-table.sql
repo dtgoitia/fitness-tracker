@@ -3,6 +3,5 @@ CREATE TABLE IF NOT EXISTS activities (
   name TEXT,
   other_names,
   last_modified,
-  trainable_ids,
   notes TEXT
 )

@@ -7,8 +7,7 @@ SELECT
 	ca.last_modified,
 	ca.duration,
 	ca.intensity,
-	ca.notes,
-	a.trainable_ids
+	ca.notes
 FROM completed_activities ca
 JOIN activities a
 ON a.id == ca.activity_id
