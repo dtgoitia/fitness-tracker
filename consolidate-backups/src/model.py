@@ -71,6 +71,7 @@ class Training:
     name: TrainingName
     activities: list[TrainingActivity]
     last_modified: Annotated[datetime.datetime | None, alias("lastModified")] = None
+    is_oneoff: Annotated[bool | None, alias("isOneOff")] = None
 
 
 @dataclass(frozen=True)
