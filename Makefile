@@ -79,10 +79,10 @@ rebuild-webapp:
 	docker-compose build --no-cache $(WEBAPP_NAME)
 
 test-dev-webapp:
-	docker-compose run --rm $(WEBAPP_NAME) npm test
+	webapp/bin/run-in-container npm test
 
 shell-webapp:
-	docker-compose run --rm $(WEBAPP_NAME) bash
+	webapp/bin/run-in-container bash
 
 deploy-webapp-from-local:
 	cd ./webapp \

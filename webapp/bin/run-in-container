@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if [[ -z "${WEBAPP_NAME}" ]]; then
+    echo "Please set WEBAPP_NAME environment variable"
+    exit 1
+fi
+
+service="${WEBAPP_NAME}"
+
+docker compose run \
+    --rm "${service}" \
+    $@
