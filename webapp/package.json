@@ -35,7 +35,7 @@
     "deploy_from_local": "npm run clear_build && npm run build && npm run clean_gh_pages_cache && npm run deploy"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/jest": "^29.5.10",
     "@types/node": "^20.10.3",
     "@types/react": "^18.2.42",
