@@ -25,7 +25,6 @@ export function TrainablesStatsPage() {
     (_now.getTime() - completed.date.getTime()) / 1000;
 
   function _render(): void {
-    console.log(`>>> render`);
     setTrainableHistory(app.getTrainableStats());
   }
 
