@@ -154,6 +154,12 @@ describe(`${getLastOccurrences.name}`, () => {
 describe(`${groupByWeek.name}`, () => {
   const _d = (s: string): Date => new Date(Date.parse(s));
 
+  it("groups when there are no completed activities", () => {
+    const history: CompletedActivity[] = [];
+    const result = groupByWeek(history);
+    expect(result).toEqual([]);
+  });
+
   it("groups when there is only one completed activity", () => {
     const ca = buildCompletedActivity({ date: _d("2024-06-02") });
     const history: CompletedActivity[] = [ca];

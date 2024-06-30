@@ -331,6 +331,10 @@ export type ActivitiesByWeek = [WeekStartDate, CompletedActivity[]];
 
 export function groupByWeek(history: CompletedActivity[]): ActivitiesByWeek[] {
   type WeekStart = ISODateString;
+  if (history.length === 0) {
+    return [];
+  }
+
   let cursor: WeekStart = getDay(weekStart(history[0].date));
 
   let weekBuffer: CompletedActivity[] = [];
