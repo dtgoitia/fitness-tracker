@@ -9,7 +9,14 @@ log () {
     echo >&2 "${message}"
 }
 
-local_ip=$(scripts/get_local_ip.py)
+local_ip="$(scripts/get_local_ip.py || echo 'no-internet')"
+
+if [[ "$local_ip" == 'no-internet' ]]; then
+    echo >&2 "no QA code generated as no internet connection found"
+    exit 0
+fi
+
+
 log "Local IP: ${local_ip}"
 
 url="http://${local_ip}:3000/fitness-tracker"
