@@ -5,6 +5,7 @@ import {
   CompletedActivityManager,
   getLastOccurrences,
   groupByDay,
+  groupByWeek,
 } from "./completedActivities";
 import { CompletedActivity } from "./model";
 import { describe, expect, it } from "vitest";
@@ -147,5 +148,33 @@ describe(`${getLastOccurrences.name}`, () => {
     const last = getLastOccurrences(history);
 
     expect(last).toEqual([completedA3, completedB2]);
+  });
+});
+
+describe(`${groupByWeek.name}`, () => {
+  const _d = (s: string): Date => new Date(Date.parse(s));
+
+  it("groups when there is only one completed activity", () => {
+    const ca = buildCompletedActivity({ date: _d("2024-06-02") });
+    const history: CompletedActivity[] = [ca];
+    const result = groupByWeek(history);
+    expect(result).toEqual([["2024-05-27", [ca]]]);
+  });
+
+  it("groups across multiple weeks", () => {
+    const ca1 = buildCompletedActivity({ date: _d("2024-06-02") });
+    const ca2 = buildCompletedActivity({ date: _d("2024-06-03") });
+    const ca3 = buildCompletedActivity({ date: _d("2024-06-04") });
+    const ca4 = buildCompletedActivity({ date: _d("2024-06-10") });
+    const ca5 = buildCompletedActivity({ date: _d("2024-06-12") });
+
+    const history: CompletedActivity[] = [ca1, ca2, ca3, ca4, ca5];
+
+    const result = groupByWeek(history);
+    expect(result).toEqual([
+      ["2024-05-27", [ca1]],
+      ["2024-06-03", [ca2, ca3]],
+      ["2024-06-10", [ca4, ca5]],
+    ]);
   });
 });
