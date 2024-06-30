@@ -101,6 +101,11 @@ export function nSecondsAfter(date: Date, n: Seconds): Date {
   return epochSecondsToDate(dateToEpochSeconds(date) + n);
 }
 
+export function nDaysAfter({ date, days }: { date: Date; days: number }): Date {
+  const seconds = days * SECONDS_PER_DAY;
+  return epochSecondsToDate(dateToEpochSeconds(date) + seconds);
+}
+
 export function nextDay(date: Date): Date {
   return new Date(date.getTime() + 24 * 3600 * 1000);
 }
