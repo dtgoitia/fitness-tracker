@@ -1,4 +1,4 @@
-import { formatTimedelta } from "./datetimeUtils";
+import { formatTimedelta, weekStart } from "./datetimeUtils";
 import { describe, expect, it } from "vitest";
 
 describe("format timedelta", () => {
@@ -46,5 +46,37 @@ describe("format timedelta", () => {
     const seconds = 12;
     const delta = oneDay + seconds;
     expect(formatTimedelta(delta)).toEqual("2 days 0h 0m 12s");
+  });
+});
+
+describe(`${weekStart.name}`, () => {
+  const _d = (s: string): Date => new Date(Date.parse(s));
+
+  it("Mon", () => {
+    expect(weekStart(_d("2024-06-24"))).toEqual(_d("2024-06-24"));
+  });
+  it("Tue", () => {
+    expect(weekStart(_d("2024-06-25"))).toEqual(_d("2024-06-24"));
+  });
+  it("Wed", () => {
+    expect(weekStart(_d("2024-06-26"))).toEqual(_d("2024-06-24"));
+  });
+  it("Thu", () => {
+    expect(weekStart(_d("2024-06-27"))).toEqual(_d("2024-06-24"));
+  });
+  it("Fri", () => {
+    expect(weekStart(_d("2024-06-28"))).toEqual(_d("2024-06-24"));
+  });
+  it("Sat", () => {
+    expect(weekStart(_d("2024-06-29"))).toEqual(_d("2024-06-24"));
+  });
+  it("Sun", () => {
+    expect(weekStart(_d("2024-06-30"))).toEqual(_d("2024-06-24"));
+  });
+  it("across months", () => {
+    expect(weekStart(_d("2024-06-02"))).toEqual(_d("2024-05-27"));
+  });
+  it("across years", () => {
+    expect(weekStart(_d("2022-01-02"))).toEqual(_d("2021-12-27"));
   });
 });
