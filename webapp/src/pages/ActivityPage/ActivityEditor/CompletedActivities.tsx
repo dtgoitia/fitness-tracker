@@ -1,6 +1,9 @@
 import { useApp } from "../../..";
 import { isoDateFormatter as toISODate } from "../../../lib/datetimeUtils";
-import { ActivitiesByWeek, groupByWeek } from "../../../lib/domain/completedActivities";
+import {
+  ItemsPerWeek,
+  groupRetrochronologicalItemsByWeek,
+} from "../../../lib/domain/completedActivities";
 import { Activity, CompletedActivity } from "../../../lib/domain/model";
 import { formatTime } from "../../HistoryExplorer/History/datetime";
 import { Button } from "@blueprintjs/core";
@@ -11,12 +14,14 @@ interface Props {
   activity: Activity;
 }
 
+type CActivitiesPerWeek = ItemsPerWeek<CompletedActivity>;
+
 export function CompletedActivities({ activity }: Props) {
   const app = useApp();
   const completedActivityManager = app.completedActivityManager;
 
   const [completed, setCompleted] = useState<CompletedActivity[]>([]);
-  const [groupedByWeek, setGroupedByWeek] = useState<ActivitiesByWeek[]>([]);
+  const [groupedByWeek, setGroupedByWeek] = useState<CActivitiesPerWeek[]>([]);
   const [displayedAmount, setDisplayedAmount] = useState<number>(10);
 
   function refreshState(allCompleted: CompletedActivity[]): void {
@@ -26,22 +31,22 @@ export function CompletedActivities({ activity }: Props) {
       return;
     }
 
-    setGroupedByWeek(groupByWeek(allCompleted));
+    setGroupedByWeek(
+      groupRetrochronologicalItemsByWeek({ items: allCompleted, fillGaps: true })
+    );
   }
 
   useEffect(() => {
     const subscription = completedActivityManager.changes$.subscribe(() => {
       const all = completedActivityManager
-        .getAll()
+        .getAll({ order: "reverse-chronological" })
         .filter((completed) => completed.activityId === activity.id);
-      // all.reverse();
       refreshState(all);
     });
 
     const all = completedActivityManager
-      .getAll()
+      .getAll({ order: "reverse-chronological" })
       .filter((completed) => completed.activityId === activity.id);
-    // all.reverse();
     refreshState(all);
 
     return () => subscription.unsubscribe();
@@ -51,7 +56,7 @@ export function CompletedActivities({ activity }: Props) {
     return <div>No data for this activity</div>;
   }
 
-  const paginated = getFirstNWeeks({ groupedByWeek, n: displayedAmount });
+  const paginated = groupedByWeek.slice(0, displayedAmount);
 
   const canShowMore = displayedAmount < groupedByWeek.length;
 
@@ -60,12 +65,12 @@ export function CompletedActivities({ activity }: Props) {
       <ol>
         {paginated.map(([weekStartDate, completedInDay]) => (
           <li key={weekStartDate}>
-            <WeekHeader>{weekStartDate}</WeekHeader>
             <ol>
               {completedInDay.map((completedActivity) => (
                 <Row key={completedActivity.id} completedActivity={completedActivity} />
               ))}
             </ol>
+            <WeekHeader>{weekStartDate}</WeekHeader>
           </li>
         ))}
       </ol>
@@ -98,10 +103,11 @@ const ShowMoreButtonContainer = styled.div`
 `;
 
 const WeekHeader = styled.div`
-  font-size: 1rem;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
   border-bottom: 1px rgba(255, 255, 255, 0.3) solid;
-  margin-top: 0.8rem;
-  margin-bottom: 0.3rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1.8rem;
   padding-bottom: 0.3rem;
 `;
 
@@ -154,19 +160,4 @@ function Row({ completedActivity }: RowProps) {
       <Col5>{completedActivity.notes}</Col5>
     </RowContainer>
   );
-}
-
-function getFirstNWeeks({
-  groupedByWeek,
-  n,
-}: {
-  groupedByWeek: ActivitiesByWeek[];
-  n: number;
-}): ActivitiesByWeek[] {
-  const result: ActivitiesByWeek[] = [];
-  for (let index = 0; index < Math.min(n, groupedByWeek.length); index++) {
-    const week = groupedByWeek[index];
-    result.push(week);
-  }
-  return result;
 }

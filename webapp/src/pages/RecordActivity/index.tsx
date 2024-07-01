@@ -36,13 +36,17 @@ export function RecordActivityPage() {
   useEffect(() => {
     const completedActivitySubscription = app.completedActivityManager.changes$.subscribe(
       (_) => {
-        const history = app.completedActivityManager.getAll();
+        const history = app.completedActivityManager.getAll({
+          order: "reverse-chronological",
+        });
         const historySlice = keepLastNDays({ all: history, n: DAY_AMOUNT_TO_SHOW });
         setHistory(historySlice);
       }
     );
 
-    const history = app.completedActivityManager.getAll();
+    const history = app.completedActivityManager.getAll({
+      order: "reverse-chronological",
+    });
     const historySlice = keepLastNDays({ all: history, n: DAY_AMOUNT_TO_SHOW });
     setHistory(historySlice);
 

@@ -1,13 +1,14 @@
+import { ISODateString } from "./domain/model";
 import { divmod } from "./math";
 
 export type Seconds = number; // duration in seconds - generic, nothing to do with epoch
-type Milliseconds = number; // duration in milliseconds - generic, nothing to do with epoch
+export type Milliseconds = number; // duration in milliseconds - generic, nothing to do with epoch
 
 const SECONDS_PER_DAY: Seconds = 60 * 60 * 24;
 const SECONDS_PER_HOUR: Seconds = 60 * 60;
 const SECONDS_PER_MINUTE: Seconds = 60;
 
-const MILLISECONDS_PER_DAY: Milliseconds = 24 * 60 * 60 * 1000;
+export const MILLISECONDS_PER_DAY: Milliseconds = 24 * 60 * 60 * 1000;
 
 type UTCSeconds = number; // Seconds ellapsed since 1970-01-01 00:00:00 (+00:00)
 export type UTCMilliseconds = number; // Milliseconds ellapsed since 1970-01-01 00:00:00 (+00:00)
@@ -37,7 +38,7 @@ export function yesterday(): Date {
 export function weekStart(datetime: Date): Date {
   const usWeekDay = datetime.getUTCDay(); // 0=Sun, 1=Mon, ..., 6=Sat
   const weekDay = usWeekDay === 0 ? 6 : usWeekDay - 1; // 0=Mon, 1=Tue, ..., 6=Sun
-  const date = toDay(datetime);
+  const date = toUTCDay(datetime);
   const weekStart = new Date(date.getTime() - weekDay * MILLISECONDS_PER_DAY);
   return weekStart;
 }
@@ -101,6 +102,10 @@ export function nSecondsAfter(date: Date, n: Seconds): Date {
   return epochSecondsToDate(dateToEpochSeconds(date) + n);
 }
 
+export function nDaysBefore({ date, days }: { date: Date; days: number }): Date {
+  return nDaysAfter({ date, days: -days });
+}
+
 export function nDaysAfter({ date, days }: { date: Date; days: number }): Date {
   const seconds = days * SECONDS_PER_DAY;
   return epochSecondsToDate(dateToEpochSeconds(date) + seconds);
@@ -112,4 +117,8 @@ export function nextDay(date: Date): Date {
 
 export function datesAreEqual(a: Date, b: Date): boolean {
   return a.getTime() === b.getTime();
+}
+
+export function toIsoDateString(date: Date): ISODateString {
+  return date.toISOString().slice(0, 10);
 }

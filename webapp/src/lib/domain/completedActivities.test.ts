@@ -5,7 +5,8 @@ import {
   CompletedActivityManager,
   getLastOccurrences,
   groupByDay,
-  groupByWeek,
+  groupChronologicalItemsByWeek,
+  groupRetrochronologicalItemsByWeek,
 } from "./completedActivities";
 import { CompletedActivity } from "./model";
 import { describe, expect, it } from "vitest";
@@ -54,7 +55,7 @@ describe(`CompletedActivityManager`, () => {
     const preservedDate = completedActivityManager.purge();
 
     // then only latest activity remains
-    expect(completedActivityManager.getAll()).toEqual([ca_b]);
+    expect(completedActivityManager.getAll({ order: "chronological" })).toEqual([ca_b]);
     // and the preserved date is the same as the latest completed activity
     expect(preservedDate).toEqual(ca_b.date);
   });
@@ -109,7 +110,9 @@ describe(`CompletedActivityManager`, () => {
     // then
     expect(preservedDate).toEqual(completedB2.date);
 
-    const remaining = new Set(completedActivityManager.getAll());
+    const remaining = new Set(
+      completedActivityManager.getAll({ order: "reverse-chronological" })
+    );
     const expected = new Set([completedA2, completedA3, completedB2]);
     expect(setsAreEqual(remaining, expected)).toBe(true);
   });
@@ -151,19 +154,19 @@ describe(`${getLastOccurrences.name}`, () => {
   });
 });
 
-describe(`${groupByWeek.name}`, () => {
+describe(`${groupChronologicalItemsByWeek.name}`, () => {
   const _d = (s: string): Date => new Date(Date.parse(s));
 
   it("groups when there are no completed activities", () => {
-    const history: CompletedActivity[] = [];
-    const result = groupByWeek(history);
+    const items: CompletedActivity[] = [];
+    const result = groupChronologicalItemsByWeek({ items, fillGaps: false });
     expect(result).toEqual([]);
   });
 
   it("groups when there is only one completed activity", () => {
     const ca = buildCompletedActivity({ date: _d("2024-06-02") });
     const history: CompletedActivity[] = [ca];
-    const result = groupByWeek(history);
+    const result = groupChronologicalItemsByWeek({ items: history, fillGaps: false });
     expect(result).toEqual([["2024-05-27", [ca]]]);
   });
 
@@ -176,11 +179,102 @@ describe(`${groupByWeek.name}`, () => {
 
     const history: CompletedActivity[] = [ca1, ca2, ca3, ca4, ca5];
 
-    const result = groupByWeek(history);
+    const result = groupChronologicalItemsByWeek({ items: history, fillGaps: false });
     expect(result).toEqual([
       ["2024-05-27", [ca1]],
       ["2024-06-03", [ca2, ca3]],
       ["2024-06-10", [ca4, ca5]],
+    ]);
+  });
+
+  it("group by filling the gaps if requested", () => {
+    const ca1 = buildCompletedActivity({ date: _d("2024-06-02") });
+    const ca2 = buildCompletedActivity({ date: _d("2024-06-28") });
+    const history: CompletedActivity[] = [ca1, ca2];
+
+    const gapsNotFilled = groupChronologicalItemsByWeek({
+      items: history,
+      fillGaps: false,
+    });
+    expect(gapsNotFilled).toEqual([
+      ["2024-05-27", [ca1]],
+      ["2024-06-24", [ca2]],
+    ]);
+
+    const gapsFilled = groupChronologicalItemsByWeek({ items: history, fillGaps: true });
+    expect(gapsFilled).toEqual([
+      ["2024-05-27", [ca1]],
+      ["2024-06-03", []],
+      ["2024-06-10", []],
+      ["2024-06-17", []],
+      ["2024-06-24", [ca2]],
+    ]);
+  });
+});
+
+describe(`${groupRetrochronologicalItemsByWeek.name}`, () => {
+  const _d = (s: string): Date => new Date(Date.parse(s));
+
+  it("groups when there are no completed activities", () => {
+    const items: CompletedActivity[] = [];
+    const result = groupRetrochronologicalItemsByWeek({ items, fillGaps: false });
+    expect(result).toEqual([]);
+  });
+
+  it("groups when there is only one completed activity", () => {
+    const ca = buildCompletedActivity({ date: _d("2024-06-02") });
+    const history: CompletedActivity[] = [ca];
+    const result = groupRetrochronologicalItemsByWeek({
+      items: history,
+      fillGaps: false,
+    });
+    expect(result).toEqual([["2024-05-27", [ca]]]);
+  });
+
+  it("groups across multiple weeks", () => {
+    const ca1 = buildCompletedActivity({ date: _d("2024-06-02") });
+    const ca2 = buildCompletedActivity({ date: _d("2024-06-03") });
+    const ca3 = buildCompletedActivity({ date: _d("2024-06-04") });
+    const ca4 = buildCompletedActivity({ date: _d("2024-06-10") });
+    const ca5 = buildCompletedActivity({ date: _d("2024-06-12") });
+
+    const history: CompletedActivity[] = [ca5, ca4, ca3, ca2, ca1];
+
+    const result = groupRetrochronologicalItemsByWeek({
+      items: history,
+      fillGaps: false,
+    });
+    expect(result).toEqual([
+      ["2024-06-10", [ca5, ca4]],
+      ["2024-06-03", [ca3, ca2]],
+      ["2024-05-27", [ca1]],
+    ]);
+  });
+
+  it("group by filling the gaps if requested", () => {
+    const ca1 = buildCompletedActivity({ date: _d("2024-06-02") });
+    const ca2 = buildCompletedActivity({ date: _d("2024-06-28") });
+    const history: CompletedActivity[] = [ca2, ca1];
+
+    const gapsNotFilled = groupRetrochronologicalItemsByWeek({
+      items: history,
+      fillGaps: false,
+    });
+    expect(gapsNotFilled).toEqual([
+      ["2024-06-24", [ca2]],
+      ["2024-05-27", [ca1]],
+    ]);
+
+    const gapsFilled = groupRetrochronologicalItemsByWeek({
+      items: history,
+      fillGaps: true,
+    });
+    expect(gapsFilled).toEqual([
+      ["2024-06-24", [ca2]],
+      ["2024-06-17", []],
+      ["2024-06-10", []],
+      ["2024-06-03", []],
+      ["2024-05-27", [ca1]],
     ]);
   });
 });

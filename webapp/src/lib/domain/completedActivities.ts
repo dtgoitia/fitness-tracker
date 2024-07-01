@@ -1,4 +1,14 @@
-import { datesAreEqual, formatTimedelta, now, weekStart } from "../datetimeUtils";
+import {
+  MILLISECONDS_PER_DAY,
+  Milliseconds,
+  datesAreEqual,
+  formatTimedelta,
+  nDaysAfter,
+  nDaysBefore,
+  now,
+  toIsoDateString,
+  weekStart,
+} from "../datetimeUtils";
 import { unreachable } from "../devex";
 import { generateId } from "../hash";
 import { SortAction } from "../sort";
@@ -181,8 +191,22 @@ export class CompletedActivityManager {
     return this.completedActivities.get(id);
   }
 
-  public getAll(): CompletedActivity[] {
-    return [...this.completedActivities.values()].sort(sortCompletedActivitiesByDate);
+  public getAll({
+    order,
+  }: {
+    order: "chronological" | "reverse-chronological";
+  }): CompletedActivity[] {
+    const history = [...this.completedActivities.values()].sort(
+      sortCompletedActivitiesByDate
+    );
+    switch (order) {
+      case "chronological":
+        return history;
+      case "reverse-chronological":
+        return history.reverse();
+      default:
+        throw unreachable(`unsupported order: ${order}`);
+    }
   }
 
   public isActivityUsedInHistory({ activityId }: { activityId: ActivityId }): boolean {
@@ -244,8 +268,8 @@ export class CompletedActivityManager {
     const tracker = new Set<CompletedActivityNotes>();
     const result: CompletedActivityNotes[] = [];
 
-    const completedActivitiesSortedByDate = this.getAll();
-    for (const completedActivity of completedActivitiesSortedByDate) {
+    const sorted = this.getAll({ order: "reverse-chronological" });
+    for (const completedActivity of sorted) {
       if (completedActivity.activityId !== activityId) {
         continue;
       }
@@ -277,6 +301,9 @@ export class CompletedActivityManager {
   }
 }
 
+/**
+ * Sort `CompletedActivity`s chronologically using their `.date` property.
+ */
 function sortCompletedActivitiesByDate(
   a: CompletedActivity,
   b: CompletedActivity
@@ -288,28 +315,24 @@ function sortCompletedActivitiesByDate(
     case date_a === date_b:
       return SortAction.PRESERVE_ORDER;
     case date_a > date_b:
-      return SortAction.FIRST_A_THEN_B;
-    case date_a < date_b:
       return SortAction.FIRST_B_THEN_A;
+    case date_a < date_b:
+      return SortAction.FIRST_A_THEN_B;
     default:
       throw unreachable();
   }
 }
 
-function getDay(date: Date): ISODateString {
-  return date.toISOString().slice(0, 10);
-}
-
 type DatedActivities = [ISODateString, CompletedActivity[]];
 
 export function groupByDay(history: CompletedActivity[]): DatedActivities[] {
-  let dayCursor: ISODateString = getDay(history[0].date);
+  let dayCursor = toIsoDateString(history[0].date);
 
   let groupedActivities: CompletedActivity[] = [];
   const result: DatedActivities[] = [];
 
   history.forEach((activity) => {
-    const day = getDay(activity.date);
+    const day = toIsoDateString(activity.date);
     if (day === dayCursor) {
       groupedActivities.push(activity);
     } else {
@@ -327,32 +350,167 @@ export function groupByDay(history: CompletedActivity[]): DatedActivities[] {
 }
 
 type WeekStartDate = ISODateString;
-export type ActivitiesByWeek = [WeekStartDate, CompletedActivity[]];
+export type ItemsPerWeek<T> = [WeekStartDate, T[]];
 
-export function groupByWeek(history: CompletedActivity[]): ActivitiesByWeek[] {
+type HasDate = { date: Date };
+
+/**
+ * Group items weekly using their `.date` property as a reference. `items` must
+ * be chronologically sorted.
+ */
+export function groupChronologicalItemsByWeek<T extends HasDate>({
+  items,
+  fillGaps,
+}: {
+  items: T[];
+  fillGaps: boolean;
+}): ItemsPerWeek<T>[] {
   type WeekStart = ISODateString;
-  if (history.length === 0) {
+
+  if (items.length === 0) {
     return [];
   }
 
-  let cursor: WeekStart = getDay(weekStart(history[0].date));
+  const earliestDay = items[0].date;
+  let weekCursor: WeekStart = toIsoDateString(weekStart(earliestDay));
 
-  let weekBuffer: CompletedActivity[] = [];
-  const result: ActivitiesByWeek[] = [];
+  // Group items by week
+  let weekItems: T[] = [];
+  const result: ItemsPerWeek<T>[] = [];
 
-  for (const completed of history) {
-    const week = getDay(weekStart(completed.date));
-    if (week === cursor) {
-      weekBuffer.push(completed);
-    } else {
-      result.push([cursor, [...weekBuffer]]);
-      cursor = week;
-      weekBuffer = [completed];
+  const MILLISECONDS_PER_WEEK = MILLISECONDS_PER_DAY * 7;
+  let previousItemDate: Date | undefined = undefined;
+  let previousWeekStart: Date | undefined = undefined;
+  for (const item of items) {
+    // validation: items must be in chronological order
+    if (previousItemDate) {
+      if (item.date.getTime() < previousItemDate.getTime()) {
+        throw Error(
+          `items are not sorted chronologically, current item.date =` +
+            ` ${item.date.toISOString()} and previous item.date = ` +
+            ` ${previousItemDate.toISOString()}`
+        );
+      }
     }
+
+    const week = weekStart(item.date);
+
+    const weekIsoDate = toIsoDateString(week);
+    const stillSameWeek = weekIsoDate === weekCursor;
+    if (stillSameWeek) {
+      weekItems.push(item);
+    } else {
+      result.push([weekCursor, [...weekItems]]);
+
+      // detect gaps in week series and fill them up if needed
+      if (fillGaps && previousWeekStart) {
+        const delta: Milliseconds =
+          weekStart(item.date).getTime() - previousWeekStart.getTime();
+
+        if (MILLISECONDS_PER_WEEK < delta) {
+          // an empty week must be added to the result
+          let next = previousWeekStart;
+          while (true) {
+            next = nDaysAfter({ date: next, days: 7 });
+            if (datesAreEqual(next, week)) {
+              break;
+            }
+            result.push([toIsoDateString(next), []]);
+          }
+        }
+      }
+
+      weekCursor = weekIsoDate;
+      weekItems = [item];
+    }
+
+    previousItemDate = item.date;
+    previousWeekStart = week;
   }
 
-  if (weekBuffer.length > 0) {
-    result.push([cursor, [...weekBuffer]]);
+  if (weekItems.length > 0) {
+    result.push([weekCursor, [...weekItems]]);
+  }
+
+  return result;
+}
+
+/**
+ * Group items weekly using their `.date` property as a reference. `items` must
+ * be in reverse chronological order.
+ */
+export function groupRetrochronologicalItemsByWeek<T extends HasDate>({
+  items,
+  fillGaps,
+}: {
+  items: T[];
+  fillGaps: boolean;
+}): ItemsPerWeek<T>[] {
+  type WeekStart = ISODateString;
+
+  if (items.length === 0) {
+    return [];
+  }
+
+  const earliestDay = items[0].date;
+  let weekCursor: WeekStart = toIsoDateString(weekStart(earliestDay));
+
+  // Group items by week
+  let weekItems: T[] = [];
+  const result: ItemsPerWeek<T>[] = [];
+
+  const MILLISECONDS_PER_WEEK = MILLISECONDS_PER_DAY * 7;
+  let previousItemDate: Date | undefined = undefined;
+  let previousWeekStart: Date | undefined = undefined;
+  for (const item of items) {
+    // validation: items must be in chronological order
+    if (previousItemDate) {
+      if (previousItemDate.getTime() < item.date.getTime()) {
+        throw Error(
+          `items are not sorted chronologically, current item.date =` +
+            ` ${item.date.toISOString()} and previous item.date = ` +
+            ` ${previousItemDate.toISOString()}`
+        );
+      }
+    }
+
+    const week = weekStart(item.date);
+
+    const weekIsoDate = toIsoDateString(week);
+    const stillSameWeek = weekIsoDate === weekCursor;
+    if (stillSameWeek) {
+      weekItems.push(item);
+    } else {
+      result.push([weekCursor, [...weekItems]]);
+
+      // detect gaps in week series and fill them up if needed
+      if (fillGaps && previousWeekStart) {
+        const delta: Milliseconds =
+          previousWeekStart.getTime() - weekStart(item.date).getTime();
+
+        if (MILLISECONDS_PER_WEEK < delta) {
+          // an empty week must be added to the result
+          let next = previousWeekStart;
+          while (true) {
+            next = nDaysBefore({ date: next, days: 7 });
+            if (datesAreEqual(next, week)) {
+              break;
+            }
+            result.push([toIsoDateString(next), []]);
+          }
+        }
+      }
+
+      weekCursor = weekIsoDate;
+      weekItems = [item];
+    }
+
+    previousItemDate = item.date;
+    previousWeekStart = week;
+  }
+
+  if (weekItems.length > 0) {
+    result.push([weekCursor, [...weekItems]]);
   }
 
   return result;
@@ -427,7 +585,7 @@ export function setCompletedActivityEllapsedInNotes(
 
 /**
  * Drop all completed activities but the latest occurrence of each completed activity,
- * and return them sorted newest to oldest
+ * and return them sorted reverse chronological order
  */
 export function getLastOccurrences(history: CompletedActivity[]): CompletedActivity[] {
   const seen = new Set<ActivityId>();

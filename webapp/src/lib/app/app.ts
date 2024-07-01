@@ -205,7 +205,9 @@ export class App {
    * POC: this probably will need to be move elsewhere
    */
   public getTrainableStats(): CompletedTrainable[] {
-    const history = this.completedActivityManager.getAll();
+    const history = this.completedActivityManager.getAll({
+      order: "reverse-chronological",
+    });
 
     // sorted from newest to oldest
     const lastCActivities = getLastOccurrences(history);

@@ -18,7 +18,7 @@ export function CompletedActivitiesCalendar({ activityIds }: Props) {
 
   function _render(): void {
     const all = completedActivityManager
-      .getAll()
+      .getAll({ order: "reverse-chronological" })
       .filter((completed) => activityIds.has(completed.activityId));
     all.reverse();
     setCompleted(all);

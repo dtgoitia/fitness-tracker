@@ -58,7 +58,7 @@ export function generateBackupFileContent({
   const data = {
     date: date.toISOString(),
     activities: app.activityManager.getAll(),
-    completedActivities: app.completedActivityManager.getAll(),
+    completedActivities: app.completedActivityManager.getAll({ order: "chronological" }),
     trainings: app.trainingManager.getAll(),
     trainables: app.trainableManager.getAll(),
     shortcuts: app.shortcutManager.getAll(),

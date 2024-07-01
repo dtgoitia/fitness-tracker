@@ -167,7 +167,9 @@ export class BrowserStorage {
   }
 
   private handleCompletedActivityChanges(): void {
-    this.storeCompletedActivities(this.completedActivityManager.getAll());
+    this.storeCompletedActivities(
+      this.completedActivityManager.getAll({ order: "chronological" })
+    );
   }
 
   private handleTrainingChanges(): void {

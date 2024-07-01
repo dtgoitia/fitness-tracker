@@ -24,11 +24,15 @@ function HistoryPage() {
 
   useEffect(() => {
     app.completedActivityManager.changes$.subscribe((_) => {
-      const history = app.completedActivityManager.getAll();
+      const history = app.completedActivityManager.getAll({
+        order: "reverse-chronological",
+      });
       setHistory(history);
     });
 
-    const history = app.completedActivityManager.getAll();
+    const history = app.completedActivityManager.getAll({
+      order: "reverse-chronological",
+    });
     setHistory(history);
   }, [app]);
 
